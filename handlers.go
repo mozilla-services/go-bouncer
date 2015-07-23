@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"log"
+	"math/rand"
 	"net/http"
 	"strings"
 )
@@ -13,6 +14,27 @@ const DefaultOS = "win"
 // BouncerHandler is the primary handler for this application
 type BouncerHandler struct {
 	db *DB
+}
+
+func randomMirror(mirrors []MirrorsResult) *MirrorsResult {
+	totalRatings := 0
+	for _, m := range mirrors {
+		totalRatings += m.Rating
+	}
+	for _, m := range mirrors {
+		// Intn(x) returns from [0,x) and we need [1,x], so adding 1
+		rand := rand.Intn(totalRatings) + 1
+		if rand <= m.Rating {
+			return &m
+		}
+		totalRatings -= m.Rating
+	}
+
+	// This shouldn't happen
+	if len(mirrors) == 0 {
+		return nil
+	}
+	return &mirrors[0]
 }
 
 // Url returns the final redirect URL given a lang, os and product
@@ -52,7 +74,26 @@ func (b *BouncerHandler) URL(lang, os, product string) (string, error) {
 		return "", err
 	}
 
-	return "", nil
+	if len(mirrors) == 0 {
+		// try again, looking for unhealthy mirrors
+		mirrors, err = b.db.Mirrors(sslOnly, lang, locationID, false)
+		if err != nil {
+			return "", err
+		}
+	}
+
+	if len(mirrors) == 0 {
+		return "", nil
+	}
+
+	mirror := randomMirror(mirrors)
+	if mirror == nil {
+		return "", nil
+	}
+
+	locationPath = strings.Replace(locationPath, ":lang", lang, -1)
+
+	return mirror.BaseURL + locationPath, nil
 }
 
 func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {

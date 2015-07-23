@@ -120,7 +120,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `auth_user` WRITE;
 /*!40000 ALTER TABLE `auth_user` DISABLE KEYS */;
-INSERT INTO `auth_user` (`id`, `username`, `first_name`, `last_name`, `email`, `password`, `is_staff`, `is_active`, `is_superuser`, `last_login`, `date_joined`) VALUES (1,'admin','','','admin@admin.com','pbkdf2_sha256$10000$1obyKBfQOSs6$TwvoLHHnE7uZprw9ZMZmviCVPKqCH1M+bFN2o6zNX4w=',1,1,1,'2015-07-23 11:45:16','2015-07-23 10:58:11');
+INSERT INTO `auth_user` (`id`, `username`, `first_name`, `last_name`, `email`, `password`, `is_staff`, `is_active`, `is_superuser`, `last_login`, `date_joined`) VALUES (1,'admin','','','admin@admin.com','pbkdf2_sha256$10000$1obyKBfQOSs6$TwvoLHHnE7uZprw9ZMZmviCVPKqCH1M+bFN2o6zNX4w=',1,1,1,'2015-07-23 16:07:01','2015-07-23 10:58:11');
 /*!40000 ALTER TABLE `auth_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -148,6 +148,10 @@ INSERT INTO `django_admin_log` (`id`, `action_time`, `user_id`, `content_type_id
 INSERT INTO `django_admin_log` (`id`, `action_time`, `user_id`, `content_type_id`, `object_id`, `object_repr`, `action_flag`, `change_message`) VALUES (9,'2015-07-23 13:39:20',1,18,'1','ProductAlias object',1,'');
 INSERT INTO `django_admin_log` (`id`, `action_time`, `user_id`, `content_type_id`, `object_id`, `object_repr`, `action_flag`, `change_message`) VALUES (10,'2015-07-23 13:41:49',1,11,'US','United States (US)',1,'');
 INSERT INTO `django_admin_log` (`id`, `action_time`, `user_id`, `content_type_id`, `object_id`, `object_repr`, `action_flag`, `change_message`) VALUES (11,'2015-07-23 13:43:43',1,21,'1','0.0.0.0 -- 223.255.247.255',1,'');
+INSERT INTO `django_admin_log` (`id`, `action_time`, `user_id`, `content_type_id`, `object_id`, `object_repr`, `action_flag`, `change_message`) VALUES (12,'2015-07-23 16:11:12',1,16,'2','/firefox/releases/39.0/mac/:lang/Firefox%2039.0.dmg',2,'Changed path.');
+INSERT INTO `django_admin_log` (`id`, `action_time`, `user_id`, `content_type_id`, `object_id`, `object_repr`, `action_flag`, `change_message`) VALUES (13,'2015-07-23 16:11:28',1,16,'1','/firefox/releases/39.0/win32/:lang/Firefox%20Setup%2039.0.exe',2,'Changed path.');
+INSERT INTO `django_admin_log` (`id`, `action_time`, `user_id`, `content_type_id`, `object_id`, `object_repr`, `action_flag`, `change_message`) VALUES (16,'2015-07-23 16:39:18',1,14,'2','Firefox-SSL',1,'');
+INSERT INTO `django_admin_log` (`id`, `action_time`, `user_id`, `content_type_id`, `object_id`, `object_repr`, `action_flag`, `change_message`) VALUES (17,'2015-07-23 16:39:57',1,16,'3','/firefox/releases/39.0/win32/:lang/Firefox%20Setup%2039.0.exe',1,'');
 /*!40000 ALTER TABLE `django_admin_log` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -179,7 +183,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `django_session` WRITE;
 /*!40000 ALTER TABLE `django_session` DISABLE KEYS */;
-INSERT INTO `django_session` (`session_key`, `session_data`, `expire_date`) VALUES ('599280a5af82612f05ccf2c8ec8c9832','YzZhMWViOTYyMGEyZDQ5NmEwYmRjOGQ2Zjk3OTA2NWNkZmZmYTE3NTqAAn1xAS4=\n','2015-08-06 13:44:16');
+INSERT INTO `django_session` (`session_key`, `session_data`, `expire_date`) VALUES ('810f108fd09ce4e4bb84684cb3581b41','OGJlMDI1NjU2YWM1YTA0NTAxY2M1YTU4NTkxYWIyYTY2MzA1ZTAxYzqAAn1xAShVEl9hdXRoX3Vz\nZXJfYmFja2VuZHECVSlkamFuZ28uY29udHJpYi5hdXRoLmJhY2tlbmRzLk1vZGVsQmFja2VuZHED\nVQ1fYXV0aF91c2VyX2lkcQSKAQF1Lg==\n','2015-08-06 16:07:01');
 /*!40000 ALTER TABLE `django_session` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -221,20 +225,27 @@ UNLOCK TABLES;
 
 LOCK TABLES `mirror_location_mirror_map` WRITE;
 /*!40000 ALTER TABLE `mirror_location_mirror_map` DISABLE KEYS */;
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,1,1,1,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,1,2,2,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,1,3,3,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,2,4,1,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,2,5,2,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,2,6,3,1);
 /*!40000 ALTER TABLE `mirror_location_mirror_map` ENABLE KEYS */;
 UNLOCK TABLES;
 
 LOCK TABLES `mirror_locations` WRITE;
 /*!40000 ALTER TABLE `mirror_locations` DISABLE KEYS */;
-INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/40.0b5/win32/:lang/Firefox%20Setup%2040.0b5.exe',1,1,1);
-INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/40.0b5/mac/:lang/Firefox%2040.0b5.dmg',1,2,2);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/39.0/win32/:lang/Firefox%20Setup%2039.0.exe',1,1,1);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/39.0/mac/:lang/Firefox%2039.0.dmg',1,2,2);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/39.0/win32/:lang/Firefox%20Setup%2039.0.exe',2,1,3);
 /*!40000 ALTER TABLE `mirror_locations` ENABLE KEYS */;
 UNLOCK TABLES;
 
 LOCK TABLES `mirror_mirrors` WRITE;
 /*!40000 ALTER TABLE `mirror_mirrors` DISABLE KEYS */;
 INSERT INTO `mirror_mirrors` (`count`, `rating`, `name`, `baseurl`, `active`, `id`) VALUES (0,100000,'Mozilla Installer CDN','http://download-installer.cdn.mozilla.net/pub',1,1);
-INSERT INTO `mirror_mirrors` (`count`, `rating`, `name`, `baseurl`, `active`, `id`) VALUES (0,100000,'Mozilla Installer CDN - SSL ','https://download-installer.cdn.mozilla.net/pub',1,2);
+INSERT INTO `mirror_mirrors` (`count`, `rating`, `name`, `baseurl`, `active`, `id`) VALUES (0,81000,'Mozilla Installer CDN - SSL ','https://download-installer.cdn.mozilla.net/pub',1,2);
 /*!40000 ALTER TABLE `mirror_mirrors` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -256,13 +267,23 @@ LOCK TABLES `mirror_product_langs` WRITE;
 /*!40000 ALTER TABLE `mirror_product_langs` DISABLE KEYS */;
 INSERT INTO `mirror_product_langs` (`language`, `product_id`, `id`) VALUES ('en-GB',1,1);
 INSERT INTO `mirror_product_langs` (`language`, `product_id`, `id`) VALUES ('en-US',1,2);
+INSERT INTO `mirror_product_langs` (`language`, `product_id`, `id`) VALUES ('en-GB',2,4);
+INSERT INTO `mirror_product_langs` (`language`, `product_id`, `id`) VALUES ('en-US',2,3);
 /*!40000 ALTER TABLE `mirror_product_langs` ENABLE KEYS */;
 UNLOCK TABLES;
 
 LOCK TABLES `mirror_products` WRITE;
 /*!40000 ALTER TABLE `mirror_products` DISABLE KEYS */;
 INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox',1,1,1,1,0);
+INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-SSL',1,1,1,2,1);
 /*!40000 ALTER TABLE `mirror_products` ENABLE KEYS */;
+UNLOCK TABLES;
+
+LOCK TABLES `sentry_log` WRITE;
+/*!40000 ALTER TABLE `sentry_log` DISABLE KEYS */;
+INSERT INTO `sentry_log` (`log_date`, `check_time`, `mirror_id`, `mirror_active`, `mirror_rating`, `reason`) VALUES ('2015-07-23 16:19:09','2015-07-23 23:19:09',1,'1',100000,'Checking mirror download-installer.cdn.mozilla.net ...\ndownload-installer.cdn.mozilla.net.	5	IN	CNAME	cs163.wpc.taucdn.net.\ncs163.wpc.taucdn.net.	5	IN	A	93.184.215.191\nUsing first seen IP: 93.184.215.191 for requests\nMaking base URL http://93.184.215.191/pub\n[2015-07-23 16:19:09 -0700] HEAD http://93.184.215.191/pub/firefox/releases/39.0/win32/zh-TW/Firefox%20Setup%2039.0.exe ... okay. CACHE=hit TOOK=0.006216\n[2015-07-23 16:19:09 -0700] HEAD http://93.184.215.191/pub/firefox/releases/39.0/mac/zh-TW/Firefox%2039.0.dmg ... okay. CACHE=hit TOOK=0.007065\nFinished. Elapsed time: 0.\n');
+INSERT INTO `sentry_log` (`log_date`, `check_time`, `mirror_id`, `mirror_active`, `mirror_rating`, `reason`) VALUES ('2015-07-23 16:19:09','2015-07-23 23:19:28',2,'0',90000,'Checking mirror download-installer.cdn.mozilla.net ...\ndownload-installer.cdn.mozilla.net.	5	IN	CNAME	cs163.wpc.taucdn.net.\ncs163.wpc.taucdn.net.	5	IN	A	93.184.215.191\nUsing first seen IP: 93.184.215.191 for requests\nMaking base URL http://93.184.215.191/pub\n[2015-07-23 16:19:09 -0700] HEAD http://93.184.215.191/pub/firefox/releases/39.0/win32/zh-TW/Firefox%20Setup%2039.0.exe ... okay. CACHE=hit TOOK=0.006216\n[2015-07-23 16:19:09 -0700] HEAD http://93.184.215.191/pub/firefox/releases/39.0/mac/zh-TW/Firefox%2039.0.dmg ... okay. CACHE=hit TOOK=0.007065\nFinished. Elapsed time: 0.\nChecking mirror download-installer.cdn.mozilla.net ...\ndownload-installer.cdn.mozilla.net.	5	IN	CNAME	cs163.wpc.taucdn.net.\ncs163.wpc.taucdn.net.	5	IN	A	93.184.215.191\nUsing first seen IP: 93.184.215.191 for requests\nMaking base URL https://93.184.215.191/pub\nhttps://93.184.215.191/pub sent no response after 10 seconds!  Checking recent history...\n**** weight 90000 active 0 for https://93.184.215.191/pub\n**** https://93.184.215.191/pub Weight Drop Pattern matched, weight will be dropped 10%\n**** https://93.184.215.191/pub Weight change 90000 -> 81000\n');
+/*!40000 ALTER TABLE `sentry_log` ENABLE KEYS */;
 UNLOCK TABLES;
 
 LOCK TABLES `south_migrationhistory` WRITE;

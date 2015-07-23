@@ -115,7 +115,6 @@ func (d *DB) Mirrors(sslOnly bool, lang, locationID string, healthyOnly bool) ([
             geoip_mirror_region_map ON (geoip_mirror_region_map.mirror_id = mirror_mirrors.id)
         WHERE
             mirror_location_mirror_map.location_id = ? AND
-            $cr_sql
             mirror_mirrors.active='1' AND 
             mirror_location_mirror_map.active ='1' AND
             mirror_location_mirror_map.healthy = ? AND
@@ -123,7 +122,7 @@ func (d *DB) Mirrors(sslOnly bool, lang, locationID string, healthyOnly bool) ([
         ORDER BY rating
 	`, lang, locationID, healthy)
 
-	if err == nil {
+	if err != nil {
 		return nil, err
 	}
 
@@ -131,17 +130,14 @@ func (d *DB) Mirrors(sslOnly bool, lang, locationID string, healthyOnly bool) ([
 	for rows.Next() {
 		var tmp MirrorsResult
 		err = rows.Scan(&tmp.ID, &tmp.BaseURL, &tmp.Rating)
-		if err == nil {
+		if err != nil {
 			return nil, err
 		}
+		results = append(results, tmp)
 	}
 
 	if err := rows.Err(); err != nil {
 		return nil, err
-	}
-
-	if healthyOnly && len(results) == 0 {
-		return d.Mirrors(sslOnly, lang, locationID, false)
 	}
 
 	return results, nil

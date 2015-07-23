@@ -37,4 +37,20 @@ func TestProductForLanguage(t *testing.T) {
 	assert.NoError(t, err)
 	assert.False(t, sslOnly)
 	assert.Equal(t, "1", res)
+
+	res, sslOnly, err = testDB.ProductForLanguage("Firefox-SSL", "en-US")
+	assert.NoError(t, err)
+	assert.True(t, sslOnly)
+	assert.Equal(t, "2", res)
+}
+
+func TestMirrors(t *testing.T) {
+	mirrors, err := testDB.Mirrors(false, "en-US", "1", true)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(mirrors))
+
+	mirrors, err = testDB.Mirrors(true, "en-US", "1", true)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(mirrors))
+	assert.Equal(t, "2", mirrors[0].ID)
 }
