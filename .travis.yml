@@ -4,6 +4,7 @@ services: mysql
 before_script:
   - mysql -e 'create database bouncer_test;'
   - mysql bouncer_test < ./fixtures/schema.sql
+  - mysql bouncer_test < ./fixtures/data.sql
 
 go:
   - 1.4

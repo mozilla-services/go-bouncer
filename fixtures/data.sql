@@ -1,0 +1,294 @@
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+LOCK TABLES `auth_group` WRITE;
+/*!40000 ALTER TABLE `auth_group` DISABLE KEYS */;
+INSERT INTO `auth_group` VALUES (1,'API access');
+INSERT INTO `auth_group` VALUES (2,'Volunteer admins');
+/*!40000 ALTER TABLE `auth_group` ENABLE KEYS */;
+UNLOCK TABLES;
+
+LOCK TABLES `auth_group_permissions` WRITE;
+/*!40000 ALTER TABLE `auth_group_permissions` DISABLE KEYS */;
+INSERT INTO `auth_group_permissions` VALUES (1,1,40);
+INSERT INTO `auth_group_permissions` VALUES (2,1,41);
+INSERT INTO `auth_group_permissions` VALUES (3,1,42);
+INSERT INTO `auth_group_permissions` VALUES (4,1,43);
+INSERT INTO `auth_group_permissions` VALUES (5,1,44);
+INSERT INTO `auth_group_permissions` VALUES (6,1,45);
+INSERT INTO `auth_group_permissions` VALUES (7,1,46);
+INSERT INTO `auth_group_permissions` VALUES (8,1,47);
+INSERT INTO `auth_group_permissions` VALUES (9,1,48);
+INSERT INTO `auth_group_permissions` VALUES (10,1,49);
+INSERT INTO `auth_group_permissions` VALUES (19,2,31);
+INSERT INTO `auth_group_permissions` VALUES (11,2,32);
+INSERT INTO `auth_group_permissions` VALUES (12,2,33);
+INSERT INTO `auth_group_permissions` VALUES (13,2,34);
+INSERT INTO `auth_group_permissions` VALUES (14,2,35);
+INSERT INTO `auth_group_permissions` VALUES (15,2,36);
+INSERT INTO `auth_group_permissions` VALUES (16,2,37);
+INSERT INTO `auth_group_permissions` VALUES (17,2,38);
+INSERT INTO `auth_group_permissions` VALUES (18,2,39);
+/*!40000 ALTER TABLE `auth_group_permissions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+LOCK TABLES `auth_message` WRITE;
+/*!40000 ALTER TABLE `auth_message` DISABLE KEYS */;
+/*!40000 ALTER TABLE `auth_message` ENABLE KEYS */;
+UNLOCK TABLES;
+
+LOCK TABLES `auth_permission` WRITE;
+/*!40000 ALTER TABLE `auth_permission` DISABLE KEYS */;
+INSERT INTO `auth_permission` VALUES (1,'Can add Legacy User',1,'add_legacyuser');
+INSERT INTO `auth_permission` VALUES (2,'Can change Legacy User',1,'change_legacyuser');
+INSERT INTO `auth_permission` VALUES (3,'Can delete Legacy User',1,'delete_legacyuser');
+INSERT INTO `auth_permission` VALUES (4,'Can add user profile',2,'add_userprofile');
+INSERT INTO `auth_permission` VALUES (5,'Can change user profile',2,'change_userprofile');
+INSERT INTO `auth_permission` VALUES (6,'Can delete user profile',2,'delete_userprofile');
+INSERT INTO `auth_permission` VALUES (7,'Can add migration history',3,'add_migrationhistory');
+INSERT INTO `auth_permission` VALUES (8,'Can change migration history',3,'change_migrationhistory');
+INSERT INTO `auth_permission` VALUES (9,'Can delete migration history',3,'delete_migrationhistory');
+INSERT INTO `auth_permission` VALUES (10,'Can add log entry',4,'add_logentry');
+INSERT INTO `auth_permission` VALUES (11,'Can change log entry',4,'change_logentry');
+INSERT INTO `auth_permission` VALUES (12,'Can delete log entry',4,'delete_logentry');
+INSERT INTO `auth_permission` VALUES (13,'Can add permission',5,'add_permission');
+INSERT INTO `auth_permission` VALUES (14,'Can change permission',5,'change_permission');
+INSERT INTO `auth_permission` VALUES (15,'Can delete permission',5,'delete_permission');
+INSERT INTO `auth_permission` VALUES (16,'Can add group',6,'add_group');
+INSERT INTO `auth_permission` VALUES (17,'Can change group',6,'change_group');
+INSERT INTO `auth_permission` VALUES (18,'Can delete group',6,'delete_group');
+INSERT INTO `auth_permission` VALUES (19,'Can add user',7,'add_user');
+INSERT INTO `auth_permission` VALUES (20,'Can change user',7,'change_user');
+INSERT INTO `auth_permission` VALUES (21,'Can delete user',7,'delete_user');
+INSERT INTO `auth_permission` VALUES (22,'Can add message',8,'add_message');
+INSERT INTO `auth_permission` VALUES (23,'Can change message',8,'change_message');
+INSERT INTO `auth_permission` VALUES (24,'Can delete message',8,'delete_message');
+INSERT INTO `auth_permission` VALUES (25,'Can add content type',9,'add_contenttype');
+INSERT INTO `auth_permission` VALUES (26,'Can change content type',9,'change_contenttype');
+INSERT INTO `auth_permission` VALUES (27,'Can delete content type',9,'delete_contenttype');
+INSERT INTO `auth_permission` VALUES (28,'Can add session',10,'add_session');
+INSERT INTO `auth_permission` VALUES (29,'Can change session',10,'change_session');
+INSERT INTO `auth_permission` VALUES (30,'Can delete session',10,'delete_session');
+INSERT INTO `auth_permission` VALUES (31,'Can add country',11,'add_country');
+INSERT INTO `auth_permission` VALUES (32,'Can change country',11,'change_country');
+INSERT INTO `auth_permission` VALUES (33,'Can delete country',11,'delete_country');
+INSERT INTO `auth_permission` VALUES (34,'Can add region',12,'add_region');
+INSERT INTO `auth_permission` VALUES (35,'Can change region',12,'change_region');
+INSERT INTO `auth_permission` VALUES (36,'Can delete region',12,'delete_region');
+INSERT INTO `auth_permission` VALUES (37,'Can add mirror',13,'add_mirror');
+INSERT INTO `auth_permission` VALUES (38,'Can change mirror',13,'change_mirror');
+INSERT INTO `auth_permission` VALUES (39,'Can delete mirror',13,'delete_mirror');
+INSERT INTO `auth_permission` VALUES (40,'Can add product',14,'add_product');
+INSERT INTO `auth_permission` VALUES (41,'Can change product',14,'change_product');
+INSERT INTO `auth_permission` VALUES (42,'Can delete product',14,'delete_product');
+INSERT INTO `auth_permission` VALUES (43,'Can add product language',15,'add_product_language');
+INSERT INTO `auth_permission` VALUES (44,'Can change product language',15,'change_product_language');
+INSERT INTO `auth_permission` VALUES (45,'Can delete product language',15,'delete_product_language');
+INSERT INTO `auth_permission` VALUES (46,'Can add location',16,'add_location');
+INSERT INTO `auth_permission` VALUES (47,'Can change location',16,'change_location');
+INSERT INTO `auth_permission` VALUES (48,'Can delete location',16,'delete_location');
+INSERT INTO `auth_permission` VALUES (49,'Can view mirror uptake',16,'view_uptake');
+INSERT INTO `auth_permission` VALUES (50,'Can add Operating System',17,'add_os');
+INSERT INTO `auth_permission` VALUES (51,'Can change Operating System',17,'change_os');
+INSERT INTO `auth_permission` VALUES (52,'Can delete Operating System',17,'delete_os');
+INSERT INTO `auth_permission` VALUES (53,'Can add product alias',18,'add_productalias');
+INSERT INTO `auth_permission` VALUES (54,'Can change product alias',18,'change_productalias');
+INSERT INTO `auth_permission` VALUES (55,'Can delete product alias',18,'delete_productalias');
+INSERT INTO `auth_permission` VALUES (56,'Can add product language',15,'add_productlanguage');
+INSERT INTO `auth_permission` VALUES (57,'Can change product language',15,'change_productlanguage');
+INSERT INTO `auth_permission` VALUES (58,'Can delete product language',15,'delete_productlanguage');
+INSERT INTO `auth_permission` VALUES (59,'Can add location mirror map',19,'add_locationmirrormap');
+INSERT INTO `auth_permission` VALUES (60,'Can change location mirror map',19,'change_locationmirrormap');
+INSERT INTO `auth_permission` VALUES (61,'Can delete location mirror map',19,'delete_locationmirrormap');
+INSERT INTO `auth_permission` VALUES (62,'Can add location mirror language exception',20,'add_locationmirrorlanguageexception');
+INSERT INTO `auth_permission` VALUES (63,'Can change location mirror language exception',20,'change_locationmirrorlanguageexception');
+INSERT INTO `auth_permission` VALUES (64,'Can delete location mirror language exception',20,'delete_locationmirrorlanguageexception');
+INSERT INTO `auth_permission` VALUES (65,'Can add IP Block',21,'add_ipblock');
+INSERT INTO `auth_permission` VALUES (66,'Can change IP Block',21,'change_ipblock');
+INSERT INTO `auth_permission` VALUES (67,'Can delete IP Block',21,'delete_ipblock');
+/*!40000 ALTER TABLE `auth_permission` ENABLE KEYS */;
+UNLOCK TABLES;
+
+LOCK TABLES `auth_user` WRITE;
+/*!40000 ALTER TABLE `auth_user` DISABLE KEYS */;
+INSERT INTO `auth_user` VALUES (1,'admin','','','admin@admin.com','pbkdf2_sha256$10000$1obyKBfQOSs6$TwvoLHHnE7uZprw9ZMZmviCVPKqCH1M+bFN2o6zNX4w=',1,1,1,'2015-07-23 11:45:16','2015-07-23 10:58:11');
+/*!40000 ALTER TABLE `auth_user` ENABLE KEYS */;
+UNLOCK TABLES;
+
+LOCK TABLES `auth_user_groups` WRITE;
+/*!40000 ALTER TABLE `auth_user_groups` DISABLE KEYS */;
+INSERT INTO `auth_user_groups` VALUES (1,1,1);
+/*!40000 ALTER TABLE `auth_user_groups` ENABLE KEYS */;
+UNLOCK TABLES;
+
+LOCK TABLES `auth_user_user_permissions` WRITE;
+/*!40000 ALTER TABLE `auth_user_user_permissions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `auth_user_user_permissions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+LOCK TABLES `django_admin_log` WRITE;
+/*!40000 ALTER TABLE `django_admin_log` DISABLE KEYS */;
+INSERT INTO `django_admin_log` VALUES (1,'2015-07-23 13:31:08',1,14,'1','Firefox',1,'');
+INSERT INTO `django_admin_log` VALUES (2,'2015-07-23 13:31:56',1,17,'1','win64',1,'');
+INSERT INTO `django_admin_log` VALUES (3,'2015-07-23 13:32:02',1,17,'2','osx',1,'');
+INSERT INTO `django_admin_log` VALUES (4,'2015-07-23 13:35:34',1,16,'1','/firefox/releases/40.0b5/win32/:lang/Firefox%20Setup%2040.0b5.exe',1,'');
+INSERT INTO `django_admin_log` VALUES (5,'2015-07-23 13:36:20',1,16,'2','/firefox/releases/40.0b5/mac/:lang/Firefox%2040.0b5.dmg',1,'');
+INSERT INTO `django_admin_log` VALUES (6,'2015-07-23 13:38:15',1,12,'1','All',1,'');
+INSERT INTO `django_admin_log` VALUES (7,'2015-07-23 13:38:30',1,13,'1','Mozilla Installer CDN',1,'');
+INSERT INTO `django_admin_log` VALUES (8,'2015-07-23 13:38:59',1,13,'2','Mozilla Installer CDN - SSL ',1,'');
+INSERT INTO `django_admin_log` VALUES (9,'2015-07-23 13:39:20',1,18,'1','ProductAlias object',1,'');
+INSERT INTO `django_admin_log` VALUES (10,'2015-07-23 13:41:49',1,11,'US','United States (US)',1,'');
+INSERT INTO `django_admin_log` VALUES (11,'2015-07-23 13:43:43',1,21,'1','0.0.0.0 -- 223.255.247.255',1,'');
+/*!40000 ALTER TABLE `django_admin_log` ENABLE KEYS */;
+UNLOCK TABLES;
+
+LOCK TABLES `django_content_type` WRITE;
+/*!40000 ALTER TABLE `django_content_type` DISABLE KEYS */;
+INSERT INTO `django_content_type` VALUES (1,'Legacy User','users','legacyuser');
+INSERT INTO `django_content_type` VALUES (2,'user profile','users','userprofile');
+INSERT INTO `django_content_type` VALUES (3,'migration history','south','migrationhistory');
+INSERT INTO `django_content_type` VALUES (4,'log entry','admin','logentry');
+INSERT INTO `django_content_type` VALUES (5,'permission','auth','permission');
+INSERT INTO `django_content_type` VALUES (6,'group','auth','group');
+INSERT INTO `django_content_type` VALUES (7,'user','auth','user');
+INSERT INTO `django_content_type` VALUES (8,'message','auth','message');
+INSERT INTO `django_content_type` VALUES (9,'content type','contenttypes','contenttype');
+INSERT INTO `django_content_type` VALUES (10,'session','sessions','session');
+INSERT INTO `django_content_type` VALUES (11,'Country','geoip','country');
+INSERT INTO `django_content_type` VALUES (12,'Region','geoip','region');
+INSERT INTO `django_content_type` VALUES (13,'Mirror','mirror','mirror');
+INSERT INTO `django_content_type` VALUES (14,'Product','mirror','product');
+INSERT INTO `django_content_type` VALUES (15,'ProductLanguage','mirror','productlanguage');
+INSERT INTO `django_content_type` VALUES (16,'Location','mirror','location');
+INSERT INTO `django_content_type` VALUES (17,'Operating System','mirror','os');
+INSERT INTO `django_content_type` VALUES (18,'product alias','mirror','productalias');
+INSERT INTO `django_content_type` VALUES (19,'location mirror map','mirror','locationmirrormap');
+INSERT INTO `django_content_type` VALUES (20,'location mirror language exception','mirror','locationmirrorlanguageexception');
+INSERT INTO `django_content_type` VALUES (21,'IP Block','geoip','ipblock');
+/*!40000 ALTER TABLE `django_content_type` ENABLE KEYS */;
+UNLOCK TABLES;
+
+LOCK TABLES `django_session` WRITE;
+/*!40000 ALTER TABLE `django_session` DISABLE KEYS */;
+INSERT INTO `django_session` VALUES ('599280a5af82612f05ccf2c8ec8c9832','YzZhMWViOTYyMGEyZDQ5NmEwYmRjOGQ2Zjk3OTA2NWNkZmZmYTE3NTqAAn1xAS4=\n','2015-08-06 13:44:16');
+/*!40000 ALTER TABLE `django_session` ENABLE KEYS */;
+UNLOCK TABLES;
+
+LOCK TABLES `geoip_country_to_region` WRITE;
+/*!40000 ALTER TABLE `geoip_country_to_region` DISABLE KEYS */;
+INSERT INTO `geoip_country_to_region` VALUES ('US',1,'United States','NA');
+/*!40000 ALTER TABLE `geoip_country_to_region` ENABLE KEYS */;
+UNLOCK TABLES;
+
+LOCK TABLES `geoip_ip_to_country` WRITE;
+/*!40000 ALTER TABLE `geoip_ip_to_country` DISABLE KEYS */;
+INSERT INTO `geoip_ip_to_country` VALUES (1,0,3758094335,'US');
+/*!40000 ALTER TABLE `geoip_ip_to_country` ENABLE KEYS */;
+UNLOCK TABLES;
+
+LOCK TABLES `geoip_mirror_region_map` WRITE;
+/*!40000 ALTER TABLE `geoip_mirror_region_map` DISABLE KEYS */;
+INSERT INTO `geoip_mirror_region_map` VALUES (1,1,1);
+INSERT INTO `geoip_mirror_region_map` VALUES (2,2,1);
+/*!40000 ALTER TABLE `geoip_mirror_region_map` ENABLE KEYS */;
+UNLOCK TABLES;
+
+LOCK TABLES `geoip_regions` WRITE;
+/*!40000 ALTER TABLE `geoip_regions` DISABLE KEYS */;
+INSERT INTO `geoip_regions` VALUES (1,'All',100,100,NULL,0);
+/*!40000 ALTER TABLE `geoip_regions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+LOCK TABLES `mirror_aliases` WRITE;
+/*!40000 ALTER TABLE `mirror_aliases` DISABLE KEYS */;
+INSERT INTO `mirror_aliases` VALUES (1,'firefox-latest','Firefox');
+/*!40000 ALTER TABLE `mirror_aliases` ENABLE KEYS */;
+UNLOCK TABLES;
+
+LOCK TABLES `mirror_lmm_lang_exceptions` WRITE;
+/*!40000 ALTER TABLE `mirror_lmm_lang_exceptions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `mirror_lmm_lang_exceptions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+LOCK TABLES `mirror_location_mirror_map` WRITE;
+/*!40000 ALTER TABLE `mirror_location_mirror_map` DISABLE KEYS */;
+/*!40000 ALTER TABLE `mirror_location_mirror_map` ENABLE KEYS */;
+UNLOCK TABLES;
+
+LOCK TABLES `mirror_locations` WRITE;
+/*!40000 ALTER TABLE `mirror_locations` DISABLE KEYS */;
+INSERT INTO `mirror_locations` VALUES ('/firefox/releases/40.0b5/win32/:lang/Firefox%20Setup%2040.0b5.exe',1,1,1);
+INSERT INTO `mirror_locations` VALUES ('/firefox/releases/40.0b5/mac/:lang/Firefox%2040.0b5.dmg',1,2,2);
+/*!40000 ALTER TABLE `mirror_locations` ENABLE KEYS */;
+UNLOCK TABLES;
+
+LOCK TABLES `mirror_mirrors` WRITE;
+/*!40000 ALTER TABLE `mirror_mirrors` DISABLE KEYS */;
+INSERT INTO `mirror_mirrors` VALUES (0,100000,'Mozilla Installer CDN','http://download-installer.cdn.mozilla.net/pub',1,1);
+INSERT INTO `mirror_mirrors` VALUES (0,100000,'Mozilla Installer CDN - SSL ','https://download-installer.cdn.mozilla.net/pub',1,2);
+/*!40000 ALTER TABLE `mirror_mirrors` ENABLE KEYS */;
+UNLOCK TABLES;
+
+LOCK TABLES `mirror_mirrors_contacts` WRITE;
+/*!40000 ALTER TABLE `mirror_mirrors_contacts` DISABLE KEYS */;
+INSERT INTO `mirror_mirrors_contacts` VALUES (1,1,1);
+INSERT INTO `mirror_mirrors_contacts` VALUES (2,2,1);
+/*!40000 ALTER TABLE `mirror_mirrors_contacts` ENABLE KEYS */;
+UNLOCK TABLES;
+
+LOCK TABLES `mirror_os` WRITE;
+/*!40000 ALTER TABLE `mirror_os` DISABLE KEYS */;
+INSERT INTO `mirror_os` VALUES (0,1,'win64');
+INSERT INTO `mirror_os` VALUES (0,2,'osx');
+/*!40000 ALTER TABLE `mirror_os` ENABLE KEYS */;
+UNLOCK TABLES;
+
+LOCK TABLES `mirror_product_langs` WRITE;
+/*!40000 ALTER TABLE `mirror_product_langs` DISABLE KEYS */;
+INSERT INTO `mirror_product_langs` VALUES ('en-GB',1,1);
+INSERT INTO `mirror_product_langs` VALUES ('en-US',1,2);
+/*!40000 ALTER TABLE `mirror_product_langs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+LOCK TABLES `mirror_products` WRITE;
+/*!40000 ALTER TABLE `mirror_products` DISABLE KEYS */;
+INSERT INTO `mirror_products` VALUES (0,'Firefox',1,1,1,1,0);
+/*!40000 ALTER TABLE `mirror_products` ENABLE KEYS */;
+UNLOCK TABLES;
+
+LOCK TABLES `south_migrationhistory` WRITE;
+/*!40000 ALTER TABLE `south_migrationhistory` DISABLE KEYS */;
+INSERT INTO `south_migrationhistory` VALUES (1,'mirror','0001_initial','2015-07-23 17:58:19');
+INSERT INTO `south_migrationhistory` VALUES (2,'mirror','0002_auto','2015-07-23 17:58:19');
+INSERT INTO `south_migrationhistory` VALUES (3,'mirror','0003_add_permissions_for_api','2015-07-23 17:58:19');
+INSERT INTO `south_migrationhistory` VALUES (4,'mirror','0004_auto__add_productalias__add_field_locationmirrormap_healthy__add_field','2015-07-23 17:58:20');
+INSERT INTO `south_migrationhistory` VALUES (5,'geoip','0001_initial','2015-07-23 17:58:20');
+INSERT INTO `south_migrationhistory` VALUES (6,'geoip','0002_auto__add_field_region_fallback','2015-07-23 17:58:20');
+INSERT INTO `south_migrationhistory` VALUES (7,'geoip','0003_auto__add_field_region_prevent_global_fallback','2015-07-23 17:58:20');
+/*!40000 ALTER TABLE `south_migrationhistory` ENABLE KEYS */;
+UNLOCK TABLES;
+
+LOCK TABLES `users_userprofile` WRITE;
+/*!40000 ALTER TABLE `users_userprofile` DISABLE KEYS */;
+INSERT INTO `users_userprofile` VALUES (1,1,'','','','');
+/*!40000 ALTER TABLE `users_userprofile` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
