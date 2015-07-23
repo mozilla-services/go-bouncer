@@ -1,6 +1,8 @@
 package main
 
 import (
+	"database/sql"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -20,6 +22,36 @@ func (b *BouncerHandler) URL(lang, os, product string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	osID, err := b.db.OSID(os)
+	switch {
+	case err == sql.ErrNoRows:
+		return "", nil
+	case err != nil:
+		return "", err
+	}
+
+	productID, sslOnly, err := b.db.ProductForLanguage(product, lang)
+	switch {
+	case err == sql.ErrNoRows:
+		return "", nil
+	case err != nil:
+		return "", err
+	}
+
+	locationID, locationPath, err := b.db.Location(productID, osID)
+	switch {
+	case err == sql.ErrNoRows:
+		return "", nil
+	case err != nil:
+		return "", err
+	}
+
+	mirrors, err := b.db.Mirrors(sslOnly, lang, locationID, true)
+	if err != nil {
+		return "", err
+	}
+
 	return "", nil
 }
 
@@ -43,4 +75,17 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	product = strings.TrimSpace(strings.ToLower(product))
 	os = strings.TrimSpace(strings.ToLower(os))
+
+	url, err := b.URL(lang, os, product)
+	if err != nil {
+		http.Error(w, "Internal Server Error.", http.StatusInternalServerError)
+		log.Println(err)
+		return
+	}
+	if url == "" {
+		http.NotFound(w, req)
+		return
+	}
+
+	http.Redirect(w, req, url, 302)
 }

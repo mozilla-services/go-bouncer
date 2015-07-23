@@ -21,7 +21,20 @@ func TestMain(m *testing.M) {
 }
 
 func TestAliasFor(t *testing.T) {
-	product, err := testDB.AliasFor("firefox-latest")
+	res, err := testDB.AliasFor("firefox-latest")
 	assert.NoError(t, err)
-	assert.Equal(t, "Firefox", product)
+	assert.Equal(t, "Firefox", res)
+}
+
+func TestOSID(t *testing.T) {
+	res, err := testDB.OSID("win64")
+	assert.NoError(t, err)
+	assert.Equal(t, "1", res)
+}
+
+func TestProductForLanguage(t *testing.T) {
+	res, sslOnly, err := testDB.ProductForLanguage("Firefox", "en-US")
+	assert.NoError(t, err)
+	assert.False(t, sslOnly)
+	assert.Equal(t, "1", res)
 }
