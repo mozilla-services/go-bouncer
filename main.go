@@ -19,17 +19,33 @@ func main() {
 			Usage:  "address on which to listen",
 			EnvVar: "BOUNCER_ADDR",
 		},
+		cli.StringFlag{
+			Name:   "db-dsn",
+			Value:  "user:password@tcp(localhost:3306)/bouncer",
+			Usage:  "database DSN (https://github.com/go-sql-driver/mysql#dsn-data-source-name)",
+			EnvVar: "BOUNCER_DB_DSN",
+		},
 	}
 	app.RunAndExitOnError()
 }
 
 func Main(c *cli.Context) {
+	db, err := NewDB(c.String("db-dsn"))
+	if err != nil {
+		log.Fatalf("Could not open DB: %v", err)
+	}
+	defer db.Close()
 
-	server := &http.Server{
-		Addr: c.String("addr"),
+	bouncerHandler := &BouncerHandler{
+		db: db,
 	}
 
-	err := server.ListenAndServe()
+	server := &http.Server{
+		Addr:    c.String("addr"),
+		Handler: bouncerHandler,
+	}
+
+	err = server.ListenAndServe()
 	if err != nil {
 		log.Fatal(err)
 	}

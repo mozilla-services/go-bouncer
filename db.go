@@ -7,7 +7,7 @@ import (
 )
 
 type DB struct {
-	db *sql.DB
+	*sql.DB
 }
 
 func NewDB(dsn string) (*DB, error) {
@@ -23,6 +23,21 @@ func NewDB(dsn string) (*DB, error) {
 	}
 
 	return &DB{
-		db: db,
+		DB: db,
 	}, nil
+}
+
+func (d *DB) AliasFor(product string) (string, error) {
+	related := ""
+	err := d.QueryRow(
+		"SELECT related_product FROM mirror_aliases WHERE alias = ?",
+		product).Scan(&related)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return product, nil
+		}
+		return "", err
+	}
+	return related, nil
 }
