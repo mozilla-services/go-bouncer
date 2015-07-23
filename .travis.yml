@@ -2,7 +2,8 @@ language: go
 services: mysql
 
 before_script:
-  - mysql < ./fixtures/schema.sql
+  - mysql -e 'create database bouncer_test;'
+  - mysql bouncer_test < ./fixtures/schema.sql
 
 go:
   - 1.4
