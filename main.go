@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/codegangsta/cli"
+	_ "github.com/mozilla-services/go-bouncer/mozlog"
 )
 
 func main() {
