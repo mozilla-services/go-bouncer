@@ -88,9 +88,6 @@ type MirrorsResult struct {
 }
 
 // Mirrors returns a list of valid mirrors
-//
-// If healthyonly is true and there are no mirrors, it will also search with
-// healthyonly set to false
 func (d *DB) Mirrors(sslOnly bool, lang, locationID string, healthyOnly bool) ([]MirrorsResult, error) {
 	baseURLPrefix := "http://"
 	if sslOnly {
