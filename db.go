@@ -125,6 +125,7 @@ func (d *DB) Mirrors(sslOnly bool, lang, locationID string, healthyOnly bool) ([
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	results := make([]MirrorsResult, 0)
 	for rows.Next() {
