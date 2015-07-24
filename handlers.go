@@ -37,7 +37,7 @@ func randomMirror(mirrors []MirrorsResult) *MirrorsResult {
 	return &mirrors[0]
 }
 
-// Url returns the final redirect URL given a lang, os and product
+// URL returns the final redirect URL given a lang, os and product
 // if the string is == "", no mirror or location was found
 func (b *BouncerHandler) URL(lang, os, product string) (string, error) {
 	product, err := b.db.AliasFor(product)
