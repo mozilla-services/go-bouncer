@@ -8,6 +8,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+// DB is a DB instance for running queries against the bouncer database
 type DB struct {
 	*sql.DB
 }
@@ -261,5 +262,12 @@ func (d *DB) SentryLogInsert(mirrorID, active, rating, reason string) error {
 func (d *DB) MirrorUpdateRating(mirrorID, rating string) error {
 	sql := `UPDATE mirror_mirrors SET rating = ? WHERE id = ?`
 	_, err := d.Exec(sql, rating, mirrorID)
+	return err
+}
+
+// SentryLogUpdateReason updates sentry_log reason
+func (d *DB) SentryLogUpdateReason(mirrorID, reason string, logUnixTime int64) error {
+	sql := `UPDATE sentry_log SET reason=? WHERE log_date=FROM_UNIXTIME(?) AND mirror_id=?`
+	_, err := d.Exec(sql, reason, logUnixTime, mirrorID)
 	return err
 }
