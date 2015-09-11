@@ -129,7 +129,7 @@ func (s *Sentry) CheckLocation(mirror *bouncer.MirrorsActiveResult, location *bo
 		},
 	}
 
-	path := strings.Replace(location.Path, ":lang", "en-US", 1)
+	path := strings.Replace(location.Path, ":lang", "en-US", -1)
 	req, err := http.NewRequest("HEAD", mirror.BaseURL+path, nil)
 	if err != nil {
 		return err
