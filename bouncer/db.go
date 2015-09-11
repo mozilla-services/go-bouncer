@@ -1,4 +1,4 @@
-package bouncerdb
+package bouncer
 
 import (
 	"database/sql"
