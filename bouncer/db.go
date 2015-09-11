@@ -150,7 +150,7 @@ type LocationsActiveResult struct {
 }
 
 // LocationsActive returns all active locations
-func (d *DB) LocationsActive(checkNow bool) ([]LocationsActiveResult, error) {
+func (d *DB) LocationsActive(checkNow bool) ([]*LocationsActiveResult, error) {
 	sql := `SELECT mirror_locations.id, mirror_locations.path
 		FROM mirror_locations
 		INNER JOIN mirror_products ON mirror_locations.product_id = mirror_products.id
@@ -166,9 +166,9 @@ func (d *DB) LocationsActive(checkNow bool) ([]LocationsActiveResult, error) {
 	}
 	defer rows.Close()
 
-	results := make([]LocationsActiveResult, 0)
+	results := make([]*LocationsActiveResult, 0)
 	for rows.Next() {
-		var tmp LocationsActiveResult
+		tmp := new(LocationsActiveResult)
 		err = rows.Scan(&tmp.ID, &tmp.Path)
 		if err != nil {
 			return nil, err
@@ -193,9 +193,9 @@ type MirrorsActiveResult struct {
 }
 
 // MirrorsActive returns all active mirrors
-func (d *DB) MirrorsActive(checkMirror string) ([]MirrorsActiveResult, error) {
+func (d *DB) MirrorsActive(checkMirror string) ([]*MirrorsActiveResult, error) {
 	params := []interface{}{}
-	sql := `SELECT id, baseurl, rating, name, ip, host
+	sql := `SELECT id, baseurl, rating, name,
 				FROM mirror_mirrors WHERE active='1'`
 	if checkMirror != "" {
 		if _, err := strconv.Atoi(checkMirror); err == nil {
@@ -215,10 +215,10 @@ func (d *DB) MirrorsActive(checkMirror string) ([]MirrorsActiveResult, error) {
 	}
 	defer rows.Close()
 
-	results := make([]MirrorsActiveResult, 0)
+	results := make([]*MirrorsActiveResult, 0)
 	for rows.Next() {
-		var tmp MirrorsActiveResult
-		err = rows.Scan(&tmp.ID, &tmp.BaseURL, &tmp.Rating, &tmp.Name, &tmp.IP, &tmp.Host)
+		tmp := new(MirrorsActiveResult)
+		err = rows.Scan(&tmp.ID, &tmp.BaseURL, &tmp.Rating, &tmp.Name)
 		if err != nil {
 			return nil, err
 		}
@@ -251,9 +251,8 @@ func (d *DB) MirrorSetHealth(mirrorID, healthy string) error {
 }
 
 // SentryLogInsert insert in to the sentry log
-func (d *DB) SentryLogInsert(mirrorID, active, rating, reason string) error {
+func (d *DB) SentryLogInsert(logDate time.Time, mirrorID, active, rating, reason string) error {
 	sql := `INSERT INTO sentry_log (log_date, mirror_id, mirror_active, mirror_rating, reason) VALUES (FROM_UNIXTIME(?), ?, ?, ?, ?)`
-	logDate := time.Now()
 	_, err := d.Exec(sql, logDate.Unix(), mirrorID, active, rating, reason)
 	return err
 }
