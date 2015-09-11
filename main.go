@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/codegangsta/cli"
+	"github.com/mozilla-services/go-bouncer/bouncer"
 	_ "github.com/mozilla-services/go-bouncer/mozlog"
 )
 
@@ -12,7 +13,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "bouncer"
 	app.Action = Main
-	app.Version = Version
+	app.Version = bouncer.Version
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:   "addr",
@@ -31,7 +32,7 @@ func main() {
 }
 
 func Main(c *cli.Context) {
-	db, err := NewDB(c.String("db-dsn"))
+	db, err := bouncer.NewDB(c.String("db-dsn"))
 	if err != nil {
 		log.Fatalf("Could not open DB: %v", err)
 	}

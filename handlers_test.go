@@ -6,13 +6,14 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/mozilla-services/go-bouncer/bouncer"
 	"github.com/stretchr/testify/assert"
 )
 
 var bouncerHandler *BouncerHandler
 
 func init() {
-	testDB, err := NewDB("root@tcp(127.0.0.1:3306)/bouncer_test")
+	testDB, err := bouncer.NewDB("root@tcp(127.0.0.1:3306)/bouncer_test")
 	if err != nil {
 		log.Fatal(err)
 	}

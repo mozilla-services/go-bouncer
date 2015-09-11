@@ -6,6 +6,8 @@ import (
 	"math/rand"
 	"net/http"
 	"strings"
+
+	"github.com/mozilla-services/go-bouncer/bouncer"
 )
 
 const DefaultLang = "en-US"
@@ -13,10 +15,10 @@ const DefaultOS = "win"
 
 // BouncerHandler is the primary handler for this application
 type BouncerHandler struct {
-	db *DB
+	db *bouncer.DB
 }
 
-func randomMirror(mirrors []MirrorsResult) *MirrorsResult {
+func randomMirror(mirrors []bouncer.MirrorsResult) *bouncer.MirrorsResult {
 	totalRatings := 0
 	for _, m := range mirrors {
 		totalRatings += m.Rating
