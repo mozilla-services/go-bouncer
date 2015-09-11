@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/codegangsta/cli"
+	"github.com/mozilla-services/go-bouncer/bouncerdb"
 	_ "github.com/mozilla-services/go-bouncer/mozlog"
 )
 
@@ -31,7 +32,7 @@ func main() {
 }
 
 func Main(c *cli.Context) {
-	db, err := NewDB(c.String("db-dsn"))
+	db, err := bouncerdb.NewDB(c.String("db-dsn"))
 	if err != nil {
 		log.Fatalf("Could not open DB: %v", err)
 	}
