@@ -3,6 +3,7 @@ package main
 //go:generate echo mm
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"log"
@@ -80,7 +81,8 @@ func (s *Sentry) CheckMirror(mirror *bouncer.MirrorsActiveResult) error {
 		return fmt.Errorf("Could not parse url: %s, err: %v", mirror.BaseURL, err)
 	}
 
-	log.Println("Checking mirror", url.Host, "...")
+	logBuf := new(bytes.Buffer)
+	logBuf.WriteString("Checking mirror " + url.Host + "...\n")
 
 	// Check DNS?
 
@@ -116,6 +118,10 @@ func (s *Sentry) CheckMirror(mirror *bouncer.MirrorsActiveResult) error {
 		}
 	}
 
+	err = s.DB.SentryLogInsert(s.StartTime, mirror.ID, "1", mirror.Rating, logBuf.String())
+	if err != nil {
+		log.Println(err)
+	}
 	return nil
 }
 
