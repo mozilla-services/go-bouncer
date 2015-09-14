@@ -47,43 +47,62 @@ func Main(c *cli.Context) {
 	}
 	defer db.Close()
 
-	locations, err := db.LocationsActive(c.Bool("checknow"))
+	sentry, err := New(db, c.Bool("checknow"), c.String("mirror"))
 	if err != nil {
-		log.Fatal("db.LocationsActive:", err)
+		log.Fatal(err)
 	}
 
-	sentry := &Sentry{
-		DB:        db,
-		Locations: locations,
-		StartTime: time.Now(),
-	}
-
-	mirrors, err := db.MirrorsActive(c.String("mirror"))
-	if err != nil {
-		log.Fatal("db.MirrorsActive:", err)
-	}
-
-	for _, m := range mirrors {
-		err := sentry.CheckMirror(m)
-		log.Printf("Error checking mirror: %s, err: %v", m.ID, err)
-	}
+	sentry.Run()
 }
 
 type Sentry struct {
 	DB        *bouncer.DB
-	Locations []*bouncer.LocationsActiveResult
-	StartTime time.Time
+	locations []*bouncer.LocationsActiveResult
+	mirrors   []*bouncer.MirrorsActiveResult
+	startTime time.Time
+}
+
+func New(db *bouncer.DB, checknow bool, mirror string) (*Sentry, error) {
+	locations, err := db.LocationsActive(checknow)
+	if err != nil {
+		return nil, fmt.Errorf("db.LocationsActive: %v", err)
+	}
+
+	mirrors, err := db.MirrorsActive(mirror)
+	if err != nil {
+		return nil, fmt.Errorf("db.MirrorsActive: %v", err)
+	}
+
+	return &Sentry{
+		DB:        db,
+		locations: locations,
+		mirrors:   mirrors,
+	}, nil
+}
+
+func (s *Sentry) Run() {
+	for _, mirror := range s.mirrors {
+		url, err := url.Parse(mirror.BaseURL)
+		if err != nil {
+			log.Printf("url: %s, err: %v", mirror.BaseURL, err)
+			continue
+		}
+
+		logBuf := new(bytes.Buffer)
+		logBuf.WriteString("Checking mirror " + url.Host + "...\n")
+
+		err := s.CheckMirror(m)
+		if err != nil {
+			dberr := s.DB.MirrorSetHealth(mirror.ID, "0")
+			if dberr != nil {
+				log.Println("MirrorSetHealth:", dberr)
+			}
+			continue
+		}
+	}
 }
 
 func (s *Sentry) CheckMirror(mirror *bouncer.MirrorsActiveResult) error {
-	url, err := url.Parse(mirror.BaseURL)
-	if err != nil {
-		return fmt.Errorf("Could not parse url: %s, err: %v", mirror.BaseURL, err)
-	}
-
-	logBuf := new(bytes.Buffer)
-	logBuf.WriteString("Checking mirror " + url.Host + "...\n")
-
 	// Check DNS?
 
 	req, err := http.NewRequest("HEAD", mirror.BaseURL, nil)
