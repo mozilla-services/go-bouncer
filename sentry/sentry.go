@@ -22,7 +22,7 @@ type Sentry struct {
 	mirrorSem   chan bool
 }
 
-func New(db *bouncer.DB, checknow bool, mirror string) (*Sentry, error) {
+func New(db *bouncer.DB, checknow bool, mirror string, mirrorRoutines, locRoutines int) (*Sentry, error) {
 	locations, err := db.LocationsActive(checknow)
 	if err != nil {
 		return nil, fmt.Errorf("db.LocationsActive: %v", err)
@@ -37,8 +37,8 @@ func New(db *bouncer.DB, checknow bool, mirror string) (*Sentry, error) {
 		DB:          db,
 		locations:   locations,
 		mirrors:     mirrors,
-		locationSem: make(chan bool, 15),
-		mirrorSem:   make(chan bool, 5),
+		locationSem: make(chan bool, locRoutines),
+		mirrorSem:   make(chan bool, mirrorRoutines),
 	}, nil
 }
 

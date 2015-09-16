@@ -29,6 +29,16 @@ func main() {
 			Name:  "mirror",
 			Usage: "If set, checks a specific mirror",
 		},
+		cli.IntFlag{
+			Name:  "mirror-routines",
+			Usage: "How many mirrors can be checked at once.",
+			Value: 5,
+		},
+		cli.IntFlag{
+			Name:  "location-routines",
+			Usage: "How many locations can be checked at once.",
+			Value: 15,
+		},
 	}
 	app.RunAndExitOnError()
 }
@@ -40,7 +50,7 @@ func Main(c *cli.Context) {
 	}
 	defer db.Close()
 
-	sentry, err := New(db, c.Bool("checknow"), c.String("mirror"))
+	sentry, err := New(db, c.Bool("checknow"), c.String("mirror"), c.Int("mirror-routines"), c.Int("location-routines"))
 	if err != nil {
 		log.Fatal(err)
 	}
