@@ -58,7 +58,7 @@ func (s *Sentry) Run() error {
 				wg.Done()
 			}()
 			if err := s.checkMirror(mirror); err != nil {
-				log.Println("Error checking mirror: %s err: %s", mirror.BaseURL, err)
+				log.Printf("Error checking mirror: %s err: %s", mirror.BaseURL, err)
 			}
 		}(mirror)
 	}
@@ -136,7 +136,7 @@ func (s *Sentry) checkMirror(mirror *bouncer.MirrorsActiveResult) error {
 		if dberr := s.DB.SentryLogInsert(s.startTime, mirror.ID, "0", mirror.Rating, err.Error()); dberr != nil {
 			return fmt.Errorf("SentryLogInsert: %v", dberr)
 		}
-		return nil
+		return fmt.Errorf("HeadMirror: %v", err)
 	}
 
 	// Check locations
@@ -163,6 +163,7 @@ func (s *Sentry) checkMirror(mirror *bouncer.MirrorsActiveResult) error {
 	if err := s.DB.SentryLogInsert(s.startTime, mirror.ID, "1", mirror.Rating, runLog.String()); err != nil {
 		log.Println(err)
 	}
+	log.Println(runLog.String())
 
 	return nil
 }
