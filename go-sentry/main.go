@@ -7,6 +7,7 @@ import (
 
 	"github.com/codegangsta/cli"
 	"github.com/mozilla-services/go-bouncer/bouncer"
+	"github.com/mozilla-services/go-bouncer/go-sentry/sentry"
 )
 
 func main() {
@@ -50,7 +51,7 @@ func Main(c *cli.Context) {
 	}
 	defer db.Close()
 
-	sentry, err := New(db, c.Bool("checknow"), c.String("mirror"), c.Int("mirror-routines"), c.Int("location-routines"))
+	sentry, err := sentry.New(db, c.Bool("checknow"), c.String("mirror"), c.Int("mirror-routines"), c.Int("location-routines"))
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -1,4 +1,4 @@
-package main
+package sentry
 
 import (
 	"errors"
@@ -12,6 +12,7 @@ import (
 	"github.com/mozilla-services/go-bouncer/bouncer"
 )
 
+// Sentry contains sentry operations
 type Sentry struct {
 	DB          *bouncer.DB
 	locations   []*bouncer.LocationsActiveResult
@@ -22,6 +23,7 @@ type Sentry struct {
 	mirrorSem   chan bool
 }
 
+// New returns a new Sentry
 func New(db *bouncer.DB, checknow bool, mirror string, mirrorRoutines, locRoutines int) (*Sentry, error) {
 	locations, err := db.LocationsActive(checknow)
 	if err != nil {
@@ -42,6 +44,7 @@ func New(db *bouncer.DB, checknow bool, mirror string, mirrorRoutines, locRoutin
 	}, nil
 }
 
+// Run starts a full sentry run
 func (s *Sentry) Run() error {
 	s.runLck.Lock()
 	defer s.runLck.Unlock()
@@ -188,6 +191,7 @@ func (s *Sentry) HeadMirror(mirror *bouncer.MirrorsActiveResult) error {
 
 }
 
+// HeadLocation makes a HEAD request to url and returns the response
 func (s *Sentry) HeadLocation(url string) (resp *http.Response, err error) {
 	client := &http.Client{
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
@@ -204,5 +208,4 @@ func (s *Sentry) HeadLocation(url string) (resp *http.Response, err error) {
 	}
 
 	return client.Do(req)
-
 }
