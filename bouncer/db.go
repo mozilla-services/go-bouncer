@@ -195,7 +195,7 @@ type MirrorsActiveResult struct {
 // MirrorsActive returns all active mirrors
 func (d *DB) MirrorsActive(checkMirror string) ([]*MirrorsActiveResult, error) {
 	params := []interface{}{}
-	sql := `SELECT id, baseurl, rating, name,
+	sql := `SELECT id, baseurl, rating, name
 				FROM mirror_mirrors WHERE active='1'`
 	if checkMirror != "" {
 		if _, err := strconv.Atoi(checkMirror); err == nil {
@@ -203,7 +203,7 @@ func (d *DB) MirrorsActive(checkMirror string) ([]*MirrorsActiveResult, error) {
 			sql += ` AND id = ?`
 		} else {
 			params = []interface{}{"%" + checkMirror + "%", "%" + checkMirror + "%"}
-			sql += ` AND (baseurl LIKE %?% OR name LIKE %?%`
+			sql += ` AND (baseurl LIKE ? OR name LIKE ?)`
 		}
 	} else {
 		sql += ` ORDER BY name`
