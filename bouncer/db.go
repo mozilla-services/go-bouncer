@@ -2,10 +2,13 @@ package bouncer
 
 import (
 	"database/sql"
+	"strconv"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
+// DB is a DB instance for running queries against the bouncer database
 type DB struct {
 	*sql.DB
 }
@@ -139,4 +142,131 @@ func (d *DB) Mirrors(sslOnly bool, lang, locationID string, healthyOnly bool) ([
 	}
 
 	return results, nil
+}
+
+type LocationsActiveResult struct {
+	ID   string
+	Path string
+}
+
+// LocationsActive returns all active locations
+func (d *DB) LocationsActive(checkNow bool) ([]*LocationsActiveResult, error) {
+	sql := `SELECT mirror_locations.id, mirror_locations.path
+		FROM mirror_locations
+		INNER JOIN mirror_products ON mirror_locations.product_id = mirror_products.id
+		WHERE mirror_products.active='1'`
+
+	if checkNow {
+		sql += ` AND mirror_products.checknow='1'`
+	}
+
+	rows, err := d.Query(sql)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	results := make([]*LocationsActiveResult, 0)
+	for rows.Next() {
+		tmp := new(LocationsActiveResult)
+		err = rows.Scan(&tmp.ID, &tmp.Path)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, tmp)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return results, nil
+}
+
+type MirrorsActiveResult struct {
+	ID      string
+	BaseURL string
+	Rating  string
+	Name    string
+	IP      string
+	Host    string
+}
+
+// MirrorsActive returns all active mirrors
+func (d *DB) MirrorsActive(checkMirror string) ([]*MirrorsActiveResult, error) {
+	params := []interface{}{}
+	sql := `SELECT id, baseurl, rating, name
+				FROM mirror_mirrors WHERE active='1'`
+	if checkMirror != "" {
+		if _, err := strconv.Atoi(checkMirror); err == nil {
+			params = []interface{}{checkMirror}
+			sql += ` AND id = ?`
+		} else {
+			params = []interface{}{"%" + checkMirror + "%", "%" + checkMirror + "%"}
+			sql += ` AND (baseurl LIKE ? OR name LIKE ?)`
+		}
+	} else {
+		sql += ` ORDER BY name`
+	}
+
+	rows, err := d.Query(sql, params...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	results := make([]*MirrorsActiveResult, 0)
+	for rows.Next() {
+		tmp := new(MirrorsActiveResult)
+		err = rows.Scan(&tmp.ID, &tmp.BaseURL, &tmp.Rating, &tmp.Name)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, tmp)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return results, nil
+}
+
+// MirrorLocationUpdate updates or inserts status for a mirror location
+func (d *DB) MirrorLocationUpdate(locationID, mirrorID, active, healthy string) error {
+	sql := `INSERT INTO mirror_location_mirror_map
+			(location_id, mirror_id, active, healthy) VALUES (?, ?, ?, ?)
+			ON DUPLICATE KEY UPDATE active=VALUES(active), healthy=VALUES(healthy)`
+
+	_, err := d.Exec(sql, locationID, mirrorID, active, healthy)
+	return err
+}
+
+// MirrorSetHealth updates health for a mirror
+func (d *DB) MirrorSetHealth(mirrorID, healthy string) error {
+	sql := `UPDATE mirror_location_mirror_map SET healthy = ? WHERE mirror_id = ?`
+
+	_, err := d.Exec(sql, healthy, mirrorID)
+	return err
+}
+
+// SentryLogInsert insert in to the sentry log
+func (d *DB) SentryLogInsert(logDate time.Time, mirrorID, active, rating, reason string) error {
+	sql := `INSERT INTO sentry_log (log_date, mirror_id, mirror_active, mirror_rating, reason) VALUES (FROM_UNIXTIME(?), ?, ?, ?, ?)`
+	_, err := d.Exec(sql, logDate.Unix(), mirrorID, active, rating, reason)
+	return err
+}
+
+// MirrorUpdateRating updates mirror rating
+func (d *DB) MirrorUpdateRating(mirrorID, rating string) error {
+	sql := `UPDATE mirror_mirrors SET rating = ? WHERE id = ?`
+	_, err := d.Exec(sql, rating, mirrorID)
+	return err
+}
+
+// SentryLogUpdateReason updates sentry_log reason
+func (d *DB) SentryLogUpdateReason(mirrorID, reason string, logUnixTime int64) error {
+	sql := `UPDATE sentry_log SET reason=? WHERE log_date=FROM_UNIXTIME(?) AND mirror_id=?`
+	_, err := d.Exec(sql, reason, logUnixTime, mirrorID)
+	return err
 }
