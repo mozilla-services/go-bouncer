@@ -111,21 +111,23 @@ func (s *Sentry) checkLocation(mirror *bouncer.MirrorsActiveResult, location *bo
 
 	start := time.Now()
 	active, healthy := true, false
-	resp, _ := s.HeadLocation(url)
 
-	if resp.StatusCode == 200 && !strings.Contains(resp.Header.Get("Content-Type"), "text/html") {
-		active, healthy = true, true
-	} else if resp.StatusCode == 404 || resp.StatusCode == 403 {
-		active, healthy = false, false
-	}
-
-	if err := s.DB.MirrorLocationUpdate(location.ID, mirror.ID, boolToString(active), boolToString(healthy)); err != nil {
-		return err
-	}
+	resp, err := s.HeadLocation(url)
 	elapsed := time.Now().Sub(start)
+	if err != nil {
+		active, healthy = true, false
+		runLog.Printf("%s TOOK=%v ERR=%v\n", url, elapsed, err)
+	} else {
+		if resp.StatusCode == 200 && !strings.Contains(resp.Header.Get("Content-Type"), "text/html") {
+			active, healthy = true, true
+		} else if resp.StatusCode == 404 || resp.StatusCode == 403 {
+			active, healthy = false, false
+		}
 
-	runLog.Printf("%s TOOK=%v RC=%d\n", url, elapsed, resp.StatusCode)
-	return nil
+		runLog.Printf("%s TOOK=%v RC=%d\n", url, elapsed, resp.StatusCode)
+	}
+
+	return s.DB.MirrorLocationUpdate(location.ID, mirror.ID, boolToString(active), boolToString(healthy))
 }
 
 func (s *Sentry) checkMirror(mirror *bouncer.MirrorsActiveResult) error {
