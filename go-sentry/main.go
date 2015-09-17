@@ -40,6 +40,10 @@ func main() {
 			Usage: "How many locations can be checked at once.",
 			Value: 15,
 		},
+		cli.BoolFlag{
+			Name:  "verbose",
+			Usage: "Output run log",
+		},
 	}
 	app.RunAndExitOnError()
 }
@@ -55,6 +59,7 @@ func Main(c *cli.Context) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	sentry.Verbose = c.Bool("verbose")
 
 	err = sentry.Run()
 	if err != nil {

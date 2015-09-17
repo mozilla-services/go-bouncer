@@ -14,7 +14,9 @@ import (
 
 // Sentry contains sentry operations
 type Sentry struct {
-	DB          *bouncer.DB
+	DB      *bouncer.DB
+	Verbose bool
+
 	locations   []*bouncer.LocationsActiveResult
 	mirrors     []*bouncer.MirrorsActiveResult
 	startTime   time.Time
@@ -166,7 +168,10 @@ func (s *Sentry) checkMirror(mirror *bouncer.MirrorsActiveResult) error {
 	if err := s.DB.SentryLogInsert(s.startTime, mirror.ID, "1", mirror.Rating, runLog.String()); err != nil {
 		log.Println(err)
 	}
-	log.Println(runLog.String())
+
+	if s.Verbose {
+		log.Println(runLog.String())
+	}
 
 	return nil
 }
