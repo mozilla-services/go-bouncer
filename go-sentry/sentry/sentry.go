@@ -23,6 +23,8 @@ type Sentry struct {
 	runLck      sync.Mutex
 	locationSem chan bool
 	mirrorSem   chan bool
+
+	client *http.Client
 }
 
 // New returns a new Sentry
@@ -37,12 +39,22 @@ func New(db *bouncer.DB, checknow bool, mirror string, mirrorRoutines, locRoutin
 		return nil, fmt.Errorf("db.MirrorsActive: %v", err)
 	}
 
+	client := &http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			if len(via) >= 1 {
+				return errors.New("Stopped after 1 redirect")
+			}
+			return nil
+		},
+	}
+
 	return &Sentry{
 		DB:          db,
 		locations:   locations,
 		mirrors:     mirrors,
 		locationSem: make(chan bool, locRoutines),
 		mirrorSem:   make(chan bool, mirrorRoutines),
+		client:      client,
 	}, nil
 }
 
@@ -200,19 +212,11 @@ func (s *Sentry) HeadMirror(mirror *bouncer.MirrorsActiveResult) error {
 
 // HeadLocation makes a HEAD request to url and returns the response
 func (s *Sentry) HeadLocation(url string) (resp *http.Response, err error) {
-	client := &http.Client{
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			if len(via) >= 1 {
-				return errors.New("Stopped after 1 redirect")
-			}
-			return nil
-		},
-	}
 
 	req, err := http.NewRequest("HEAD", url, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	return client.Do(req)
+	return s.client.Do(req)
 }
