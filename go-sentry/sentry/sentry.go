@@ -24,7 +24,8 @@ type Sentry struct {
 	locationSem chan bool
 	mirrorSem   chan bool
 
-	client *http.Client
+	client       *http.Client
+	roundTripper http.RoundTripper
 }
 
 // New returns a new Sentry
@@ -49,12 +50,13 @@ func New(db *bouncer.DB, checknow bool, mirror string, mirrorRoutines, locRoutin
 	}
 
 	return &Sentry{
-		DB:          db,
-		locations:   locations,
-		mirrors:     mirrors,
-		locationSem: make(chan bool, locRoutines),
-		mirrorSem:   make(chan bool, mirrorRoutines),
-		client:      client,
+		DB:           db,
+		locations:    locations,
+		mirrors:      mirrors,
+		locationSem:  make(chan bool, locRoutines),
+		mirrorSem:    make(chan bool, mirrorRoutines),
+		client:       client,
+		roundTripper: http.DefaultTransport,
 	}, nil
 }
 
@@ -199,7 +201,7 @@ func (s *Sentry) HeadMirror(mirror *bouncer.MirrorsActiveResult) error {
 		return err
 	}
 
-	resp, err := http.DefaultTransport.RoundTrip(req)
+	resp, err := s.roundTripper.RoundTrip(req)
 	if err != nil {
 		return err
 	}
