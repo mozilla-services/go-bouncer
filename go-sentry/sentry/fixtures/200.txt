@@ -1,0 +1,14 @@
+HTTP/1.1 200 OK
+Content-Type: text/html;charset=UTF-8
+Connection: keep-alive
+Server: Apache
+X-Backend-Server: ftp1.dmz.scl3.mozilla.com
+Cache-Control: max-age=300
+Date: Tue, 22 Sep 2015 23:25:39 GMT
+Expires: Tue, 22 Sep 2015 23:30:39 GMT
+Access-Control-Allow-Origin: *
+X-Cache-Info: caching
+Via: 1.1 1ad93f7bc27480bc8fe409213eb3d520.cloudfront.net (CloudFront), 1.1 cefc8d5fa87d71a439685ef208f6f9bf.cloudfront.net (CloudFront)
+X-Cache: Miss from cloudfront
+X-Amz-Cf-Id: gahAUjy4Cj7e5IwZSO5s8MPX01BHODmpA6_XMEajo5b6oH1ti4lFcQ==
+
