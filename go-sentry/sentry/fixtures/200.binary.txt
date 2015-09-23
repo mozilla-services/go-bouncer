@@ -1,0 +1,18 @@
+HTTP/1.1 200 OK
+Content-Type: application/octet-stream
+Content-Length: 41138200
+Connection: keep-alive
+Server: Apache
+X-Backend-Server: ftp2.dmz.scl3.mozilla.com
+Cache-Control: max-age=604800
+Date: Mon, 21 Sep 2015 20:21:36 GMT
+Expires: Mon, 28 Sep 2015 20:21:36 GMT
+Accept-Ranges: bytes
+Access-Control-Allow-Origin: *
+ETag: "4bf04a5-273b818-519c95e5af5eb"
+Last-Modified: Wed, 01 Jul 2015 05:12:25 GMT
+X-Cache-Info: caching
+Via: 1.1 e027aa1254faeb914e8cf83bfe8c8b09.cloudfront.net (CloudFront), 1.1 f3d074cc7aff1aa2532ef541140d328d.cloudfront.net (CloudFront)
+Age: 184419
+X-Cache: Hit from cloudfront
+

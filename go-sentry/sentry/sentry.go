@@ -12,6 +12,16 @@ import (
 	"github.com/mozilla-services/go-bouncer/bouncer"
 )
 
+// The default http.Client for HeadLocation
+var DefaultClient = &http.Client{
+	CheckRedirect: func(req *http.Request, via []*http.Request) error {
+		if len(via) >= 1 {
+			return errors.New("Stopped after 1 redirect")
+		}
+		return nil
+	},
+}
+
 // Sentry contains sentry operations
 type Sentry struct {
 	DB      *bouncer.DB
@@ -40,22 +50,13 @@ func New(db *bouncer.DB, checknow bool, mirror string, mirrorRoutines, locRoutin
 		return nil, fmt.Errorf("db.MirrorsActive: %v", err)
 	}
 
-	client := &http.Client{
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			if len(via) >= 1 {
-				return errors.New("Stopped after 1 redirect")
-			}
-			return nil
-		},
-	}
-
 	return &Sentry{
 		DB:           db,
 		locations:    locations,
 		mirrors:      mirrors,
 		locationSem:  make(chan bool, locRoutines),
 		mirrorSem:    make(chan bool, mirrorRoutines),
-		client:       client,
+		client:       DefaultClient,
 		roundTripper: http.DefaultTransport,
 	}, nil
 }
@@ -93,7 +94,12 @@ func boolToString(b bool) string {
 	return "0"
 }
 
-func (s *Sentry) checkLocation(mirror *bouncer.MirrorsActiveResult, location *bouncer.LocationsActiveResult, runLog *lockedWriter) error {
+type checkLocationResult struct {
+	Active  bool
+	Healthy bool
+}
+
+func (s *Sentry) checkLocation(mirror *bouncer.MirrorsActiveResult, location *bouncer.LocationsActiveResult, runLog *lockedWriter) *checkLocationResult {
 	lang := "en-US"
 
 	if strings.Contains(location.Path, "/firefox/") &&
@@ -140,8 +146,7 @@ func (s *Sentry) checkLocation(mirror *bouncer.MirrorsActiveResult, location *bo
 
 		runLog.Printf("%s TOOK=%v RC=%d\n", url, elapsed, resp.StatusCode)
 	}
-
-	return s.DB.MirrorLocationUpdate(location.ID, mirror.ID, boolToString(active), boolToString(healthy))
+	return &checkLocationResult{Active: active, Healthy: healthy}
 }
 
 func (s *Sentry) checkMirror(mirror *bouncer.MirrorsActiveResult) error {
@@ -171,8 +176,9 @@ func (s *Sentry) checkMirror(mirror *bouncer.MirrorsActiveResult) error {
 				wg.Done()
 			}()
 
-			if err := s.checkLocation(mirror, location, runLog); err != nil {
-				runLog.Printf("Error checking mirror: %s, location: %s, err: %v\n", mirror.ID, location.ID, err)
+			res := s.checkLocation(mirror, location, runLog)
+			if err := s.DB.MirrorLocationUpdate(location.ID, mirror.ID, boolToString(res.Active), boolToString(res.Healthy)); err != nil {
+				runLog.Printf("MirrorLocationUpdate err: %v", err)
 				return
 			}
 
