@@ -134,8 +134,8 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if b.CacheTime.Seconds() > 0 {
-		w.Header().Set("Cache-Control", fmt.Sprintf("max-age=%d", b.CacheTime.Seconds()))
+	if b.CacheTime > 0 {
+		w.Header().Set("Cache-Control", fmt.Sprintf("max-age=%d", b.CacheTime/time.Second))
 	}
 
 	http.Redirect(w, req, url, 302)
