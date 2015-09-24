@@ -2,10 +2,12 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/mozilla-services/go-bouncer/bouncer"
 )
@@ -16,6 +18,8 @@ const DefaultOS = "win"
 // BouncerHandler is the primary handler for this application
 type BouncerHandler struct {
 	db *bouncer.DB
+
+	CacheTime time.Duration
 }
 
 func randomMirror(mirrors []bouncer.MirrorsResult) *bouncer.MirrorsResult {
@@ -128,6 +132,10 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	if url == "" {
 		http.NotFound(w, req)
 		return
+	}
+
+	if b.CacheTime.Seconds() > 0 {
+		w.Header().Set("Cache-Control", fmt.Sprintf("max-age=%d", b.CacheTime.Seconds()))
 	}
 
 	http.Redirect(w, req, url, 302)

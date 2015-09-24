@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/codegangsta/cli"
 	"github.com/mozilla-services/go-bouncer/bouncer"
@@ -15,6 +16,11 @@ func main() {
 	app.Action = Main
 	app.Version = bouncer.Version
 	app.Flags = []cli.Flag{
+		cli.IntFlag{
+			Name:  "cache-time",
+			Value: 60,
+			Usage: "Time, in seconds, for Cache-Control max-age",
+		},
 		cli.StringFlag{
 			Name:   "addr",
 			Value:  ":8888",
@@ -39,7 +45,8 @@ func Main(c *cli.Context) {
 	defer db.Close()
 
 	bouncerHandler := &BouncerHandler{
-		db: db,
+		db:        db,
+		CacheTime: time.Duration(c.Int("cache-time")) * time.Second,
 	}
 
 	server := &http.Server{
