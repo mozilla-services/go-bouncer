@@ -12,7 +12,7 @@ import (
 
 var Logger = &MozLogger{
 	Output:     os.Stdout,
-	LoggerName: "MozLog",
+	LoggerName: "Bouncer",
 }
 
 var hostname string
