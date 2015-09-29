@@ -8,6 +8,8 @@ import (
 	"github.com/codegangsta/cli"
 	"github.com/mozilla-services/go-bouncer/bouncer"
 	"github.com/mozilla-services/go-bouncer/go-sentry/sentry"
+
+	_ "github.com/mozilla-services/go-bouncer/mozlog"
 )
 
 func main() {
