@@ -24,4 +24,4 @@ _testmain.go
 *.prof
 
 /go-bouncer
-/sentry/sentry
+/go-sentry/go-sentry
