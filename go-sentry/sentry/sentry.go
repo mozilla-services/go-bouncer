@@ -135,17 +135,18 @@ func (s *Sentry) checkLocation(mirror *bouncer.MirrorsActiveResult, location *bo
 	resp, err := s.HeadLocation(url)
 	elapsed := time.Now().Sub(start)
 	if err != nil {
-		active, healthy = true, false
 		runLog.Printf("%s TOOK=%v ERR=%v\n", url, elapsed, err)
-	} else {
-		if resp.StatusCode == 200 && !strings.Contains(resp.Header.Get("Content-Type"), "text/html") {
-			active, healthy = true, true
-		} else if resp.StatusCode == 404 || resp.StatusCode == 403 {
-			active, healthy = false, false
-		}
-
-		runLog.Printf("%s TOOK=%v RC=%d\n", url, elapsed, resp.StatusCode)
+		return &checkLocationResult{Active: true, Healthy: false}
 	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == 200 && !strings.Contains(resp.Header.Get("Content-Type"), "text/html") {
+		active, healthy = true, true
+	} else if resp.StatusCode == 404 || resp.StatusCode == 403 {
+		active, healthy = false, false
+	}
+
+	runLog.Printf("%s TOOK=%v RC=%d\n", url, elapsed, resp.StatusCode)
 	return &checkLocationResult{Active: active, Healthy: healthy}
 }
 
@@ -211,6 +212,8 @@ func (s *Sentry) HeadMirror(mirror *bouncer.MirrorsActiveResult) error {
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
+
 	if resp.StatusCode >= 500 {
 		return fmt.Errorf("Bad Response: %s", resp.Status)
 	}
