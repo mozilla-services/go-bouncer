@@ -15,6 +15,29 @@ import (
 const DefaultLang = "en-US"
 const DefaultOS = "win"
 
+// HealthHandler returns 200 if the app looks okay
+type HealthHandler struct {
+	db *bouncer.DB
+
+	CacheTime time.Duration
+}
+
+func (h *HealthHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	if h.CacheTime > 0 {
+		w.Header().Set("Cache-Control", fmt.Sprintf("max-age=%d", h.CacheTime/time.Second))
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	err := h.db.Ping()
+	if err != nil {
+		log.Printf("HealthHandler err: %v", err)
+		http.Error(w, `{"db": false}`, http.StatusInternalServerError)
+		return
+	}
+	w.Write([]byte(`{"db": true}`))
+}
+
 // BouncerHandler is the primary handler for this application
 type BouncerHandler struct {
 	db *bouncer.DB

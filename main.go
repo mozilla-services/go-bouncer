@@ -49,9 +49,19 @@ func Main(c *cli.Context) {
 		CacheTime: time.Duration(c.Int("cache-time")) * time.Second,
 	}
 
+	healthHandler := &HealthHandler{
+		db:        db,
+		CacheTime: 5 * time.Second,
+	}
+
+	mux := http.NewServeMux()
+
+	mux.Handle("/__heartbeat__", healthHandler)
+	mux.Handle("/", bouncerHandler)
+
 	server := &http.Server{
 		Addr:    c.String("addr"),
-		Handler: bouncerHandler,
+		Handler: mux,
 	}
 
 	err = server.ListenAndServe()
