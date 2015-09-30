@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"math/rand"
@@ -15,11 +16,43 @@ import (
 const DefaultLang = "en-US"
 const DefaultOS = "win"
 
+// HealthResult represents service health
+type HealthResult struct {
+	DB      bool   `json:"db"`
+	Healthy bool   `json:"healthy"`
+	Version string `json:"version"`
+}
+
+// JSON returns json string
+func (h *HealthResult) JSON() []byte {
+	res, err := json.Marshal(h)
+	if err != nil {
+		log.Printf("HealthResult.JSON err: %v", err)
+		return []byte{}
+	}
+	return res
+}
+
 // HealthHandler returns 200 if the app looks okay
 type HealthHandler struct {
 	db *bouncer.DB
 
 	CacheTime time.Duration
+}
+
+func (h *HealthHandler) check() *HealthResult {
+	result := &HealthResult{
+		Healthy: true,
+		Version: bouncer.Version,
+	}
+
+	err := h.db.Ping()
+	if err != nil {
+		result.DB = false
+		result.Healthy = false
+		log.Printf("HealthHandler err: %v", err)
+	}
+	return result
 }
 
 func (h *HealthHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
@@ -29,13 +62,11 @@ func (h *HealthHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	err := h.db.Ping()
-	if err != nil {
-		log.Printf("HealthHandler err: %v", err)
-		http.Error(w, `{"db": false}`, http.StatusInternalServerError)
-		return
+	result := h.check()
+	if !result.Healthy {
+		w.WriteHeader(http.StatusInternalServerError)
 	}
-	w.Write([]byte(`{"db": true}`))
+	w.Write(result.JSON())
 }
 
 // BouncerHandler is the primary handler for this application

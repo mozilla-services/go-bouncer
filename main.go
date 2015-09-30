@@ -1,5 +1,7 @@
 package main
 
+//go:generate ./version.sh
+
 import (
 	"log"
 	"net/http"
