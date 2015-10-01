@@ -58,7 +58,7 @@ type AppLog struct {
 	EnvVersion string
 	Pid        int `json:",omitempty"`
 	Severity   int `json:",omitempty"`
-	Fields     map[string]string
+	Fields     map[string]interface{}
 }
 
 // NewAppLog returns a loggable struct
@@ -70,7 +70,7 @@ func NewAppLog(loggerName string, msg []byte) *AppLog {
 		Hostname:   hostname,
 		EnvVersion: "2.0",
 		Pid:        os.Getpid(),
-		Fields: map[string]string{
+		Fields: map[string]interface{}{
 			"msg": string(bytes.TrimSpace(msg)),
 		},
 	}
