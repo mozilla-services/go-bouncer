@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/mozilla-services/go-bouncer/bouncer"
 	"github.com/stretchr/testify/assert"
 )
@@ -70,7 +71,7 @@ func TestCheckLocation(t *testing.T) {
 			Path: loc.Path,
 		}
 
-		runLog := newLockedWriter()
+		runLog := logrus.WithField("testing", true)
 
 		rt := fileRoundTripper("./fixtures/200.binary.txt")
 		s.client.Transport = rt
