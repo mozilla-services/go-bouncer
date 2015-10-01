@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/mozilla-services/go-bouncer/bouncer"
 )
 
@@ -99,7 +100,11 @@ type checkLocationResult struct {
 	Healthy bool
 }
 
-func (s *Sentry) checkLocation(mirror *bouncer.MirrorsActiveResult, location *bouncer.LocationsActiveResult, runLog *lockedWriter) *checkLocationResult {
+func (s *Sentry) checkLocation(mirror *bouncer.MirrorsActiveResult, location *bouncer.LocationsActiveResult, mirrorLog *logrus.Entry) *checkLocationResult {
+	locationLog := mirrorLog.WithFields(logrus.Fields{
+		"location": location.Path,
+	})
+
 	lang := "en-US"
 
 	if strings.Contains(location.Path, "/firefox/") &&
@@ -135,7 +140,7 @@ func (s *Sentry) checkLocation(mirror *bouncer.MirrorsActiveResult, location *bo
 	resp, err := s.HeadLocation(url)
 	elapsed := time.Now().Sub(start)
 	if err != nil {
-		runLog.Printf("%s TOOK=%v ERR=%v\n", url, elapsed, err)
+		locationLog.WithError(err).Errorf("%s TOOK=%v", url, elapsed)
 		return &checkLocationResult{Active: true, Healthy: false}
 	}
 	defer resp.Body.Close()
@@ -146,17 +151,23 @@ func (s *Sentry) checkLocation(mirror *bouncer.MirrorsActiveResult, location *bo
 		active, healthy = false, false
 	}
 
-	runLog.Printf("%s TOOK=%v RC=%d\n", url, elapsed, resp.StatusCode)
+	locationLog.Infof("%s TOOK=%v RC=%d", url, elapsed, resp.StatusCode)
 	return &checkLocationResult{Active: active, Healthy: healthy}
 }
 
 func (s *Sentry) checkMirror(mirror *bouncer.MirrorsActiveResult) error {
-	runLog := newLockedWriter()
-	runLog.Printf("Checking mirror %s ...\n", mirror.BaseURL)
+	mirrorLog := logrus.WithFields(logrus.Fields{
+		"mirror": mirror.BaseURL,
+	})
+
+	mirrorLog.Infof("Checking mirror...")
+
+	startTime := time.Now()
 
 	// Check overall mirror health
 	err := s.HeadMirror(mirror)
 	if err != nil {
+		mirrorLog.WithError(err).Error("Mirror HEAD failed")
 		if dberr := s.DB.MirrorSetHealth(mirror.ID, "0"); dberr != nil {
 			return fmt.Errorf("MirrorSetHealth: %v", dberr)
 		}
@@ -177,9 +188,9 @@ func (s *Sentry) checkMirror(mirror *bouncer.MirrorsActiveResult) error {
 				wg.Done()
 			}()
 
-			res := s.checkLocation(mirror, location, runLog)
+			res := s.checkLocation(mirror, location, mirrorLog)
 			if err := s.DB.MirrorLocationUpdate(location.ID, mirror.ID, boolToString(res.Active), boolToString(res.Healthy)); err != nil {
-				runLog.Printf("MirrorLocationUpdate err: %v", err)
+				mirrorLog.WithError(err).Error("MirrorLocationUpdate failed")
 				return
 			}
 
@@ -188,12 +199,10 @@ func (s *Sentry) checkMirror(mirror *bouncer.MirrorsActiveResult) error {
 
 	wg.Wait()
 
-	if err := s.DB.SentryLogInsert(s.startTime, mirror.ID, "1", mirror.Rating, runLog.String()); err != nil {
+	elapsed := time.Now().Sub(startTime)
+	mirrorLog.Infof("Finished in %v", elapsed)
+	if err := s.DB.SentryLogInsert(s.startTime, mirror.ID, "1", mirror.Rating, fmt.Sprintf("%s finished in %v", mirror.BaseURL, elapsed)); err != nil {
 		log.Println(err)
-	}
-
-	if s.Verbose {
-		log.Println(runLog.String())
 	}
 
 	return nil
