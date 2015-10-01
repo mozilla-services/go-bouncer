@@ -42,6 +42,7 @@ type HealthHandler struct {
 
 func (h *HealthHandler) check() *HealthResult {
 	result := &HealthResult{
+		DB:      true,
 		Healthy: true,
 		Version: bouncer.Version,
 	}
