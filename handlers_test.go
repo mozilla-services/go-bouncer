@@ -32,6 +32,17 @@ func TestBouncerHandlerParams(t *testing.T) {
 	assert.Equal(t, "http://www.mozilla.org/", w.HeaderMap.Get("Location"))
 }
 
+func TestBouncerHandlerPrintQuery(t *testing.T) {
+	w := httptest.NewRecorder()
+
+	req, err := http.NewRequest("GET", "http://test/?product=firefox-latest&os=osx&lang=en-US&print=yes", nil)
+	assert.NoError(t, err)
+
+	bouncerHandler.ServeHTTP(w, req)
+	assert.Equal(t, 200, w.Code)
+	assert.Equal(t, "http://download-installer.cdn.mozilla.net/pub/firefox/releases/39.0/mac/en-US/Firefox%2039.0.dmg", w.Body.String())
+}
+
 func TestBouncerHandlerValid(t *testing.T) {
 	w := httptest.NewRecorder()
 	req, err := http.NewRequest("GET", "http://test/?product=firefox-latest&os=osx&lang=en-US", nil)

@@ -160,6 +160,7 @@ func (b *BouncerHandler) URL(lang, os, product string) (string, error) {
 func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	queryVals := req.URL.Query()
 
+	printOnly := queryVals.Get("print")
 	os := queryVals.Get("os")
 	product := queryVals.Get("product")
 	lang := queryVals.Get("lang")
@@ -191,6 +192,13 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	if b.CacheTime > 0 {
 		w.Header().Set("Cache-Control", fmt.Sprintf("max-age=%d", b.CacheTime/time.Second))
+	}
+
+	// If ?print=yes, print the resulting URL instead of 302ing
+	if printOnly == "yes" {
+		w.Header().Set("Content-Type", "text/plain")
+		w.Write([]byte(url))
+		return
 	}
 
 	http.Redirect(w, req, url, 302)
