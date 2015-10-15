@@ -35,7 +35,7 @@ func TestBouncerHandlerParams(t *testing.T) {
 func TestBouncerHandlerPrintQuery(t *testing.T) {
 	w := httptest.NewRecorder()
 
-	req, err := http.NewRequest("GET", "http://test/?product=firefox-latest&os=osx&lang=en-US", nil)
+	req, err := http.NewRequest("GET", "http://test/?product=firefox-latest&os=osx&lang=en-US&print=yes", nil)
 	assert.NoError(t, err)
 
 	bouncerHandler.ServeHTTP(w, req)
