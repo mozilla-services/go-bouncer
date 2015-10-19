@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/PagerDuty/godspeed"
 	"github.com/codegangsta/cli"
 	"github.com/mozilla-services/go-bouncer/bouncer"
 	_ "github.com/mozilla-services/go-bouncer/mozlog"
@@ -35,6 +36,10 @@ func main() {
 			Usage:  "database DSN (https://github.com/go-sql-driver/mysql#dsn-data-source-name)",
 			EnvVar: "BOUNCER_DB_DSN",
 		},
+		cli.BoolFlag{
+			Name:  "dogstatsd",
+			Usage: "Enable dogstatsd metrics",
+		},
 	}
 	app.RunAndExitOnError()
 }
@@ -49,6 +54,15 @@ func Main(c *cli.Context) {
 	bouncerHandler := &BouncerHandler{
 		db:        db,
 		CacheTime: time.Duration(c.Int("cache-time")) * time.Second,
+	}
+	if c.Bool("dogstatsd") {
+		gs, err := godspeed.NewDefault()
+		if err != nil {
+			log.Println(err)
+		} else {
+			defer gs.Conn.Close()
+			bouncerHandler.SetGodspeed(gs, 30000)
+		}
 	}
 
 	healthHandler := &HealthHandler{

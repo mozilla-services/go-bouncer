@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/PagerDuty/godspeed"
 	"github.com/mozilla-services/go-bouncer/bouncer"
 )
 
@@ -75,6 +76,39 @@ type BouncerHandler struct {
 	db *bouncer.DB
 
 	CacheTime time.Duration
+
+	godspeedChan chan []string
+}
+
+// SetGodspeed sets the handlers godspeed client
+func (h *BouncerHandler) SetGodspeed(gs *godspeed.Godspeed, buffer int) {
+	h.godspeedChan = make(chan []string, buffer)
+	go func(gs *godspeed.Godspeed, c chan []string) {
+		for tags := range h.godspeedChan {
+			err := gs.Incr("bouncer.download", tags)
+			if err != nil {
+				log.Println(err)
+			}
+
+		}
+	}(gs, h.godspeedChan)
+}
+
+func (h *BouncerHandler) downloadMetric(product, lang, os string) {
+	if h.godspeedChan == nil {
+		return
+	}
+
+	tags := []string{
+		"product:" + product,
+		"language:" + lang,
+		"os:" + os,
+	}
+	select {
+	case h.godspeedChan <- tags:
+	default:
+		log.Println("downloadMetric: godspeed buffer full sending: %v", tags)
+	}
 }
 
 func randomMirror(mirrors []bouncer.MirrorsResult) *bouncer.MirrorsResult {
@@ -200,6 +234,8 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		w.Write([]byte(url))
 		return
 	}
+
+	b.downloadMetric(product, lang, os)
 
 	http.Redirect(w, req, url, 302)
 }

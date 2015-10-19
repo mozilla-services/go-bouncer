@@ -44,6 +44,9 @@ func TestBouncerHandlerPrintQuery(t *testing.T) {
 }
 
 func TestBouncerHandlerValid(t *testing.T) {
+	bouncerHandler.godspeedChan = make(chan []string, 100)
+	defer func() { bouncerHandler.godspeedChan = nil }()
+
 	w := httptest.NewRecorder()
 	req, err := http.NewRequest("GET", "http://test/?product=firefox-latest&os=osx&lang=en-US", nil)
 	assert.NoError(t, err)
@@ -51,6 +54,12 @@ func TestBouncerHandlerValid(t *testing.T) {
 	bouncerHandler.ServeHTTP(w, req)
 	assert.Equal(t, 302, w.Code)
 	assert.Equal(t, "http://download-installer.cdn.mozilla.net/pub/firefox/releases/39.0/mac/en-US/Firefox%2039.0.dmg", w.HeaderMap.Get("Location"))
+
+	tags, ok := <-bouncerHandler.godspeedChan
+	assert.True(t, ok)
+	assert.Contains(t, tags, "product:firefox-latest")
+	assert.Contains(t, tags, "os:osx")
+	assert.Contains(t, tags, "language:en-US")
 
 	w = httptest.NewRecorder()
 	req, err = http.NewRequest("GET", "http://test/?product=firefox-latest&os=win64&lang=en-US", nil)
@@ -60,6 +69,12 @@ func TestBouncerHandlerValid(t *testing.T) {
 	assert.Equal(t, 302, w.Code)
 	assert.Equal(t, "http://download-installer.cdn.mozilla.net/pub/firefox/releases/39.0/win32/en-US/Firefox%20Setup%2039.0.exe", w.HeaderMap.Get("Location"))
 
+	tags, ok = <-bouncerHandler.godspeedChan
+	assert.True(t, ok)
+	assert.Contains(t, tags, "product:firefox-latest")
+	assert.Contains(t, tags, "os:win64")
+	assert.Contains(t, tags, "language:en-US")
+
 	w = httptest.NewRecorder()
 	req, err = http.NewRequest("GET", "http://test/?product=Firefox-SSL&os=win64&lang=en-US", nil)
 	assert.NoError(t, err)
@@ -67,4 +82,10 @@ func TestBouncerHandlerValid(t *testing.T) {
 	bouncerHandler.ServeHTTP(w, req)
 	assert.Equal(t, 302, w.Code)
 	assert.Equal(t, "https://download-installer.cdn.mozilla.net/pub/firefox/releases/39.0/win32/en-US/Firefox%20Setup%2039.0.exe", w.HeaderMap.Get("Location"))
+
+	tags, ok = <-bouncerHandler.godspeedChan
+	assert.True(t, ok)
+	assert.Contains(t, tags, "product:firefox-ssl")
+	assert.Contains(t, tags, "os:win64")
+	assert.Contains(t, tags, "language:en-US")
 }
