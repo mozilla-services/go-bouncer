@@ -6,6 +6,10 @@
 	],
 	"Deps": [
 		{
+			"ImportPath": "github.com/PagerDuty/godspeed",
+			"Rev": "d940a26b3aedd5752c2518b873f5cbd67ef459fb"
+		},
+		{
 			"ImportPath": "github.com/Sirupsen/logrus",
 			"Comment": "v0.8.7",
 			"Rev": "418b41d23a1bf978c06faea5313ba194650ac088"
