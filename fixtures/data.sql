@@ -228,9 +228,13 @@ LOCK TABLES `mirror_location_mirror_map` WRITE;
 INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,1,1,1,1);
 INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,1,2,2,1);
 INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,1,3,3,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,2,4,1,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,2,5,2,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,2,6,3,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,1,4,4,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,1,5,5,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,2,6,1,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,2,7,2,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,2,8,3,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,2,9,4,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,2,10,5,1);
 /*!40000 ALTER TABLE `mirror_location_mirror_map` ENABLE KEYS */;
 UNLOCK TABLES;
 
