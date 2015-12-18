@@ -27,7 +27,7 @@ func isWindowsXPUserAgent(userAgent string) bool {
 func firefoxSha1Product(product string) string {
 	ver := strings.TrimPrefix(product, "firefox-")
 	switch ver {
-	case "", "firefox", "latest":
+	case "", "firefox", "latest", "ssl":
 		return "firefox-43.0.1-SSL"
 	}
 
