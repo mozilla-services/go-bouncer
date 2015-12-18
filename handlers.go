@@ -18,7 +18,7 @@ import (
 const DefaultLang = "en-US"
 const DefaultOS = "win"
 
-var windowsXPRegex = regexp.MustCompile(`Windows NT 5.1`)
+var windowsXPRegex = regexp.MustCompile(`Windows (?:NT 5.1|XP)`)
 
 func isWindowsXPUserAgent(userAgent string) bool {
 	return windowsXPRegex.MatchString(userAgent)
