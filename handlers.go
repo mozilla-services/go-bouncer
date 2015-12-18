@@ -7,6 +7,8 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -15,6 +17,41 @@ import (
 
 const DefaultLang = "en-US"
 const DefaultOS = "win"
+
+var windowsXPRegex = regexp.MustCompile(`Windows NT 5.1`)
+
+func isWindowsXPUserAgent(userAgent string) bool {
+	return windowsXPRegex.MatchString(userAgent)
+}
+
+func firefoxSha1Product(product string) string {
+	ver := strings.TrimPrefix(product, "firefox-")
+	if ver == "" || ver == "latest" {
+		return "firefox-43.0.1-SSL"
+	}
+
+	verParts := strings.Split(ver, ".")
+	if len(verParts) < 1 {
+		return product
+	}
+
+	i, err := strconv.Atoi(verParts[0])
+	if err != nil {
+		return product
+	}
+	if i >= 43 {
+		return "firefox-43.0.1-SSL"
+	}
+
+	return product
+}
+
+func sha1Product(product string) string {
+	if strings.HasPrefix(product, "firefox-") {
+		return firefoxSha1Product(product)
+	}
+	return product
+}
 
 // HealthResult represents service health
 type HealthResult struct {
@@ -178,6 +215,14 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	product = strings.TrimSpace(strings.ToLower(product))
 	os = strings.TrimSpace(strings.ToLower(os))
+
+	// HACKS
+	// If the user is coming from windows xp, send a sha1
+	// signed product.
+	// HACKS
+	if isWindowsXPUserAgent(req.UserAgent()) {
+		product = sha1Product(product)
+	}
 
 	url, err := b.URL(lang, os, product)
 	if err != nil {
