@@ -25,10 +25,18 @@ func isWindowsXPUserAgent(userAgent string) bool {
 }
 
 func firefoxSha1Product(product string) string {
-	ver := strings.TrimPrefix(product, "firefox-")
+	parts := strings.Split(product, "-")
+	if len(parts) == 1 {
+		return product
+	}
+	ver := parts[1]
 	switch ver {
-	case "", "firefox", "latest", "ssl":
-		return "firefox-43.0.1-SSL"
+	case "stub":
+		return "firefox-43.0.1-stub"
+	case "ssl":
+		return "firefox-43.0.1-ssl"
+	case "latest":
+		return "firefox-43.0.1"
 	}
 
 	verParts := strings.Split(ver, ".")
@@ -37,11 +45,19 @@ func firefoxSha1Product(product string) string {
 	}
 
 	i, err := strconv.Atoi(verParts[0])
-	if err != nil {
+	if err != nil || i < 43 {
 		return product
 	}
-	if i >= 43 {
-		return "firefox-43.0.1-SSL"
+
+	if len(parts) <= 2 {
+		return "firefox-43.0.1"
+	}
+
+	switch parts[2] {
+	case "ssl":
+		return "firefox-43.0.1-ssl"
+	case "stub":
+		return "firefox-43.0.1-stub"
 	}
 
 	return product

@@ -110,8 +110,22 @@ func TestIsWindowsXPUserAgent(t *testing.T) {
 }
 
 func TestSha1Product(t *testing.T) {
-	assert.Equal(t, "firefox-43.0.1-SSL", sha1Product("firefox-latest"))
-	assert.Equal(t, "firefox-43.0.1-SSL", sha1Product("firefox"))
-	assert.Equal(t, "firefox-43.0.1-SSL", sha1Product("firefox-44.0.0-SSL"))
-	assert.Equal(t, "firefox-42.0.0-SSL", sha1Product("firefox-42.0.0-SSL"))
+	assert.Equal(t, "firefox-43.0.1", sha1Product("firefox-latest"))
+	assert.Equal(t, "firefox", sha1Product("firefox"))
+	assert.Equal(t, "firefox-42.0.0-ssl", sha1Product("firefox-42.0.0-ssl"))
+	assert.Equal(t, "firefox-43.0.1-ssl", sha1Product("firefox-43.0.2-ssl"))
+	assert.Equal(t, "firefox-43.0.1-ssl", sha1Product("firefox-44.0.0-ssl"))
+
+	assert.Equal(t, "firefox-42.0.0", sha1Product("firefox-42.0.0"))
+	assert.Equal(t, "firefox-43.0.1", sha1Product("firefox-43.0.1"))
+	assert.Equal(t, "firefox-43.0.1", sha1Product("firefox-43.0.2"))
+
+	assert.Equal(t, "firefox-42.0.0-stub", sha1Product("firefox-42.0.0-stub"))
+	assert.Equal(t, "firefox-43.0.1-stub", sha1Product("firefox-43.0.1-stub"))
+	assert.Equal(t, "firefox-43.0.1-stub", sha1Product("firefox-43.0.2-stub"))
+
+	assert.Equal(t, "firefox-42.0.0-complete", sha1Product("firefox-42.0.0-complete"))
+	assert.Equal(t, "firefox-43.0.1-partial-41.0.2build1", sha1Product("firefox-43.0.1-partial-41.0.2build1"))
+	assert.Equal(t, "firefox-43.0.2-complete", sha1Product("firefox-43.0.2-complete"))
+	assert.Equal(t, "firefox-44.0-complete", sha1Product("firefox-44.0-complete"))
 }
