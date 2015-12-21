@@ -19,45 +19,64 @@ const DefaultLang = "en-US"
 const DefaultOS = "win"
 
 var windowsXPRegex = regexp.MustCompile(`Windows (?:NT 5.1|XP)`)
+var windowsXPLastRelease = "firefox-43.0.1"
+var windowsXPLastBeta = "firefox-44.0b1"
 
 func isWindowsXPUserAgent(userAgent string) bool {
 	return windowsXPRegex.MatchString(userAgent)
 }
 
 func firefoxSha1Product(product string) string {
-	parts := strings.Split(product, "-")
+	parts := strings.SplitN(product, "-", 2)
 	if len(parts) == 1 {
 		return product
 	}
-	ver := parts[1]
-	switch ver {
+
+	productSuffix := parts[1]
+
+	switch productSuffix {
+	case "beta":
+		return windowsXPLastBeta
+	case "beta-stub":
+		return windowsXPLastBeta + "-stub"
 	case "stub":
-		return "firefox-43.0.1-stub"
+		return windowsXPLastRelease + "-stub"
 	case "ssl":
-		return "firefox-43.0.1-ssl"
+		return windowsXPLastRelease + "-ssl"
 	case "latest":
-		return "firefox-43.0.1"
+		return windowsXPLastRelease
 	}
 
+	isBeta := false
+	productSuffixParts := strings.SplitN(productSuffix, "-", 2)
+	ver := productSuffixParts[0]
 	verParts := strings.Split(ver, ".")
-	if len(verParts) < 1 {
+	if len(verParts) > 1 && strings.HasPrefix(verParts[1], "0b") {
+		isBeta = true
+	}
+
+	majorVersion, err := strconv.Atoi(verParts[0])
+	if err != nil ||
+		((majorVersion < 43 && !isBeta) || (majorVersion < 44 && isBeta)) {
 		return product
 	}
 
-	i, err := strconv.Atoi(verParts[0])
-	if err != nil || i < 43 {
-		return product
+	if len(productSuffixParts) == 1 {
+		if isBeta {
+			return windowsXPLastBeta
+		}
+		return windowsXPLastRelease
 	}
 
-	if len(parts) <= 2 {
-		return "firefox-43.0.1"
+	possibleProduct := windowsXPLastRelease
+	if isBeta {
+		possibleProduct = windowsXPLastBeta
 	}
-
-	switch parts[2] {
+	switch productSuffixParts[1] {
 	case "ssl":
-		return "firefox-43.0.1-ssl"
+		return possibleProduct + "-ssl"
 	case "stub":
-		return "firefox-43.0.1-stub"
+		return possibleProduct + "-stub"
 	}
 
 	return product

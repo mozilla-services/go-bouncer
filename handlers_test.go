@@ -128,4 +128,13 @@ func TestSha1Product(t *testing.T) {
 	assert.Equal(t, "firefox-43.0.1-partial-41.0.2build1", sha1Product("firefox-43.0.1-partial-41.0.2build1"))
 	assert.Equal(t, "firefox-43.0.2-complete", sha1Product("firefox-43.0.2-complete"))
 	assert.Equal(t, "firefox-44.0-complete", sha1Product("firefox-44.0-complete"))
+
+	assert.Equal(t, "firefox-45.0b1-complete", sha1Product("firefox-45.0b1-complete"))
+	assert.Equal(t, "firefox-44.0b1-stub", sha1Product("firefox-45.0b1-stub"))
+	assert.Equal(t, "firefox-44.0b1-ssl", sha1Product("firefox-45.0b1-ssl"))
+	assert.Equal(t, "firefox-44.0b1-stub", sha1Product("firefox-beta-stub"))
+	assert.Equal(t, "firefox-44.0b1", sha1Product("firefox-beta"))
+	assert.Equal(t, "firefox-43.0b1", sha1Product("firefox-43.0b1"))
+	assert.Equal(t, "firefox-44.0b1", sha1Product("firefox-45.0b2"))
+	assert.Equal(t, "firefox-44.0b1", sha1Product("firefox-44.0b2"))
 }
