@@ -70,7 +70,7 @@ func TestBouncerHandlerValid(t *testing.T) {
 
 	// Test Windows XP
 	w = httptest.NewRecorder()
-	req, err = http.NewRequest("GET", "http://test/?product=Firefox-SSL&os=win64&lang=en-US", nil)
+	req, err = http.NewRequest("GET", "http://test/?product=Firefox-SSL&os=win&lang=en-US", nil)
 	assert.NoError(t, err)
 
 	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)")
