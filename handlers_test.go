@@ -98,9 +98,9 @@ func TestIsWindowsXPUserAgent(t *testing.T) {
 	}
 }
 
-func TestFirefoxSha1Product(t *testing.T) {
-	assert.Equal(t, "firefox-43.0.1-SSL", firefoxSha1Product("firefox-latest"))
-	assert.Equal(t, "firefox-43.0.1-SSL", firefoxSha1Product("firefox"))
-	assert.Equal(t, "firefox-43.0.1-SSL", firefoxSha1Product("firefox-44.0.0-SSL"))
-	assert.Equal(t, "firefox-42.0.0-SSL", firefoxSha1Product("firefox-42.0.0-SSL"))
+func TestSha1Product(t *testing.T) {
+	assert.Equal(t, "firefox-43.0.1-SSL", sha1Product("firefox-latest"))
+	assert.Equal(t, "firefox-43.0.1-SSL", sha1Product("firefox"))
+	assert.Equal(t, "firefox-43.0.1-SSL", sha1Product("firefox-44.0.0-SSL"))
+	assert.Equal(t, "firefox-42.0.0-SSL", sha1Product("firefox-42.0.0-SSL"))
 }
