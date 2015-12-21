@@ -48,7 +48,7 @@ func firefoxSha1Product(product string) string {
 }
 
 func sha1Product(product string) string {
-	if strings.HasPrefix(product, "firefox-") {
+	if strings.HasPrefix(product, "firefox") {
 		return firefoxSha1Product(product)
 	}
 	return product
