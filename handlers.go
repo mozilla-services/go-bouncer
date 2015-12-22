@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode"
 
 	"github.com/mozilla-services/go-bouncer/bouncer"
 )
@@ -18,74 +19,110 @@ import (
 const DefaultLang = "en-US"
 const DefaultOS = "win"
 
-var windowsXPRegex = regexp.MustCompile(`Windows (?:NT 5.1|XP)`)
-var windowsXPLastRelease = "firefox-43.0.1"
-var windowsXPLastBeta = "firefox-44.0b1"
+type xpRelease struct {
+	Version string
+}
+
+var windowsXPRegex = regexp.MustCompile(`Windows (?:NT 5.1|XP|NT 5.2)`)
+var firefoxWinXPLastRelease = xpRelease{"43.0.1"}
+var firefoxWinXPLastBeta = xpRelease{"44.0b1"}
+var firefoxWinXPLastESR = xpRelease{"38.5.2esr"}
 
 func isWindowsXPUserAgent(userAgent string) bool {
 	return windowsXPRegex.MatchString(userAgent)
 }
 
-func firefoxSha1Product(product string) string {
-	parts := strings.SplitN(product, "-", 2)
-	if len(parts) == 1 {
-		return product
+func isNotNumber(r rune) bool {
+	return !unicode.IsNumber(r)
+}
+
+// a < b = -1
+// a == b = 0
+// a > b = 1
+func compareVersions(a, b string) int {
+	if a == b {
+		return 0
 	}
+	aParts := strings.Split(a, ".")
+	bParts := strings.Split(b, ".")
 
-	productSuffix := parts[1]
+	for i, verA := range aParts {
+		if len(bParts) <= i {
+			return 1
+		}
+		verB := bParts[i]
 
+		aInt, err := strconv.Atoi(strings.TrimRightFunc(verA, isNotNumber))
+		if err != nil {
+			aInt = 0
+		}
+		bInt, err := strconv.Atoi(strings.TrimRightFunc(verB, isNotNumber))
+		if err != nil {
+			bInt = 0
+		}
+
+		if aInt > bInt {
+			return 1
+		}
+		if aInt < bInt {
+			return -1
+		}
+	}
+	return 0
+}
+
+func firefoxSha1Product(productSuffix string) string {
 	switch productSuffix {
 	case "beta":
-		return windowsXPLastBeta
+		return firefoxWinXPLastBeta.Version
 	case "beta-stub":
-		return windowsXPLastBeta + "-stub"
+		return firefoxWinXPLastBeta.Version + "-stub"
 	case "stub":
-		return windowsXPLastRelease + "-stub"
+		return firefoxWinXPLastRelease.Version + "-stub"
 	case "ssl":
-		return windowsXPLastRelease + "-ssl"
+		return firefoxWinXPLastRelease.Version + "-ssl"
 	case "latest":
-		return windowsXPLastRelease
+		return firefoxWinXPLastRelease.Version
 	}
 
-	isBeta := false
 	productSuffixParts := strings.SplitN(productSuffix, "-", 2)
 	ver := productSuffixParts[0]
-	verParts := strings.Split(ver, ".")
-	if len(verParts) > 1 && strings.HasPrefix(verParts[1], "0b") {
-		isBeta = true
+
+	possibleVersion := firefoxWinXPLastRelease
+	if strings.Contains(ver, "esr") {
+		possibleVersion = firefoxWinXPLastESR
+	} else if strings.Contains(ver, ".0b") {
+		possibleVersion = firefoxWinXPLastBeta
 	}
 
-	majorVersion, err := strconv.Atoi(verParts[0])
-	if err != nil ||
-		((majorVersion < 43 && !isBeta) || (majorVersion < 44 && isBeta)) {
-		return product
+	if compareVersions(ver, possibleVersion.Version) == -1 {
+		return productSuffix
 	}
 
 	if len(productSuffixParts) == 1 {
-		if isBeta {
-			return windowsXPLastBeta
-		}
-		return windowsXPLastRelease
+		return possibleVersion.Version
 	}
 
-	possibleProduct := windowsXPLastRelease
-	if isBeta {
-		possibleProduct = windowsXPLastBeta
-	}
 	switch productSuffixParts[1] {
 	case "ssl":
-		return possibleProduct + "-ssl"
+		return possibleVersion.Version + "-ssl"
 	case "stub":
-		return possibleProduct + "-stub"
+		return possibleVersion.Version + "-stub"
 	}
 
-	return product
+	return productSuffix
 }
 
 func sha1Product(product string) string {
-	if strings.HasPrefix(product, "firefox") {
-		return firefoxSha1Product(product)
+	productParts := strings.SplitN(product, "-", 2)
+	if len(productParts) == 1 {
+		return product
 	}
+
+	if productParts[0] == "firefox" {
+		return "firefox-" + firefoxSha1Product(productParts[1])
+	}
+
 	return product
 }
 
