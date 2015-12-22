@@ -228,9 +228,15 @@ LOCK TABLES `mirror_location_mirror_map` WRITE;
 INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,1,1,1,1);
 INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,1,2,2,1);
 INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,1,3,3,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,2,4,1,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,2,5,2,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,2,6,3,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,1,4,4,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,1,5,5,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,2,6,1,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,2,7,2,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,2,8,3,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,2,9,4,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,2,10,5,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,1,11,6,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,2,12,6,1);
 /*!40000 ALTER TABLE `mirror_location_mirror_map` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -239,6 +245,9 @@ LOCK TABLES `mirror_locations` WRITE;
 INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/39.0/win32/:lang/Firefox%20Setup%2039.0.exe',1,1,1);
 INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/39.0/mac/:lang/Firefox%2039.0.dmg',1,2,2);
 INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/39.0/win32/:lang/Firefox%20Setup%2039.0.exe',2,1,3);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/43.0.1/win64/:lang/Firefox%20Setup%2043.0.1.exe',3,1,4);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/43.0.1/mac/:lang/Firefox%2043.0.1.dmg',3,2,5);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/43.0.1/win32/:lang/Firefox%20Setup%2043.0.1.exe',3,3,6);
 /*!40000 ALTER TABLE `mirror_locations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -260,6 +269,7 @@ LOCK TABLES `mirror_os` WRITE;
 /*!40000 ALTER TABLE `mirror_os` DISABLE KEYS */;
 INSERT INTO `mirror_os` (`priority`, `id`, `name`) VALUES (0,1,'win64');
 INSERT INTO `mirror_os` (`priority`, `id`, `name`) VALUES (0,2,'osx');
+INSERT INTO `mirror_os` (`priority`, `id`, `name`) VALUES (0,3,'win');
 /*!40000 ALTER TABLE `mirror_os` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -267,8 +277,10 @@ LOCK TABLES `mirror_product_langs` WRITE;
 /*!40000 ALTER TABLE `mirror_product_langs` DISABLE KEYS */;
 INSERT INTO `mirror_product_langs` (`language`, `product_id`, `id`) VALUES ('en-GB',1,1);
 INSERT INTO `mirror_product_langs` (`language`, `product_id`, `id`) VALUES ('en-US',1,2);
-INSERT INTO `mirror_product_langs` (`language`, `product_id`, `id`) VALUES ('en-GB',2,4);
 INSERT INTO `mirror_product_langs` (`language`, `product_id`, `id`) VALUES ('en-US',2,3);
+INSERT INTO `mirror_product_langs` (`language`, `product_id`, `id`) VALUES ('en-GB',2,4);
+INSERT INTO `mirror_product_langs` (`language`, `product_id`, `id`) VALUES ('en-GB',3,5);
+INSERT INTO `mirror_product_langs` (`language`, `product_id`, `id`) VALUES ('en-US',3,6);
 /*!40000 ALTER TABLE `mirror_product_langs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -276,6 +288,7 @@ LOCK TABLES `mirror_products` WRITE;
 /*!40000 ALTER TABLE `mirror_products` DISABLE KEYS */;
 INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox',1,1,1,1,0);
 INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-SSL',1,1,1,2,1);
+INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-43.0.1-SSL',1,1,1,3,1);
 /*!40000 ALTER TABLE `mirror_products` ENABLE KEYS */;
 UNLOCK TABLES;
 

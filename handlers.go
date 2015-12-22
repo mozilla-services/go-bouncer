@@ -7,14 +7,124 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"regexp"
+	"strconv"
 	"strings"
 	"time"
+	"unicode"
 
 	"github.com/mozilla-services/go-bouncer/bouncer"
 )
 
 const DefaultLang = "en-US"
 const DefaultOS = "win"
+
+type xpRelease struct {
+	Version string
+}
+
+var windowsXPRegex = regexp.MustCompile(`Windows (?:NT 5.1|XP|NT 5.2)`)
+var firefoxWinXPLastRelease = xpRelease{"43.0.1"}
+var firefoxWinXPLastBeta = xpRelease{"44.0b1"}
+var firefoxWinXPLastESR = xpRelease{"38.5.2esr"}
+
+func isWindowsXPUserAgent(userAgent string) bool {
+	return windowsXPRegex.MatchString(userAgent)
+}
+
+func isNotNumber(r rune) bool {
+	return !unicode.IsNumber(r)
+}
+
+// a < b = -1
+// a == b = 0
+// a > b = 1
+func compareVersions(a, b string) int {
+	if a == b {
+		return 0
+	}
+	aParts := strings.Split(a, ".")
+	bParts := strings.Split(b, ".")
+
+	for i, verA := range aParts {
+		if len(bParts) <= i {
+			return 1
+		}
+		verB := bParts[i]
+
+		aInt, err := strconv.Atoi(strings.TrimRightFunc(verA, isNotNumber))
+		if err != nil {
+			aInt = 0
+		}
+		bInt, err := strconv.Atoi(strings.TrimRightFunc(verB, isNotNumber))
+		if err != nil {
+			bInt = 0
+		}
+
+		if aInt > bInt {
+			return 1
+		}
+		if aInt < bInt {
+			return -1
+		}
+	}
+	return 0
+}
+
+func firefoxSha1Product(productSuffix string) string {
+	switch productSuffix {
+	case "beta":
+		return firefoxWinXPLastBeta.Version
+	case "beta-stub":
+		return firefoxWinXPLastBeta.Version + "-stub"
+	case "stub":
+		return firefoxWinXPLastRelease.Version + "-stub"
+	case "ssl":
+		return firefoxWinXPLastRelease.Version + "-ssl"
+	case "latest":
+		return firefoxWinXPLastRelease.Version
+	}
+
+	productSuffixParts := strings.SplitN(productSuffix, "-", 2)
+	ver := productSuffixParts[0]
+
+	possibleVersion := firefoxWinXPLastRelease
+	if strings.Contains(ver, "esr") {
+		possibleVersion = firefoxWinXPLastESR
+	} else if strings.Contains(ver, ".0b") {
+		possibleVersion = firefoxWinXPLastBeta
+	}
+
+	if compareVersions(ver, possibleVersion.Version) == -1 {
+		return productSuffix
+	}
+
+	if len(productSuffixParts) == 1 {
+		return possibleVersion.Version
+	}
+
+	switch productSuffixParts[1] {
+	case "ssl":
+		return possibleVersion.Version + "-ssl"
+	case "stub":
+		return possibleVersion.Version + "-stub"
+	}
+
+	return productSuffix
+}
+
+func sha1Product(product string) string {
+	productParts := strings.SplitN(product, "-", 2)
+	if len(productParts) == 1 {
+		return product
+	}
+
+	if productParts[0] == "firefox" {
+		return "firefox-" + firefoxSha1Product(productParts[1])
+	}
+
+	return product
+}
 
 // HealthResult represents service health
 type HealthResult struct {
@@ -178,6 +288,14 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	product = strings.TrimSpace(strings.ToLower(product))
 	os = strings.TrimSpace(strings.ToLower(os))
+
+	// HACKS
+	// If the user is coming from windows xp, send a sha1
+	// signed product.
+	// HACKS
+	if (os == "win" || os == "win64") && isWindowsXPUserAgent(req.UserAgent()) {
+		product = sha1Product(product)
+	}
 
 	url, err := b.URL(lang, os, product)
 	if err != nil {
