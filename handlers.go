@@ -26,7 +26,7 @@ type xpRelease struct {
 var windowsXPRegex = regexp.MustCompile(`Windows (?:NT 5.1|XP|NT 5.2)`)
 var firefoxWinXPLastRelease = xpRelease{"43.0.1"}
 var firefoxWinXPLastBeta = xpRelease{"44.0b1"}
-var firefoxWinXPLastESR = xpRelease{"38.5.2esr"}
+var firefoxWinXPLastESR = xpRelease{"38.5.1esr"}
 
 func isWindowsXPUserAgent(userAgent string) bool {
 	return windowsXPRegex.MatchString(userAgent)
@@ -73,7 +73,7 @@ func compareVersions(a, b string) int {
 
 func firefoxSha1Product(productSuffix string) string {
 	switch productSuffix {
-	case "beta":
+	case "beta", "beta-latest":
 		return firefoxWinXPLastBeta.Version
 	case "beta-stub":
 		return firefoxWinXPLastBeta.Version + "-stub"

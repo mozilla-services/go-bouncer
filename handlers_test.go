@@ -134,16 +134,17 @@ func TestSha1Product(t *testing.T) {
 	assert.Equal(t, "firefox-44.0b1-ssl", sha1Product("firefox-45.0b1-ssl"))
 	assert.Equal(t, "firefox-44.0b1-stub", sha1Product("firefox-beta-stub"))
 	assert.Equal(t, "firefox-44.0b1", sha1Product("firefox-beta"))
+	assert.Equal(t, "firefox-44.0b1", sha1Product("firefox-beta-latest"))
 	assert.Equal(t, "firefox-43.0b1", sha1Product("firefox-43.0b1"))
 	assert.Equal(t, "firefox-44.0b1", sha1Product("firefox-45.0b2"))
 	assert.Equal(t, "firefox-44.0b1", sha1Product("firefox-44.0b2"))
 
 	assert.Equal(t, "firefox-35.0.1esr", sha1Product("firefox-35.0.1esr"))
-	assert.Equal(t, "firefox-38.5.1esr", sha1Product("firefox-38.5.1esr"))
-	assert.Equal(t, "firefox-38.5.2esr", sha1Product("firefox-38.5.2esr"))
-	assert.Equal(t, "firefox-38.5.2esr", sha1Product("firefox-38.5.3esr"))
-	assert.Equal(t, "firefox-38.5.2esr", sha1Product("firefox-38.6.3esr"))
-	assert.Equal(t, "firefox-38.5.2esr", sha1Product("firefox-40.0.0esr"))
+	assert.Equal(t, "firefox-38.5.0esr", sha1Product("firefox-38.5.0esr"))
+	assert.Equal(t, "firefox-38.5.1esr", sha1Product("firefox-38.5.2esr"))
+	assert.Equal(t, "firefox-38.5.1esr", sha1Product("firefox-38.5.3esr"))
+	assert.Equal(t, "firefox-38.5.1esr", sha1Product("firefox-38.6.3esr"))
+	assert.Equal(t, "firefox-38.5.1esr", sha1Product("firefox-40.0.0esr"))
 }
 
 func BenchmarkSha1Product(b *testing.B) {
