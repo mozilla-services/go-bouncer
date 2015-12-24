@@ -89,6 +89,18 @@ func TestBouncerHandlerValid(t *testing.T) {
 	bouncerHandler.ServeHTTP(w, req)
 	assert.Equal(t, 302, w.Code)
 	assert.Equal(t, "https://download-installer.cdn.mozilla.net/pub/firefox/releases/43.0.1/win64/en-US/Firefox%20Setup%2043.0.1.exe", w.HeaderMap.Get("Location"))
+
+	// Test Windows XP does not get stub installer
+	w = httptest.NewRecorder()
+	req, err = http.NewRequest("GET", "http://test/?product=Firefox-stub&os=win&lang=en-US", nil)
+	assert.NoError(t, err)
+
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)")
+
+	bouncerHandler.ServeHTTP(w, req)
+	assert.Equal(t, 302, w.Code)
+	assert.Equal(t, "https://download-installer.cdn.mozilla.net/pub/firefox/releases/43.0.1/win32/en-US/Firefox%20Setup%2043.0.1.exe", w.HeaderMap.Get("Location"))
+
 }
 
 func TestIsWindowsXPUserAgent(t *testing.T) {

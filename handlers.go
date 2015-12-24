@@ -291,10 +291,10 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	// HACKS
 	// If the user is coming from windows xp, send a sha1
-	// signed product.
+	// signed product, replacing "-stub" with "-ssl"
 	// HACKS
 	if (os == "win" || os == "win64") && isWindowsXPUserAgent(req.UserAgent()) {
-		product = sha1Product(product)
+		product = strings.Replace(sha1Product(product), "-stub", "-ssl", 1)
 	}
 
 	url, err := b.URL(lang, os, product)
