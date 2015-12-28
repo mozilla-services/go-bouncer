@@ -128,7 +128,7 @@ func TestIsWindowsXPUserAgent(t *testing.T) {
 		{"Mozilla/5.0 (Windows; U; MSIE 7.0; Windows NT 6.0; en-US)", false},                                                   // IE non-XP
 	}
 	for _, ua := range uas {
-		assert.Equal(t, ua.IsXP, isWindowsXPUserAgent(ua.UA))
+		assert.Equal(t, ua.IsXP, isWindowsXPUserAgent(ua.UA), "ua: %v", ua.UA)
 	}
 }
 
