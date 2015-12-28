@@ -23,7 +23,9 @@ type xpRelease struct {
 	Version string
 }
 
-var windowsXPRegex = regexp.MustCompile(`Windows (?:NT 5.1|XP|NT 5.2)`)
+// detects Windows XP and Vista clients
+var windowsXPRegex = regexp.MustCompile(`Windows (?:NT 5.1|XP|NT 5.2|NT 6.0)`)
+
 var firefoxWinXPLastRelease = xpRelease{"43.0.1"}
 var firefoxWinXPLastBeta = xpRelease{"44.0b1"}
 var firefoxWinXPLastESR = xpRelease{"38.5.1esr"}
@@ -290,7 +292,7 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	os = strings.TrimSpace(strings.ToLower(os))
 
 	// HACKS
-	// If the user is coming from windows xp, send a sha1
+	// If the user is coming from windows xp or vista, send a sha1
 	// signed product, replacing "-stub" with "-ssl"
 	// HACKS
 	if (os == "win" || os == "win64") && isWindowsXPUserAgent(req.UserAgent()) {
