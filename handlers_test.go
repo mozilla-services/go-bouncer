@@ -79,6 +79,17 @@ func TestBouncerHandlerValid(t *testing.T) {
 	assert.Equal(t, 302, w.Code)
 	assert.Equal(t, "https://download-installer.cdn.mozilla.net/pub/firefox/releases/43.0.1/win32/en-US/Firefox%20Setup%2043.0.1.exe", w.HeaderMap.Get("Location"))
 
+	// Test Windows Vista
+	w = httptest.NewRecorder()
+	req, err = http.NewRequest("GET", "http://test/?product=Firefox-SSL&os=win&lang=en-US", nil)
+	assert.NoError(t, err)
+
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 6.0; SV1; .NET CLR 2.0.50727)")
+
+	bouncerHandler.ServeHTTP(w, req)
+	assert.Equal(t, 302, w.Code)
+	assert.Equal(t, "https://download-installer.cdn.mozilla.net/pub/firefox/releases/43.0.1/win32/en-US/Firefox%20Setup%2043.0.1.exe", w.HeaderMap.Get("Location"))
+
 	// Test Windows XP 64 bit
 	w = httptest.NewRecorder()
 	req, err = http.NewRequest("GET", "http://test/?product=Firefox-SSL&os=win64&lang=en-US", nil)
@@ -114,10 +125,11 @@ func TestIsWindowsXPUserAgent(t *testing.T) {
 		{"Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2225.0 Safari/537.36", false}, // Chrome non-XP
 		{"Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)", true},                                  // IE XP
 		{"Mozilla/4.0 (compatible; MSIE 6.1; Windows XP)", true},                                                               // IE XP
-		{"Mozilla/5.0 (Windows; U; MSIE 7.0; Windows NT 6.0; en-US)", false},                                                   // IE non-XP
+		{"Mozilla/5.0 (Windows; U; MSIE 7.0; Windows NT 6.0; en-US)", true},                                                    // IE Vista
+		{"Mozilla/5.0 (Windows; U; MSIE 7.0; Windows NT 6.1; en-US)", false},                                                   // IE non-XP
 	}
 	for _, ua := range uas {
-		assert.Equal(t, ua.IsXP, isWindowsXPUserAgent(ua.UA))
+		assert.Equal(t, ua.IsXP, isWindowsXPUserAgent(ua.UA), "ua: %v", ua.UA)
 	}
 }
 
