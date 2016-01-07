@@ -44,74 +44,32 @@ func TestBouncerHandlerPrintQuery(t *testing.T) {
 }
 
 func TestBouncerHandlerValid(t *testing.T) {
-	w := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", "http://test/?product=firefox-latest&os=osx&lang=en-US", nil)
-	assert.NoError(t, err)
+	defaultUA := "Mozilla/5.0 (Windows NT 7.0; rv:10.0) Gecko/20100101 Firefox/43.0"
+	testRequests := []struct {
+		URL              string
+		ExpectedLocation string
+		UserAgent        string
+	}{
+		{"http://test/?product=firefox-latest&os=osx&lang=en-US", "http://download-installer.cdn.mozilla.net/pub/firefox/releases/39.0/mac/en-US/Firefox%2039.0.dmg", defaultUA},
+		{"http://test/?product=firefox-latest&os=win64&lang=en-US", "http://download-installer.cdn.mozilla.net/pub/firefox/releases/39.0/win32/en-US/Firefox%20Setup%2039.0.exe", defaultUA},
+		{"http://test/?product=Firefox-SSL&os=win64&lang=en-US", "https://download-installer.cdn.mozilla.net/pub/firefox/releases/39.0/win32/en-US/Firefox%20Setup%2039.0.exe", defaultUA},
+		{"http://test/?product=Firefox-SSL&os=win&lang=en-US", "https://download-installer.cdn.mozilla.net/pub/firefox/releases/43.0.1/win32/en-US/Firefox%20Setup%2043.0.1.exe", "Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)"},   // Windows XP
+		{"http://test/?product=Firefox-SSL&os=win&lang=en-US", "https://download-installer.cdn.mozilla.net/pub/firefox/releases/43.0.1/win32/en-US/Firefox%20Setup%2043.0.1.exe", "Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 6.0; SV1; .NET CLR 2.0.50727)"},   // Windows Vista
+		{"http://test/?product=Firefox-SSL&os=win64&lang=en-US", "https://download-installer.cdn.mozilla.net/pub/firefox/releases/43.0.1/win64/en-US/Firefox%20Setup%2043.0.1.exe", "Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)"}, // Windows XP 64 bit
+		{"http://test/?product=Firefox-stub&os=win&lang=en-US", "https://download-installer.cdn.mozilla.net/pub/firefox/releases/43.0.1/win32/en-US/Firefox%20Setup%2043.0.1.exe", "Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)"},  // Windows XP no stub
+	}
 
-	bouncerHandler.ServeHTTP(w, req)
-	assert.Equal(t, 302, w.Code)
-	assert.Equal(t, "http://download-installer.cdn.mozilla.net/pub/firefox/releases/39.0/mac/en-US/Firefox%2039.0.dmg", w.HeaderMap.Get("Location"))
+	for _, testRequest := range testRequests {
+		w := httptest.NewRecorder()
+		req, err := http.NewRequest("GET", testRequest.URL, nil)
+		assert.NoError(t, err, "url: %v ua: %v", testRequest.URL, testRequest.UserAgent)
 
-	w = httptest.NewRecorder()
-	req, err = http.NewRequest("GET", "http://test/?product=firefox-latest&os=win64&lang=en-US", nil)
-	assert.NoError(t, err)
+		req.Header.Set("User-Agent", testRequest.UserAgent)
 
-	bouncerHandler.ServeHTTP(w, req)
-	assert.Equal(t, 302, w.Code)
-	assert.Equal(t, "http://download-installer.cdn.mozilla.net/pub/firefox/releases/39.0/win32/en-US/Firefox%20Setup%2039.0.exe", w.HeaderMap.Get("Location"))
-
-	w = httptest.NewRecorder()
-	req, err = http.NewRequest("GET", "http://test/?product=Firefox-SSL&os=win64&lang=en-US", nil)
-	assert.NoError(t, err)
-
-	bouncerHandler.ServeHTTP(w, req)
-	assert.Equal(t, 302, w.Code)
-	assert.Equal(t, "https://download-installer.cdn.mozilla.net/pub/firefox/releases/39.0/win32/en-US/Firefox%20Setup%2039.0.exe", w.HeaderMap.Get("Location"))
-
-	// Test Windows XP
-	w = httptest.NewRecorder()
-	req, err = http.NewRequest("GET", "http://test/?product=Firefox-SSL&os=win&lang=en-US", nil)
-	assert.NoError(t, err)
-
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)")
-
-	bouncerHandler.ServeHTTP(w, req)
-	assert.Equal(t, 302, w.Code)
-	assert.Equal(t, "https://download-installer.cdn.mozilla.net/pub/firefox/releases/43.0.1/win32/en-US/Firefox%20Setup%2043.0.1.exe", w.HeaderMap.Get("Location"))
-
-	// Test Windows Vista
-	w = httptest.NewRecorder()
-	req, err = http.NewRequest("GET", "http://test/?product=Firefox-SSL&os=win&lang=en-US", nil)
-	assert.NoError(t, err)
-
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 6.0; SV1; .NET CLR 2.0.50727)")
-
-	bouncerHandler.ServeHTTP(w, req)
-	assert.Equal(t, 302, w.Code)
-	assert.Equal(t, "https://download-installer.cdn.mozilla.net/pub/firefox/releases/43.0.1/win32/en-US/Firefox%20Setup%2043.0.1.exe", w.HeaderMap.Get("Location"))
-
-	// Test Windows XP 64 bit
-	w = httptest.NewRecorder()
-	req, err = http.NewRequest("GET", "http://test/?product=Firefox-SSL&os=win64&lang=en-US", nil)
-	assert.NoError(t, err)
-
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)")
-
-	bouncerHandler.ServeHTTP(w, req)
-	assert.Equal(t, 302, w.Code)
-	assert.Equal(t, "https://download-installer.cdn.mozilla.net/pub/firefox/releases/43.0.1/win64/en-US/Firefox%20Setup%2043.0.1.exe", w.HeaderMap.Get("Location"))
-
-	// Test Windows XP does not get stub installer
-	w = httptest.NewRecorder()
-	req, err = http.NewRequest("GET", "http://test/?product=Firefox-stub&os=win&lang=en-US", nil)
-	assert.NoError(t, err)
-
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)")
-
-	bouncerHandler.ServeHTTP(w, req)
-	assert.Equal(t, 302, w.Code)
-	assert.Equal(t, "https://download-installer.cdn.mozilla.net/pub/firefox/releases/43.0.1/win32/en-US/Firefox%20Setup%2043.0.1.exe", w.HeaderMap.Get("Location"))
-
+		bouncerHandler.ServeHTTP(w, req)
+		assert.Equal(t, 302, w.Code, "url: %v ua: %v", testRequest.URL, testRequest.UserAgent)
+		assert.Equal(t, testRequest.ExpectedLocation, w.HeaderMap.Get("Location"), "url: %v ua: %v", testRequest.URL, testRequest.UserAgent)
+	}
 }
 
 func TestIsWindowsXPUserAgent(t *testing.T) {
