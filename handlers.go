@@ -75,6 +75,8 @@ func compareVersions(a, b string) int {
 
 func firefoxSha1Product(productSuffix string) string {
 	switch productSuffix {
+	case "aurora", "aurora-stub":
+		return "aurora-sha1"
 	case "beta", "beta-latest":
 		return firefoxWinXPLastBeta.Version
 	case "beta-stub":
