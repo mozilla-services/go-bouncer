@@ -127,6 +127,8 @@ func TestSha1Product(t *testing.T) {
 	assert.Equal(t, "firefox-38.5.1esr", sha1Product("firefox-38.5.3esr"))
 	assert.Equal(t, "firefox-38.5.1esr", sha1Product("firefox-38.6.3esr"))
 	assert.Equal(t, "firefox-38.5.1esr", sha1Product("firefox-40.0.0esr"))
+
+	assert.Equal(t, "firefox-aurora-sha1", sha1Product("firefox-aurora-stub"))
 }
 
 func BenchmarkSha1Product(b *testing.B) {
