@@ -129,6 +129,16 @@ func TestSha1Product(t *testing.T) {
 	assert.Equal(t, "firefox-38.5.1esr", sha1Product("firefox-40.0.0esr"))
 
 	assert.Equal(t, "firefox-aurora-sha1", sha1Product("firefox-aurora-stub"))
+
+	assert.Equal(t, "thunderbird-38.5.0", sha1Product("thunderbird-38.6.0"))
+	assert.Equal(t, "thunderbird-38.5.0", sha1Product("thunderbird-39.0.0"))
+
+	assert.Equal(t, "thunderbird-38.4.0", sha1Product("thunderbird-38.4.0"))
+
+	assert.Equal(t, "thunderbird-43.0b1", sha1Product("thunderbird-43.0b2"))
+	assert.Equal(t, "thunderbird-43.0b1", sha1Product("thunderbird-44.0b1"))
+
+	assert.Equal(t, "thunderbird-42.0b1", sha1Product("thunderbird-42.0b1"))
 }
 
 func BenchmarkSha1Product(b *testing.B) {

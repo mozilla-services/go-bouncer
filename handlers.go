@@ -30,6 +30,9 @@ var firefoxWinXPLastRelease = xpRelease{"43.0.1"}
 var firefoxWinXPLastBeta = xpRelease{"44.0b1"}
 var firefoxWinXPLastESR = xpRelease{"38.5.1esr"}
 
+var tBirdWinXPLastRelease = xpRelease{"38.5.0"}
+var tBirdWinXPLastBeta = xpRelease{"43.0b1"}
+
 func isWindowsXPUserAgent(userAgent string) bool {
 	return windowsXPRegex.MatchString(userAgent)
 }
@@ -71,6 +74,40 @@ func compareVersions(a, b string) int {
 		}
 	}
 	return 0
+}
+
+func tBirdSha1Product(productSuffix string) string {
+	switch productSuffix {
+	case "beta", "beta-latest":
+		return tBirdWinXPLastBeta.Version
+	case "ssl":
+		return tBirdWinXPLastRelease.Version + "-ssl"
+	case "latest":
+		return tBirdWinXPLastRelease.Version
+	}
+
+	productSuffixParts := strings.SplitN(productSuffix, "-", 2)
+	ver := productSuffixParts[0]
+
+	possibleVersion := tBirdWinXPLastRelease
+	if strings.Contains(ver, ".0b") {
+		possibleVersion = tBirdWinXPLastBeta
+	}
+
+	if compareVersions(ver, possibleVersion.Version) == -1 {
+		return productSuffix
+	}
+
+	if len(productSuffixParts) == 1 {
+		return possibleVersion.Version
+	}
+
+	switch productSuffixParts[1] {
+	case "ssl":
+		return possibleVersion.Version + "-ssl"
+	}
+
+	return productSuffix
 }
 
 func firefoxSha1Product(productSuffix string) string {
@@ -125,6 +162,10 @@ func sha1Product(product string) string {
 
 	if productParts[0] == "firefox" {
 		return "firefox-" + firefoxSha1Product(productParts[1])
+	}
+
+	if productParts[0] == "thunderbird" {
+		return "thunderbird-" + tBirdSha1Product(productParts[1])
 	}
 
 	return product
