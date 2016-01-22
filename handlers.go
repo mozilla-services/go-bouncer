@@ -102,8 +102,7 @@ func tBirdSha1Product(productSuffix string) string {
 		return possibleVersion.Version
 	}
 
-	switch productSuffixParts[1] {
-	case "ssl":
+	if productSuffixParts[1] == "ssl" {
 		return possibleVersion.Version + "-ssl"
 	}
 
