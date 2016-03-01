@@ -7,5 +7,5 @@ before_script:
   - mysql bouncer_test < ./fixtures/data.sql
 
 go:
-  - 1.5
+  - 1.6
   - tip
