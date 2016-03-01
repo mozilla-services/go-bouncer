@@ -1,7 +1,6 @@
-FROM golang:1.5
+FROM golang:1.6
 
-ENV PROJECT=github.com/mozilla-services/go-bouncer \
-    GOPATH=/go/src/github.com/mozilla-services/go-bouncer/Godeps/_workspace:$GOPATH
+ENV PROJECT=github.com/mozilla-services/go-bouncer
 
 COPY . /go/src/$PROJECT
 

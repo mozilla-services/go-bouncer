@@ -6,6 +6,8 @@ before_script:
   - mysql bouncer_test < ./fixtures/schema.sql
   - mysql bouncer_test < ./fixtures/data.sql
 
+install: true
+
 go:
-  - 1.5
+  - 1.6
   - tip
