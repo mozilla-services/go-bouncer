@@ -22,65 +22,27 @@ You will need to install the following:
 
 * **Git**: If you have cloned this project already then you can skip this! GitHub has excellent guides for [Windows](https://help.github.com/articles/set-up-git/#platform-windows), [OS X](https://help.github.com/articles/set-up-git/#platform-mac) and [Linux](https://help.github.com/articles/set-up-git/#platform-linux).
 * **Python**: Before you will be able to run these tests you will need to have [Python 2.6](https://www.python.org/download/releases/2.6/) installed.
-
-### Installing `pip` (for managing Python packages)
-
-```bash
-sudo easy_install pip
-```
-
-### Installing dependencies
-
-If you are using `virtualenv`, run the following in the project root:
-
-```bash
-virtualenv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
-
-If you are not using `virtualenv`, run the following in the project root to install dependencies globally:
-
-```bash
-sudo pip install -r requirements.txt
-```
-
-For more information on `virtualenv`, see below.
+* **Tox**: You will need to [install Tox](https://testrun.org/tox/latest/install.html) to manage the virtual environments and run the tests.
 
 ### Running tests locally
 
 To run these tests, use:
 
 ```bash
-py.test --baseurl="http://download.allizom.org" tests
+tox -e e2e -- --base-url=http://download.allizom.org
 ```
 
 Use `-k` to run a specific test. For example,
 
 ```bash
-py.test -k test_that_checks_redirect_using_incorrect_query_values \
-        --baseurl="http://download.allizom.org" tests
+tox -e e2e -- --base-url=http://download.allizom.org -k test_that_checks_redirect_using_incorrect_query_values
 ```
-
-The mozwebqa plugin has advanced command line options for reporting and using browsers. To see the options available, try running:
-
-```bash
-py.test --help
-```
-
-Also see the documentation on davehunt's [pytest-mozwebqa](https://github.com/davehunt/pytest-mozwebqa) GitHub project page.
-
-### `virtualenv` and `virtualenvwrapper` (optional, intermediate level)
-
-While most of us have had some experience using virtual machines, [`virtualenv`](https://pypi.python.org/pypi/virtualenv) is something else entirely. It's used to keep libraries that you install from clashing and messing up your local environment. After installing `virtualenv`, installing [`virtualenvwrapper`](https://bitbucket.org/dhellmann/virtualenvwrapper) will give you some nice commands to use with `virtualenv`.
-
-For a more detailed discussion of `virtualenv` and `virtualenvwrapper`, check out our [quick start guide](https://wiki.mozilla.org/QA/Execution/Web_Testing/Automation/Virtual_Environments) and also [this blog post](http://www.silverwareconsulting.com/index.cfm/2012/7/24/Getting-Started-with-virtualenv-and-virtualenvwrapper-in-Python).
 
 ## Writing tests
 
 If you want to get involved and add more tests then there's just a few things we'd like to ask you to do:
 
-1. Use an existing file from this repository as a template for all new tests and page objects
+1. Use an existing file from this repository as a template for all new tests
 2. Follow our simple [style guide](https://wiki.mozilla.org/QA/Execution/Web_Testing/Docs/Automation/StyleGuide)
 3. Fork this project with your own GitHub account
 4. Add your test into the `tests` folder

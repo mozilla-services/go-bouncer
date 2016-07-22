@@ -5,8 +5,11 @@
 *.pyc
 
 # Folders
+__pycache__
 _obj
 _test
+.cache
+.tox
 
 # Architecture specific extensions/prefixes
 *.[568vq]

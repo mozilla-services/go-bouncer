@@ -106,18 +106,7 @@ def pytest_generate_tests(metafunc):
         metafunc.parametrize('os', OS)
 
 
-def pytest_configure(config):
-    if not config.option.base_url:
-        raise pytest.UsageError('--baseurl must be specified.')
-
-
 def pytest_addoption(parser):
-    parser.addoption('--baseurl',
-                     action='store',
-                     dest='base_url',
-                     metavar='url',
-                     help='base url for the application under test.')
-
     parser.addoption('--product',
                      action='store',
                      dest='product',
@@ -127,10 +116,5 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture
-def base_url(request):
-    return request.config.getoption("--baseurl")
-
-
-@pytest.fixture
 def product(request):
-    return request.config.getoption("--product")
+    return request.config.getoption('product')
