@@ -50,9 +50,6 @@ class Base:
         return 'Response URL: %s\n Response Headers:\n %s' \
                % (url, self.get_headers(response))
 
-    def get_x_backend_server(self, response):
-        return response.headers.get('X-Backend-Server') or 'Unknown'
-
     def get_headers(self, response):
         return '\n'.join(['%s: %s' % (header, value) for header, value in response.headers.items()])
 

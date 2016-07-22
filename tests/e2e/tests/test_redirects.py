@@ -187,10 +187,6 @@ class TestRedirects(Base):
         assert urlencode(param) == parsed_url.query, \
             self.response_info_failure_message(base_url, param, response)
 
-        assert 'Unknown' != self.get_x_backend_server(response), \
-            'Failed, x-backend-server was not in the response object. %s' % \
-            self.response_info_failure_message(base_url, param, response)
-
     @pytest.mark.parametrize('os', OS)
     @pytest.mark.parametrize('lang', LOCALES)
     def test_that_checks_redirect_using_locales_and_os(
@@ -220,10 +216,6 @@ class TestRedirects(Base):
         assert 'http' == parsed_url.scheme, 'Failed to redirect to the correct scheme. %s' % \
             self.response_info_failure_message(base_url, param, response)
 
-        assert 'Unknown' != self.get_x_backend_server(response), \
-            'Failed, x-backend-server was not in the response object %s' % \
-            self.response_info_failure_message(base_url, param, response)
-
     def test_stub_installer_redirect_for_en_us_and_win(self, base_url, product):
         param = {
             'product': product,
@@ -245,10 +237,6 @@ class TestRedirects(Base):
 
         assert 'download-installer.cdn.mozilla.net' == parsed_url.netloc, \
             'Failed by redirected to incorrect host. %s' % \
-            self.response_info_failure_message(base_url, param, response)
-
-        assert 'Unknown' != self.get_x_backend_server(response), \
-            'Failed, x-backend-server was not in the response object %s' % \
             self.response_info_failure_message(base_url, param, response)
 
     @pytest.mark.parametrize('product_alias', [
@@ -291,10 +279,6 @@ class TestRedirects(Base):
                                          'cloudfront.net',
                                          'ftp.mozilla.org'], \
                 'Failed, redirected to unknown host. %s' % \
-                self.response_info_failure_message(base_url, param, response)
-
-            assert 'Unknown' != self.get_x_backend_server(response), \
-                'Failed, x-backend-server was not in the response object %s' % \
                 self.response_info_failure_message(base_url, param, response)
 
             if (
