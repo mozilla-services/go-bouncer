@@ -167,7 +167,7 @@ class TestRedirects(Base):
 
     def test_that_checks_redirect_using_incorrect_query_values(self, base_url):
         param = {
-            'product': 'firefox-31.0',
+            'product': 'firefox-47.0.1',
             'lang': 'kitty_language',
             'os': 'stella'
         }
@@ -200,7 +200,7 @@ class TestRedirects(Base):
             lang = 'ja-JP-mac'
 
         param = {
-            'product': 'firefox-31.0',
+            'product': 'firefox-47.0.1',
             'lang': lang,
             'os': os
         }
