@@ -24,7 +24,6 @@ LOCALES = (
     'bs',
     'ca',
     'cs',
-    'csb',
     'cy',
     'da',
     'de',
@@ -61,7 +60,6 @@ LOCALES = (
     'km',
     'kn',
     'ko',
-    'ku',
     'lij',
     'lt',
     'lv',
@@ -96,8 +94,7 @@ LOCALES = (
     'vi',
     'xh',
     'zh-CN',
-    'zh-TW',
-    'zu'
+    'zh-TW'
 )
 
 OS = ('win', 'win64', 'linux', 'linux64', 'osx')
