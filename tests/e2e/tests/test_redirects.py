@@ -142,14 +142,17 @@ class TestRedirects(Base):
         }
         response = self._head_request(base_url, user_agent=user_agent, params=param)
         parsed_url = urlparse(response.url)
-        if product_alias in ['stub', 'latest', '44.0', '43.0.1']:
+        print 'product_alias: ' + product_alias
+        if product_alias in ['stub', 'latest', '42.0', '43.0.1', '44.0']:
             assert '43.0.1.exe' in parsed_url.path
         elif 'esr' in product_alias:
             assert '38.5.1esr.exe' in parsed_url.path
-        elif product_alias in ['beta-latest', 'beta', '44.0b1']:
+        elif product_alias in ['beta']:
+            assert '43.0.1.exe' in parsed_url.path
+        elif product_alias in ['beta-latest', 'firefox-sha1', '44.0b1']:
             assert '44.0b1.exe' in parsed_url.path
         else:
-            assert (product_alias + '.exe') in parsed_url.path
+            assert ('43.0.1.exe') in parsed_url.path
 
     def test_ie6_vista_6_0_redirects_to_correct_version(self, base_url):
         user_agent = ('Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 6.0; SV1; .NET CLR 2.0.50727)')
