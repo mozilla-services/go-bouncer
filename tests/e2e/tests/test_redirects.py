@@ -142,7 +142,6 @@ class TestRedirects(Base):
         }
         response = self._head_request(base_url, user_agent=user_agent, params=param)
         parsed_url = urlparse(response.url)
-        print 'product_alias: ' + product_alias
         if product_alias in ['stub', 'latest', '42.0', '43.0.1', '44.0']:
             assert '43.0.1.exe' in parsed_url.path
         elif 'esr' in product_alias:
