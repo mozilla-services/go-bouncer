@@ -1,4 +1,4 @@
-FROM golang:1.6
+FROM golang:1.7
 
 ENV PROJECT=github.com/mozilla-services/go-bouncer
 
