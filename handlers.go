@@ -7,6 +7,7 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
@@ -244,6 +245,7 @@ type BouncerHandler struct {
 	CacheTime          time.Duration
 	PinnedBaseURLHttp  string
 	PinnedBaseURLHttps string
+	StubRootURL        string
 }
 
 func randomMirror(mirrors []bouncer.MirrorsResult) *bouncer.MirrorsResult {
@@ -343,6 +345,16 @@ func (b *BouncerHandler) mirrorBaseURL(sslOnly bool, lang, locationID string) (s
 	return mirror.BaseURL, nil
 }
 
+func (b *BouncerHandler) stubAttributionURL(lang, os, product, attributionCode string) string {
+	query := url.Values{}
+	query.Set("lang", lang)
+	query.Set("os", os)
+	query.Set("product", product)
+	query.Set("attribution_code", attributionCode)
+
+	return b.StubRootURL + "?" + query.Encode()
+}
+
 func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	queryVals := req.URL.Query()
 
@@ -350,6 +362,7 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	os := queryVals.Get("os")
 	product := queryVals.Get("product")
 	lang := queryVals.Get("lang")
+	attributionCode := queryVals.Get("attribution_code")
 
 	if product == "" {
 		http.Redirect(w, req, "http://www.mozilla.org/", 302)
@@ -365,11 +378,20 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	product = strings.TrimSpace(strings.ToLower(product))
 	os = strings.TrimSpace(strings.ToLower(os))
 
+	isWinXpClient := isWindowsXPUserAgent(req.UserAgent())
+
+	// If the client is not WinXP and attribution_code is set, redirect to the stub service
+	if b.StubRootURL != "" && attributionCode != "" && !isWinXpClient {
+		stubURL := b.stubAttributionURL(lang, os, product, attributionCode)
+		http.Redirect(w, req, stubURL, 302)
+		return
+	}
+
 	// HACKS
 	// If the user is coming from windows xp or vista, send a sha1
 	// signed product
 	// HACKS
-	if (os == "win" || os == "win64") && isWindowsXPUserAgent(req.UserAgent()) {
+	if (os == "win" || os == "win64") && isWinXpClient {
 		product = sha1Product(product)
 	}
 

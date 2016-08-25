@@ -19,12 +19,30 @@ func init() {
 		log.Fatal(err)
 	}
 
-	bouncerHandler = &BouncerHandler{db: testDB}
+	bouncerHandler = &BouncerHandler{
+		db:          testDB,
+		StubRootURL: "https://stub/",
+	}
 	bouncerHandlerPinned = &BouncerHandler{
 		db:                 testDB,
 		PinnedBaseURLHttp:  "download-sha1.cdn.mozilla.net/pub",
 		PinnedBaseURLHttps: "download-sha1.cdn.mozilla.net/pub",
 	}
+}
+
+func TestBouncerHandlerAttributionCode(t *testing.T) {
+	w := httptest.NewRecorder()
+
+	req, err := http.NewRequest("GET",
+		"http://test/?product=Firefox&os=win&lang=en-US&attribution_code=source%3Dgoogle.com%26medium%3Dorganic%26campaign%3D(not%20set)%26content%3D(not%20set)",
+		nil)
+	assert.NoError(t, err)
+
+	bouncerHandler.ServeHTTP(w, req)
+	assert.Equal(t, 302, w.Code)
+	assert.Equal(t,
+		"https://stub/?attribution_code=source%3Dgoogle.com%26medium%3Dorganic%26campaign%3D%28not+set%29%26content%3D%28not+set%29&lang=en-US&os=win&product=firefox",
+		w.HeaderMap.Get("Location"))
 }
 
 func TestBouncerHandlerParams(t *testing.T) {
