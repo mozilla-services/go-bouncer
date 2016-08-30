@@ -205,7 +205,7 @@ DROP TABLE IF EXISTS `mirror_lmm_lang_exceptions`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mirror_lmm_lang_exceptions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `location_mirror_map_id` int(10) unsigned DEFAULT NULL,
+  `location_mirror_map_id` bigint(20) DEFAULT NULL,
   `language` varchar(30) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `location_mirror_map_id` (`location_mirror_map_id`,`language`)
@@ -215,7 +215,7 @@ DROP TABLE IF EXISTS `mirror_location_mirror_map`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mirror_location_mirror_map` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `location_id` int(11) NOT NULL DEFAULT '0',
   `mirror_id` int(11) NOT NULL DEFAULT '0',
   `active` tinyint(4) NOT NULL DEFAULT '0',

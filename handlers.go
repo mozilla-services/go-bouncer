@@ -18,6 +18,9 @@ import (
 
 const DefaultLang = "en-US"
 const DefaultOS = "win"
+const firefoxSHA1ReleaseAliasSuffix = "sha1"
+const firefoxSHA1BetaAliasSuffix = "beta-sha1"
+const firefoxSHA1ESRAliasSuffix = "esr-sha1"
 
 type xpRelease struct {
 	Version string
@@ -25,10 +28,6 @@ type xpRelease struct {
 
 // detects Windows XP and Vista clients
 var windowsXPRegex = regexp.MustCompile(`Windows (?:NT 5.1|XP|NT 5.2|NT 6.0)`)
-
-var firefoxWinXPLastRelease = xpRelease{"43.0.1"}
-var firefoxWinXPLastBeta = xpRelease{"44.0b1"}
-var firefoxWinXPLastESR = xpRelease{"38.5.1esr"}
 
 var tBirdWinXPLastRelease = xpRelease{"38.5.0"}
 var tBirdWinXPLastBeta = xpRelease{"43.0b1"}
@@ -110,47 +109,61 @@ func tBirdSha1Product(productSuffix string) string {
 }
 
 func firefoxSha1Product(productSuffix string) string {
+	// Example list of products:
+	// Firefox-48.0-Complete
+	// Firefox-48.0build1-Complete
+	// Firefox-48.0
+	// Firefox-48.0-SSL
+	// Firefox-48.0-stub
+	// Firefox-48.0build1-Partial-47.0build3
+	// Firefox-48.0build1-Partial-47.0.1build1
+	// Firefox-48.0build1-Partial-48.0b10build1
+	// Firefox-48.0-Partial-47.0
+	// Firefox-48.0-Partial-47.0.1
+	// Firefox-48.0-Partial-48.0b10
+
+	// Example list of aliases:
+	// firefox-beta-latest
+	// firefox-beta-sha1
+	// Firefox-beta-stub
+	// firefox-esr-latest
+	// firefox-esr-sha1
+	// firefox-latest
+	// firefox-sha1
+	// Firefox-stub
+
+	// Do not touch products ending with "sha1"
+	if strings.HasSuffix(productSuffix, "-sha1") {
+		return productSuffix
+	}
+
+	// Do not touch completes and partials
+	if strings.HasSuffix(productSuffix, "-complete") || strings.Contains(productSuffix, "-partial-") {
+		return productSuffix
+	}
 	switch productSuffix {
+	// special product manually created for aurora
 	case "aurora", "aurora-stub":
 		return "aurora-sha1"
-	case "beta", "beta-latest":
-		return firefoxWinXPLastBeta.Version
-	case "beta-stub":
-		return firefoxWinXPLastBeta.Version + "-stub"
-	case "stub":
-		return firefoxWinXPLastRelease.Version + "-stub"
-	case "ssl":
-		return firefoxWinXPLastRelease.Version + "-ssl"
-	case "latest":
-		return firefoxWinXPLastRelease.Version
+	// Bouncer aliases, no version specified
+	case "stub", "latest":
+		return firefoxSHA1ReleaseAliasSuffix
+	case "beta-latest", "beta-stub":
+		return firefoxSHA1BetaAliasSuffix
+	case "esr-latest":
+		return firefoxSHA1ESRAliasSuffix
 	}
 
 	productSuffixParts := strings.SplitN(productSuffix, "-", 2)
 	ver := productSuffixParts[0]
 
-	possibleVersion := firefoxWinXPLastRelease
 	if strings.Contains(ver, "esr") {
-		possibleVersion = firefoxWinXPLastESR
+		return firefoxSHA1ESRAliasSuffix
 	} else if strings.Contains(ver, ".0b") {
-		possibleVersion = firefoxWinXPLastBeta
+		return firefoxSHA1BetaAliasSuffix
 	}
-
-	if compareVersions(ver, possibleVersion.Version) == -1 {
-		return productSuffix
-	}
-
-	if len(productSuffixParts) == 1 {
-		return possibleVersion.Version
-	}
-
-	switch productSuffixParts[1] {
-	case "ssl":
-		return possibleVersion.Version + "-ssl"
-	case "stub":
-		return possibleVersion.Version + "-stub"
-	}
-
-	return productSuffix
+	// Fallback to release
+	return firefoxSHA1ReleaseAliasSuffix
 }
 
 func sha1Product(product string) string {
@@ -335,10 +348,10 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	// HACKS
 	// If the user is coming from windows xp or vista, send a sha1
-	// signed product, replacing "-stub" with "-ssl"
+	// signed product
 	// HACKS
 	if (os == "win" || os == "win64") && isWindowsXPUserAgent(req.UserAgent()) {
-		product = strings.Replace(sha1Product(product), "-stub", "-ssl", 1)
+		product = sha1Product(product)
 	}
 
 	url, err := b.URL(lang, os, product)

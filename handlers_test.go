@@ -92,43 +92,84 @@ func TestIsWindowsXPUserAgent(t *testing.T) {
 }
 
 func TestSha1Product(t *testing.T) {
-	assert.Equal(t, "firefox-43.0.1", sha1Product("firefox-latest"))
-	assert.Equal(t, "firefox", sha1Product("firefox"))
-	assert.Equal(t, "firefox-42.0.0-ssl", sha1Product("firefox-42.0.0-ssl"))
-	assert.Equal(t, "firefox-43.0.1-ssl", sha1Product("firefox-43.0.2-ssl"))
-	assert.Equal(t, "firefox-43.0.1-ssl", sha1Product("firefox-44.0.0-ssl"))
+	// Ignore products ending with sha1
+	assert.Equal(t, "firefox-something-sha1", sha1Product("firefox-something-sha1"))
+	assert.Equal(t, "firefox-45.0-sha1", sha1Product("firefox-45.0-sha1"))
+	assert.Equal(t, "firefox-45.0.2-sha1", sha1Product("firefox-45.0.2-sha1"))
+	assert.Equal(t, "firefox-49.0b1-sha1", sha1Product("firefox-49.0b1-sha1"))
+	assert.Equal(t, "firefox-49.0b2-sha1", sha1Product("firefox-49.0b2-sha1"))
+	assert.Equal(t, "firefox-45.0esr-sha1", sha1Product("firefox-45.0esr-sha1"))
+	assert.Equal(t, "firefox-45.0.2esr-sha1", sha1Product("firefox-45.0.2esr-sha1"))
+	assert.Equal(t, "firefox-45.1.0esr-sha1", sha1Product("firefox-45.1.0esr-sha1"))
+	assert.Equal(t, "firefox-45.1.2esr-sha1", sha1Product("firefox-45.1.2esr-sha1"))
 
-	assert.Equal(t, "firefox-42.0.0", sha1Product("firefox-42.0.0"))
-	assert.Equal(t, "firefox-43.0.1", sha1Product("firefox-43.0.1"))
-	assert.Equal(t, "firefox-43.0.1", sha1Product("firefox-43.0.2"))
-
-	assert.Equal(t, "firefox-42.0.0-stub", sha1Product("firefox-42.0.0-stub"))
-	assert.Equal(t, "firefox-43.0.1-stub", sha1Product("firefox-43.0.1-stub"))
-	assert.Equal(t, "firefox-43.0.1-stub", sha1Product("firefox-43.0.2-stub"))
-
+	// Ignore partials and completes
 	assert.Equal(t, "firefox-42.0.0-complete", sha1Product("firefox-42.0.0-complete"))
-	assert.Equal(t, "firefox-43.0.1-partial-41.0.2build1", sha1Product("firefox-43.0.1-partial-41.0.2build1"))
+	assert.Equal(t, "firefox-48.0-partial-41.0.2build1", sha1Product("firefox-48.0-partial-41.0.2build1"))
 	assert.Equal(t, "firefox-43.0.2-complete", sha1Product("firefox-43.0.2-complete"))
 	assert.Equal(t, "firefox-44.0-complete", sha1Product("firefox-44.0-complete"))
-
 	assert.Equal(t, "firefox-45.0b1-complete", sha1Product("firefox-45.0b1-complete"))
-	assert.Equal(t, "firefox-44.0b1-stub", sha1Product("firefox-45.0b1-stub"))
-	assert.Equal(t, "firefox-44.0b1-ssl", sha1Product("firefox-45.0b1-ssl"))
-	assert.Equal(t, "firefox-44.0b1-stub", sha1Product("firefox-beta-stub"))
-	assert.Equal(t, "firefox-44.0b1", sha1Product("firefox-beta"))
-	assert.Equal(t, "firefox-44.0b1", sha1Product("firefox-beta-latest"))
-	assert.Equal(t, "firefox-43.0b1", sha1Product("firefox-43.0b1"))
-	assert.Equal(t, "firefox-44.0b1", sha1Product("firefox-45.0b2"))
-	assert.Equal(t, "firefox-44.0b1", sha1Product("firefox-44.0b2"))
+	assert.Equal(t, "firefox-48.0-partial-42.0b1", sha1Product("firefox-48.0-partial-42.0b1"))
+	assert.Equal(t, "firefox-48.0b9-partial-48.0b1", sha1Product("firefox-48.0b9-partial-48.0b1"))
 
-	assert.Equal(t, "firefox-35.0.1esr", sha1Product("firefox-35.0.1esr"))
-	assert.Equal(t, "firefox-38.5.0esr", sha1Product("firefox-38.5.0esr"))
-	assert.Equal(t, "firefox-38.5.1esr", sha1Product("firefox-38.5.2esr"))
-	assert.Equal(t, "firefox-38.5.1esr", sha1Product("firefox-38.5.3esr"))
-	assert.Equal(t, "firefox-38.5.1esr", sha1Product("firefox-38.6.3esr"))
-	assert.Equal(t, "firefox-38.5.1esr", sha1Product("firefox-40.0.0esr"))
+	// ignore product wihtout dashes
+	assert.Equal(t, "firefox", sha1Product("firefox"))
 
+	// Aliases with no version specified
+	assert.Equal(t, "firefox-sha1", sha1Product("firefox-latest"))
+	assert.Equal(t, "firefox-sha1", sha1Product("firefox-stub"))
+	assert.Equal(t, "firefox-beta-sha1", sha1Product("firefox-beta-latest"))
+	assert.Equal(t, "firefox-beta-sha1", sha1Product("firefox-beta-stub"))
+	assert.Equal(t, "firefox-esr-sha1", sha1Product("firefox-esr-latest"))
+	assert.Equal(t, "firefox-esr-sha1", sha1Product("firefox-esr-stub"))
+
+	// Aurora is special a bit
+	assert.Equal(t, "firefox-aurora-sha1", sha1Product("firefox-aurora"))
 	assert.Equal(t, "firefox-aurora-sha1", sha1Product("firefox-aurora-stub"))
+
+	// Beta versions
+	assert.Equal(t, "firefox-beta-sha1", sha1Product("firefox-48.0b1"))
+	assert.Equal(t, "firefox-beta-sha1", sha1Product("firefox-49.0b8"))
+	assert.Equal(t, "firefox-beta-sha1", sha1Product("firefox-48.0b1-stub"))
+	assert.Equal(t, "firefox-beta-sha1", sha1Product("firefox-49.0b8-stub"))
+	assert.Equal(t, "firefox-beta-sha1", sha1Product("firefox-48.0b1-ssl"))
+	assert.Equal(t, "firefox-beta-sha1", sha1Product("firefox-49.0b8-ssl"))
+
+	// ESR
+	assert.Equal(t, "firefox-esr-sha1", sha1Product("firefox-45.0esr"))
+	assert.Equal(t, "firefox-esr-sha1", sha1Product("firefox-45.0.1esr"))
+	assert.Equal(t, "firefox-esr-sha1", sha1Product("firefox-45.3.0esr"))
+	assert.Equal(t, "firefox-esr-sha1", sha1Product("firefox-45.3.1esr"))
+	assert.Equal(t, "firefox-esr-sha1", sha1Product("firefox-45.0esr-stub"))
+	assert.Equal(t, "firefox-esr-sha1", sha1Product("firefox-45.0.1esr-stub"))
+	assert.Equal(t, "firefox-esr-sha1", sha1Product("firefox-45.3.0esr-stub"))
+	assert.Equal(t, "firefox-esr-sha1", sha1Product("firefox-45.3.1esr-stub"))
+	assert.Equal(t, "firefox-esr-sha1", sha1Product("firefox-45.0esr-ssl"))
+	assert.Equal(t, "firefox-esr-sha1", sha1Product("firefox-45.0.1esr-ssl"))
+	assert.Equal(t, "firefox-esr-sha1", sha1Product("firefox-45.3.0esr-ssl"))
+	assert.Equal(t, "firefox-esr-sha1", sha1Product("firefox-45.3.1esr-ssl"))
+
+	// Everything else starting with firefox should go to firefox-sha1
+	assert.Equal(t, "firefox-sha1", sha1Product("firefox-42.0.0"))
+	assert.Equal(t, "firefox-sha1", sha1Product("firefox-48.0"))
+	assert.Equal(t, "firefox-sha1", sha1Product("firefox-48.0.1"))
+	assert.Equal(t, "firefox-sha1", sha1Product("firefox-8.0"))
+	assert.Equal(t, "firefox-sha1", sha1Product("firefox-8.0.4"))
+	assert.Equal(t, "firefox-sha1", sha1Product("firefox-42.0.0-stub"))
+	assert.Equal(t, "firefox-sha1", sha1Product("firefox-48.0-stub"))
+	assert.Equal(t, "firefox-sha1", sha1Product("firefox-48.0.1-stub"))
+	assert.Equal(t, "firefox-sha1", sha1Product("firefox-8.0-stub"))
+	assert.Equal(t, "firefox-sha1", sha1Product("firefox-8.0.4-stub"))
+	assert.Equal(t, "firefox-sha1", sha1Product("firefox-42.0.0-ssl"))
+	assert.Equal(t, "firefox-sha1", sha1Product("firefox-48.0-ssl"))
+	assert.Equal(t, "firefox-sha1", sha1Product("firefox-48.0.1-ssl"))
+	assert.Equal(t, "firefox-sha1", sha1Product("firefox-8.0-ssl"))
+	assert.Equal(t, "firefox-sha1", sha1Product("firefox-8.0.4-ssl"))
+	assert.Equal(t, "firefox-sha1", sha1Product("firefox-42.0.0-something-new"))
+	assert.Equal(t, "firefox-sha1", sha1Product("firefox-48.0-ssl-something-new"))
+	assert.Equal(t, "firefox-sha1", sha1Product("firefox-48.0.1-ssl-something-new"))
+	assert.Equal(t, "firefox-sha1", sha1Product("firefox-8.0-something-old"))
+	assert.Equal(t, "firefox-sha1", sha1Product("firefox-8.0.4-ssl-something-old"))
 
 	assert.Equal(t, "thunderbird-38.5.0", sha1Product("thunderbird-38.6.0"))
 	assert.Equal(t, "thunderbird-38.5.0", sha1Product("thunderbird-39.0.0"))
