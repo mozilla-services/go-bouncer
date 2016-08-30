@@ -263,6 +263,10 @@ class TestRedirects(Base):
             url_scheme = 'http'
             if product_alias['product_name'] == 'firefox-beta-stub':
                 url_scheme = 'https'
+            elif product_alias['product_name'] == ['firefox-beta-latest', 'firefox-latest']:
+                # Can be served over SSL or not
+                # https://bugzilla.mozilla.org/show_bug.cgi?id=1299163#c1
+                url_scheme = ['http', 'https']
 
             assert requests.codes.ok == response.status_code, \
                 'Redirect failed with HTTP status. %s' % \
