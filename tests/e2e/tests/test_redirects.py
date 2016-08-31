@@ -110,12 +110,13 @@ class TestRedirects(Base):
         '40.0.0esr',
         'stub',
         'latest',
+        'sha1',
         '42.0',
         '43.0.1',
         '44.0',
-        'beta-latest',
         'beta',
-        '44.0b1'
+        'beta-latest',
+        '49.0b8'
     ]
 
     @pytest.mark.parametrize(('product_alias'), _winxp_products)
@@ -146,10 +147,13 @@ class TestRedirects(Base):
             assert '43.0.1.exe' in parsed_url.path
         elif 'esr' in product_alias:
             assert '38.5.1esr.exe' in parsed_url.path
+        elif product_alias in ['firefox-sha1', '49.0b8']:
+            assert '49.0b8.exe' in parsed_url.path
+        elif product_alias in ['beta-latest']:
+            extracted_ver_num = parsed_url.path.split('Firefox%20Setup%20')[1].split('.')[0]
+            assert 49 <= int(extracted_ver_num) 
         elif product_alias in ['beta']:
             assert '43.0.1.exe' in parsed_url.path
-        elif product_alias in ['beta-latest', 'firefox-sha1', '44.0b1']:
-            assert '44.0b1.exe' in parsed_url.path
         else:
             assert ('43.0.1.exe') in parsed_url.path
 
