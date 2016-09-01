@@ -150,8 +150,10 @@ class TestRedirects(Base):
         elif product_alias in ['firefox-sha1', '49.0b8']:
             assert '49.0b8.exe' in parsed_url.path
         elif product_alias in ['beta-latest']:
+            # beta-latest is a moving target, check that it is never
+            # less than 49
             extracted_ver_num = parsed_url.path.split('Firefox%20Setup%20')[1].split('.')[0]
-            assert 49 <= int(extracted_ver_num) 
+            assert 49 <= int(extracted_ver_num)
         elif product_alias in ['beta']:
             assert '43.0.1.exe' in parsed_url.path
         else:
@@ -267,7 +269,7 @@ class TestRedirects(Base):
             url_scheme = 'http'
             if product_alias['product_name'] == 'firefox-beta-stub':
                 url_scheme = 'https'
-            elif product_alias['product_name'] == ['firefox-beta-latest', 'firefox-latest']:
+            elif product_alias['product_name'] in ['firefox-beta-latest', 'firefox-latest']:
                 # Can be served over SSL or not
                 # https://bugzilla.mozilla.org/show_bug.cgi?id=1299163#c1
                 url_scheme = ['http', 'https']
@@ -276,7 +278,7 @@ class TestRedirects(Base):
                 'Redirect failed with HTTP status. %s' % \
                 self.response_info_failure_message(base_url, param, response)
 
-            assert url_scheme == parsed_url.scheme, \
+            assert parsed_url.scheme in url_scheme, \
                 'Failed to redirect to the correct scheme. %s' % \
                 self.response_info_failure_message(base_url, param, response)
 
