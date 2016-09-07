@@ -300,4 +300,4 @@ class TestRedirects(Base):
                 product_alias['product_name'] != 'firefox-aurora-latest' and
                 product_alias['product_name'] != 'firefox-latest-euballot'
             ):
-                assert '/win32/' in parsed_url.path, self.response_info(response)
+                assert '/win32' in parsed_url.path, self.response_info(response)
