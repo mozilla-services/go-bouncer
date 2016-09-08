@@ -365,6 +365,10 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	// Since we are using WinXP detection, we need to Vary on user agent.
+	// Interally we ignore this Vary and reduce users to XP or not-XP to avoid
+	// the raw User-Agent multiplier.
+	w.Header().Set("Vary", "User-Agent")
 	if b.CacheTime > 0 {
 		w.Header().Set("Cache-Control", fmt.Sprintf("max-age=%d", b.CacheTime/time.Second))
 	}
