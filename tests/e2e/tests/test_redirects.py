@@ -173,7 +173,7 @@ class TestRedirects(Base):
         }
         response = self._head_request(base_url, user_agent=user_agent, params=param)
         parsed_url = urlparse(response.url)
-        assert '43.0.1.exe' in parsed_url.path
+        assert '49.0.exe' in parsed_url.path
 
     def test_that_checks_redirect_using_incorrect_query_values(self, base_url):
         param = {
