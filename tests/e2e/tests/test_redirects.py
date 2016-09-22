@@ -150,19 +150,22 @@ class TestRedirects(Base):
         elif 'esr' in product_alias:
             assert '38.5.1esr.exe' in parsed_url.path
         elif product_alias in ['49.0b8', '49.0b10', '49.0b37']:
-            # beta versions are pinned to 49.0b10
-            assert '49.0b10.exe' in parsed_url.path
+            # beta versions are now a moving target, check that it is never
+            # less than 49
+            assert 49 <= self._extract_version_num(parsed_url.path)
         elif product_alias in ['firefox-sha1']:
             assert '49.0b8.exe' in parsed_url.path
         elif product_alias in ['beta-latest']:
             # beta-latest is a moving target, check that it is never
             # less than 49
-            extracted_ver_num = parsed_url.path.split('Firefox%20Setup%20')[1].split('.')[0]
-            assert 49 <= int(extracted_ver_num)
+            assert 49 <= self._extract_version_num(parsed_url.path)
         elif product_alias in ['beta']:
             assert '49.0.exe' in parsed_url.path
         else:
             assert '49.0.exe' in parsed_url.path
+
+    def _extract_version_num(self, path):
+        return int(path.split('Firefox%20Setup%20')[1].split('.')[0])
 
     def test_ie6_vista_6_0_redirects_to_correct_version(self, base_url):
         user_agent = ('Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 6.0; SV1; .NET CLR 2.0.50727)')
