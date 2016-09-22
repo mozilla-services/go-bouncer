@@ -5,3 +5,7 @@ A Go port of the [user facing portion](https://github.com/mozilla/tuxedo/tree/ma
 ## Environment Variables
 ### `BOUNCER_PINNED_BASEURL`
 If this is a unset, bouncer will randomly pick a healthy mirror from the database and return its base url. If this option is set, the mirror table is completely ignored and `BOUNCER_PINNED_BASEURL` will be returned instead.
+
+This endpoint **MUST** support http and https.
+
+Example: `BOUNCER_PINNED_BASEURL=download-sha1.cdn.mozilla.net`

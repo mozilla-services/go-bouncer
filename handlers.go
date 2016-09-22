@@ -310,7 +310,10 @@ func (b *BouncerHandler) URL(lang, os, product string) (string, error) {
 
 func (b *BouncerHandler) mirrorBaseURL(sslOnly bool, lang, locationID string) (string, error) {
 	if b.PinnedBaseURL != "" {
-		return b.PinnedBaseURL, nil
+		if sslOnly {
+			return "https://" + b.PinnedBaseURL, nil
+		}
+		return "http://" + b.PinnedBaseURL, nil
 	}
 
 	mirrors, err := b.db.Mirrors(sslOnly, lang, locationID, true)

@@ -37,7 +37,7 @@ func main() {
 		},
 		cli.StringFlag{
 			Name:   "pinned-baseurl",
-			Usage:  "if this flag is set pinned master will always be the base url example: https://pinned-cdn.mozilla.com/pub",
+			Usage:  "if this flag is set it will always be the base url. Scheme should be excluded, e.g.,: pinned-cdn.mozilla.com/pub",
 			EnvVar: "BOUNCER_PINNED_BASEURL",
 		},
 	}
