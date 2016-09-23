@@ -241,8 +241,9 @@ func (h *HealthHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 type BouncerHandler struct {
 	db *bouncer.DB
 
-	CacheTime     time.Duration
-	PinnedBaseURL string
+	CacheTime          time.Duration
+	PinnedBaseURLHttp  string
+	PinnedBaseURLHttps string
 }
 
 func randomMirror(mirrors []bouncer.MirrorsResult) *bouncer.MirrorsResult {
@@ -309,11 +310,12 @@ func (b *BouncerHandler) URL(lang, os, product string) (string, error) {
 }
 
 func (b *BouncerHandler) mirrorBaseURL(sslOnly bool, lang, locationID string) (string, error) {
-	if b.PinnedBaseURL != "" {
-		if sslOnly {
-			return "https://" + b.PinnedBaseURL, nil
-		}
-		return "http://" + b.PinnedBaseURL, nil
+	if b.PinnedBaseURLHttps != "" && sslOnly {
+		return "https://" + b.PinnedBaseURLHttps, nil
+	}
+
+	if b.PinnedBaseURLHttp != "" && !sslOnly {
+		return "http://" + b.PinnedBaseURLHttp, nil
 	}
 
 	mirrors, err := b.db.Mirrors(sslOnly, lang, locationID, true)
