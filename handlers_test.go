@@ -21,8 +21,9 @@ func init() {
 
 	bouncerHandler = &BouncerHandler{db: testDB}
 	bouncerHandlerPinned = &BouncerHandler{
-		db:            testDB,
-		PinnedBaseURL: "download-sha1.cdn.mozilla.net/pub",
+		db:                 testDB,
+		PinnedBaseURLHttp:  "download-sha1.cdn.mozilla.net/pub",
+		PinnedBaseURLHttps: "download-sha1.cdn.mozilla.net/pub",
 	}
 }
 

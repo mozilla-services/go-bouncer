@@ -36,9 +36,14 @@ func main() {
 			EnvVar: "BOUNCER_DB_DSN",
 		},
 		cli.StringFlag{
-			Name:   "pinned-baseurl",
-			Usage:  "if this flag is set it will always be the base url. Scheme should be excluded, e.g.,: pinned-cdn.mozilla.com/pub",
-			EnvVar: "BOUNCER_PINNED_BASEURL",
+			Name:   "pinned-baseurl-http",
+			Usage:  "if this flag is set it will always be the base url for http products. Scheme should be excluded, e.g.,: pinned-cdn.mozilla.com/pub",
+			EnvVar: "BOUNCER_PINNED_BASEURL_HTTP",
+		},
+		cli.StringFlag{
+			Name:   "pinned-baseurl-https",
+			Usage:  "if this flag is set it will always be the base url for https products. Scheme should be excluded, e.g.,: pinned-cdn.mozilla.com/pub",
+			EnvVar: "BOUNCER_PINNED_BASEURL_HTTPS",
 		},
 	}
 	app.RunAndExitOnError()
@@ -52,9 +57,10 @@ func Main(c *cli.Context) {
 	defer db.Close()
 
 	bouncerHandler := &BouncerHandler{
-		db:            db,
-		CacheTime:     time.Duration(c.Int("cache-time")) * time.Second,
-		PinnedBaseURL: c.String("pinned-baseurl"),
+		db:                 db,
+		CacheTime:          time.Duration(c.Int("cache-time")) * time.Second,
+		PinnedBaseURLHttp:  c.String("pinned-baseurl-http"),
+		PinnedBaseURLHttps: c.String("pinned-baseurl-https"),
 	}
 
 	healthHandler := &HealthHandler{
