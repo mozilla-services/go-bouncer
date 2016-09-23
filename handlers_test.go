@@ -11,6 +11,7 @@ import (
 )
 
 var bouncerHandler *BouncerHandler
+var bouncerHandlerPinned *BouncerHandler
 
 func init() {
 	testDB, err := bouncer.NewDB("root@tcp(127.0.0.1:3306)/bouncer_test")
@@ -19,6 +20,11 @@ func init() {
 	}
 
 	bouncerHandler = &BouncerHandler{db: testDB}
+	bouncerHandlerPinned = &BouncerHandler{
+		db:                 testDB,
+		PinnedBaseURLHttp:  "download-sha1.cdn.mozilla.net/pub",
+		PinnedBaseURLHttps: "download-sha1.cdn.mozilla.net/pub",
+	}
 }
 
 func TestBouncerHandlerParams(t *testing.T) {
@@ -41,6 +47,35 @@ func TestBouncerHandlerPrintQuery(t *testing.T) {
 	bouncerHandler.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "http://download-installer.cdn.mozilla.net/pub/firefox/releases/39.0/mac/en-US/Firefox%2039.0.dmg", w.Body.String())
+}
+
+func TestBouncerHandlerPinnedValid(t *testing.T) {
+	defaultUA := "Mozilla/5.0 (Windows NT 7.0; rv:10.0) Gecko/20100101 Firefox/43.0"
+	testRequests := []struct {
+		URL              string
+		ExpectedLocation string
+		UserAgent        string
+	}{
+		{"http://test/?product=firefox-latest&os=osx&lang=en-US", "http://download-sha1.cdn.mozilla.net/pub/firefox/releases/39.0/mac/en-US/Firefox%2039.0.dmg", defaultUA},
+		{"http://test/?product=firefox-latest&os=win64&lang=en-US", "http://download-sha1.cdn.mozilla.net/pub/firefox/releases/39.0/win32/en-US/Firefox%20Setup%2039.0.exe", defaultUA},
+		{"http://test/?product=Firefox-SSL&os=win64&lang=en-US", "https://download-sha1.cdn.mozilla.net/pub/firefox/releases/39.0/win32/en-US/Firefox%20Setup%2039.0.exe", defaultUA},
+		{"http://test/?product=Firefox-SSL&os=win&lang=en-US", "https://download-sha1.cdn.mozilla.net/pub/firefox/releases/43.0.1/win32/en-US/Firefox%20Setup%2043.0.1.exe", "Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)"},   // Windows XP
+		{"http://test/?product=Firefox-SSL&os=win&lang=en-US", "https://download-sha1.cdn.mozilla.net/pub/firefox/releases/43.0.1/win32/en-US/Firefox%20Setup%2043.0.1.exe", "Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 6.0; SV1; .NET CLR 2.0.50727)"},   // Windows Vista
+		{"http://test/?product=Firefox-SSL&os=win64&lang=en-US", "https://download-sha1.cdn.mozilla.net/pub/firefox/releases/43.0.1/win64/en-US/Firefox%20Setup%2043.0.1.exe", "Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)"}, // Windows XP 64 bit
+		{"http://test/?product=Firefox-stub&os=win&lang=en-US", "https://download-sha1.cdn.mozilla.net/pub/firefox/releases/43.0.1/win32/en-US/Firefox%20Setup%2043.0.1.exe", "Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)"},  // Windows XP no stub
+	}
+
+	for _, testRequest := range testRequests {
+		w := httptest.NewRecorder()
+		req, err := http.NewRequest("GET", testRequest.URL, nil)
+		assert.NoError(t, err, "url: %v ua: %v", testRequest.URL, testRequest.UserAgent)
+
+		req.Header.Set("User-Agent", testRequest.UserAgent)
+
+		bouncerHandlerPinned.ServeHTTP(w, req)
+		assert.Equal(t, 302, w.Code, "url: %v ua: %v", testRequest.URL, testRequest.UserAgent)
+		assert.Equal(t, testRequest.ExpectedLocation, w.HeaderMap.Get("Location"), "url: %v ua: %v", testRequest.URL, testRequest.UserAgent)
+	}
 }
 
 func TestBouncerHandlerValid(t *testing.T) {
