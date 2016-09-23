@@ -29,13 +29,13 @@ You will need to install the following:
 To run these tests, use:
 
 ```bash
-tox -e e2e -- --base-url=http://bouncer-bouncer.stage.mozaws.net/
+tox -e e2e -- --base-url=http://bouncer-bouncer.stage.mozaws.net
 ```
 
 Use `-k` to run a specific test. For example,
 
 ```bash
-tox -e e2e -- --base-url=http://bouncer-bouncer.stage.mozaws.net/ -k test_that_checks_redirect_using_incorrect_query_values
+tox -e e2e -- --base-url=http://bouncer-bouncer.stage.mozaws.net -k test_that_checks_redirect_using_incorrect_query_values
 ```
 
 ## Writing tests
