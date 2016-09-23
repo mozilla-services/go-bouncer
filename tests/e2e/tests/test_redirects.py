@@ -123,16 +123,12 @@ class TestRedirects(Base):
 
     @pytest.mark.parametrize(('product_alias'), _winxp_products)
     def test_ie6_winxp_useragent_5_1_redirects_to_correct_version(self, base_url, product_alias):
-        # With Bug 1233779, WinXP bouncer is configured to redirect users
-        # to Firefox version 43.0.1 if they visit firefox-latest and firefox-44.0
         user_agent_ie6 = ('Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)')
 
         self._verify_winxp_redirect_rules(base_url, product_alias, user_agent_ie6)
 
     @pytest.mark.parametrize(('product_alias'), _winxp_products)
     def test_ie6_winxp_useragent_5_2_redirects_to_correct_version(self, base_url, product_alias):
-        # With Bug 1233779, WinXP bouncer is configured to redirect users
-        # to Firefox version 43.0.1 if they visit firefox-latest and firefox-44.0
         user_agent_ie6 = ('Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; SV1)')
 
         self._verify_winxp_redirect_rules(base_url, product_alias, user_agent_ie6)
@@ -150,21 +146,21 @@ class TestRedirects(Base):
         elif 'esr' in product_alias:
             assert '38.5.1esr.exe' in parsed_url.path
         elif product_alias in ['49.0b8', '49.0b10', '49.0b37']:
-            # beta versions are now a moving target, check that it is never
-            # less than 49
-            assert 49 <= self._extract_version_num(parsed_url.path)
+            # beta versions are a moving number, regarless of which version is requested
+            # verify version is greater than or equal to 49
+            assert 49 < self._extract_windows_version_num(parsed_url.path)
         elif product_alias in ['firefox-sha1']:
             assert '49.0b8.exe' in parsed_url.path
         elif product_alias in ['beta-latest']:
-            # beta-latest is a moving target, check that it is never
-            # less than 49
-            assert 49 <= self._extract_version_num(parsed_url.path)
+            # beta-latest are a moving number
+            # verify version is greater than or equal to 49
+            assert 49 < self._extract_windows_version_num(parsed_url.path)
         elif product_alias in ['beta']:
             assert '49.0.exe' in parsed_url.path
         else:
             assert '49.0.exe' in parsed_url.path
 
-    def _extract_version_num(self, path):
+    def _extract_windows_version_num(self, path):
         return int(path.split('Firefox%20Setup%20')[1].split('.')[0])
 
     def test_ie6_vista_6_0_redirects_to_correct_version(self, base_url):
