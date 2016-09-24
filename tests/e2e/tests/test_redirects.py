@@ -142,7 +142,8 @@ class TestRedirects(Base):
         response = self._head_request(base_url, user_agent=user_agent, params=param)
         parsed_url = urlparse(response.url)
         if product_alias in ['stub', 'latest', '42.0', '43.0.1', '44.0']:
-            assert '49.0.exe' in parsed_url.path
+            # rc versions are a moving number, regarless of which version is requested
+            assert 49 <= self._extract_windows_version_num(parsed_url.path)
         elif 'esr' in product_alias:
             assert '38.5.1esr.exe' in parsed_url.path
         elif product_alias in ['49.0b8', '49.0b10', '49.0b37']:
