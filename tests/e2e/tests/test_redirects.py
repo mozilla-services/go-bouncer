@@ -146,23 +146,20 @@ class TestRedirects(Base):
             assert 49 <= self._extract_windows_version_num(parsed_url.path)
         elif 'esr' in product_alias:
             assert '38.5.1esr.exe' in parsed_url.path
-        elif product_alias in ['49.0b8', '49.0b10', '49.0b37']:
+        elif product_alias in ['beta-latest', '49.0b8', '49.0b10', '49.0b37']:
             # beta versions are a moving number, regarless of which version is requested
-            # verify version is greater than or equal to 49
+            # verify version is greater than 49
             assert 49 < self._extract_windows_version_num(parsed_url.path)
         elif product_alias in ['firefox-sha1']:
             assert '49.0b8.exe' in parsed_url.path
-        elif product_alias in ['beta-latest']:
-            # beta-latest are a moving number
-            # verify version is greater than or equal to 49
-            assert 49 < self._extract_windows_version_num(parsed_url.path)
         elif product_alias in ['beta']:
-            assert '49.0.exe' in parsed_url.path
+            # beta versions are a moving number
+            # verify version is greater than or equal to 49
+            assert 49 <= self._extract_windows_version_num(parsed_url.path)
+        elif product_alias is 'sha1':
+            assert 49 <= self._extract_windows_version_num(parsed_url.path)
         else:
-            assert '49.0.exe' in parsed_url.path
-
-    def _extract_windows_version_num(self, path):
-        return int(path.split('Firefox%20Setup%20')[1].split('.')[0])
+            raise Exception("An assert for product_alias='%s' hasn't been set." % product_alias)
 
     def test_ie6_vista_6_0_redirects_to_correct_version(self, base_url):
         user_agent = ('Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 6.0; SV1; .NET CLR 2.0.50727)')
@@ -173,7 +170,11 @@ class TestRedirects(Base):
         }
         response = self._head_request(base_url, user_agent=user_agent, params=param)
         parsed_url = urlparse(response.url)
-        assert '49.0.exe' in parsed_url.path
+        # rc versions are a moving number
+        assert 49 <= self._extract_windows_version_num(parsed_url.path)
+
+    def _extract_windows_version_num(self, path):
+        return int(path.split('Firefox%20Setup%20')[1].split('.')[0])
 
     def test_that_checks_redirect_using_incorrect_query_values(self, base_url):
         param = {
