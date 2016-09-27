@@ -6,15 +6,16 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/tsenart/nap"
 )
 
 // DB is a DB instance for running queries against the bouncer database
 type DB struct {
-	*sql.DB
+	*nap.DB
 }
 
 func NewDB(dsn string) (*DB, error) {
-	db, err := sql.Open("mysql", dsn)
+	db, err := nap.Open("mysql", dsn)
 
 	if err != nil {
 		return nil, err

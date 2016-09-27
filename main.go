@@ -30,9 +30,10 @@ func main() {
 			EnvVar: "BOUNCER_ADDR",
 		},
 		cli.StringFlag{
-			Name:   "db-dsn",
-			Value:  "user:password@tcp(localhost:3306)/bouncer",
-			Usage:  "database DSN (https://github.com/go-sql-driver/mysql#dsn-data-source-name)",
+			Name:  "db-dsn",
+			Value: "user:password@tcp(localhost:3306)/bouncer",
+			Usage: "database DSN (https://github.com/go-sql-driver/mysql#dsn-data-source-name)." +
+				"Multiple DSNs can be separated with ';' The first specified DSN will act as the Master.",
 			EnvVar: "BOUNCER_DB_DSN",
 		},
 		cli.StringFlag{
