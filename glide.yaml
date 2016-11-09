@@ -1,0 +1,12 @@
+package: github.com/mozilla-services/go-bouncer
+import:
+- package: github.com/Sirupsen/logrus
+  version: v0.8.7
+- package: github.com/codegangsta/cli
+  version: bca61c476e3c752594983e4c9bcd5f62fb09f157
+- package: github.com/go-sql-driver/mysql
+  version: fb7299726d2e68745a8805b14f2ff44b5c2cfa84
+- package: github.com/stretchr/testify
+  version: 5ab65693f48b284b3f7a83114dd7b166b45f0193
+  subpackages:
+  - assert
