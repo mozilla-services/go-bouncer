@@ -58,5 +58,4 @@ class RelengHelper:
         url = self._base_url % self._firefox_versions_uri
         response = requests.get(url)
         releng_products = response.json()
-
         return releng_products

@@ -19,7 +19,7 @@ class Base:
                            'rv:10.0.1) Gecko/20100101 Firefox/10.0.1')
 
     def get_expected_fx_pkg_str(self, os, alias, product_version):
-        """Output a string reprentation of the expected Firefox file name.
+        """Output a string representation of the expected Firefox filename.
 
         :arg os: string, 'win', 'osx', and 'linux' are currently supported.
         :arg alias: string, the go-bouncer alias. Examples include firefox-latest,
