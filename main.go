@@ -49,7 +49,7 @@ func main() {
 			Name:   "stub-root-url",
 			Value:  "",
 			Usage:  "Root url of service used to service modified stub installers",
-			EnvVar: "STUB_ROOT_URL",
+			EnvVar: "BOUNCER_STUB_ROOT_URL",
 		},
 	}
 	app.RunAndExitOnError()

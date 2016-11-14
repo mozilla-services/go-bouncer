@@ -12,3 +12,9 @@ Example: `BOUNCER_PINNED_BASEURL=download-sha1.cdn.mozilla.net/pub`
 
 ### `BOUNCER_PINNED_BASEURL_HTTPS`
 This option is exactly the same as `BOUNCER_PINNED_BASEURL_HTTP` but acts on ssl only products.
+
+### `BOUNCER_STUB_ROOT_URL`
+If set, bouncer will redirect requests with `attribution_sig` and `attribution_code` parameters to
+`BOUNCER_STUB_ROOT_URL?product=PRODUCT&os=OS&lang=LANG&attribution_sig=ATTRIBUTION_SIG&attribution_code=ATTRIBUTION_CODE`.
+
+Example: `BOUNCER_STUB_ROOT_URL=https://stubdownloader.services.mozilla.com/`
