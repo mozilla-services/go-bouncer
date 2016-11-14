@@ -47,7 +47,7 @@ func main() {
 		},
 		cli.StringFlag{
 			Name:   "stub-root-url",
-			Value:  "https://stubdownloader.prod.mozaws.net/",
+			Value:  "",
 			Usage:  "Root url of service used to service modified stub installers",
 			EnvVar: "STUB_ROOT_URL",
 		},
