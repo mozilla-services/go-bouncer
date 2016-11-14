@@ -7,6 +7,7 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
@@ -244,6 +245,7 @@ type BouncerHandler struct {
 	CacheTime          time.Duration
 	PinnedBaseURLHttp  string
 	PinnedBaseURLHttps string
+	StubRootURL        string
 }
 
 func randomMirror(mirrors []bouncer.MirrorsResult) *bouncer.MirrorsResult {
@@ -343,37 +345,54 @@ func (b *BouncerHandler) mirrorBaseURL(sslOnly bool, lang, locationID string) (s
 	return mirror.BaseURL, nil
 }
 
+func (b *BouncerHandler) stubAttributionURL(reqParams *BouncerParams) string {
+	query := url.Values{}
+	query.Set("lang", reqParams.Lang)
+	query.Set("os", reqParams.OS)
+	query.Set("product", reqParams.Product)
+	query.Set("attribution_code", reqParams.AttributionCode)
+	query.Set("attribution_sig", reqParams.AttributionSig)
+
+	return b.StubRootURL + "?" + query.Encode()
+}
+
 func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	queryVals := req.URL.Query()
+	reqParams := BouncerParamsFromValues(req.URL.Query())
 
-	printOnly := queryVals.Get("print")
-	os := queryVals.Get("os")
-	product := queryVals.Get("product")
-	lang := queryVals.Get("lang")
-
-	if product == "" {
+	if reqParams.Product == "" {
 		http.Redirect(w, req, "http://www.mozilla.org/", 302)
 		return
 	}
-	if os == "" {
-		os = DefaultOS
+
+	if reqParams.OS == "" {
+		reqParams.OS = DefaultOS
 	}
-	if lang == "" {
-		lang = DefaultLang
+	if reqParams.Lang == "" {
+		reqParams.Lang = DefaultLang
 	}
 
-	product = strings.TrimSpace(strings.ToLower(product))
-	os = strings.TrimSpace(strings.ToLower(os))
+	isWinXpClient := isWindowsXPUserAgent(req.UserAgent())
+
+	// If the client is not WinXP and attribution_code is set, redirect to the stub service
+	if b.StubRootURL != "" &&
+		reqParams.AttributionCode != "" &&
+		reqParams.AttributionSig != "" &&
+		!isWinXpClient {
+
+		stubURL := b.stubAttributionURL(reqParams)
+		http.Redirect(w, req, stubURL, 302)
+		return
+	}
 
 	// HACKS
 	// If the user is coming from windows xp or vista, send a sha1
 	// signed product
 	// HACKS
-	if (os == "win" || os == "win64") && isWindowsXPUserAgent(req.UserAgent()) {
-		product = sha1Product(product)
+	if (reqParams.OS == "win" || reqParams.OS == "win64") && isWinXpClient {
+		reqParams.Product = sha1Product(reqParams.Product)
 	}
 
-	url, err := b.URL(lang, os, product)
+	url, err := b.URL(reqParams.Lang, reqParams.OS, reqParams.Product)
 	if err != nil {
 		http.Error(w, "Internal Server Error.", http.StatusInternalServerError)
 		log.Println(err)
@@ -389,7 +408,7 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 
 	// If ?print=yes, print the resulting URL instead of 302ing
-	if printOnly == "yes" {
+	if reqParams.PrintOnly {
 		w.Header().Set("Content-Type", "text/plain")
 		w.Write([]byte(url))
 		return

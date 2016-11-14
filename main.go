@@ -45,6 +45,12 @@ func main() {
 			Usage:  "if this flag is set it will always be the base url for https products. Scheme should be excluded, e.g.,: pinned-cdn.mozilla.com/pub",
 			EnvVar: "BOUNCER_PINNED_BASEURL_HTTPS",
 		},
+		cli.StringFlag{
+			Name:   "stub-root-url",
+			Value:  "",
+			Usage:  "Root url of service used to service modified stub installers",
+			EnvVar: "STUB_ROOT_URL",
+		},
 	}
 	app.RunAndExitOnError()
 }
@@ -61,6 +67,7 @@ func Main(c *cli.Context) {
 		CacheTime:          time.Duration(c.Int("cache-time")) * time.Second,
 		PinnedBaseURLHttp:  c.String("pinned-baseurl-http"),
 		PinnedBaseURLHttps: c.String("pinned-baseurl-https"),
+		StubRootURL:        c.String("stub-root-url"),
 	}
 
 	healthHandler := &HealthHandler{
