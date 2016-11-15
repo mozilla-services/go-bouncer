@@ -44,8 +44,9 @@ class Base:
             else:
                 return 'firefox-{0}.tar.bz2'.format(product_version)
         else:
-            return 'Failed, unsupported OS: os = %s, alias = %s, product_version = %s' % \
+            e = 'Failed, unsupported OS: os = %s, alias = %s, product_version = %s' % \
                 (os, alias, product_version)
+            raise ValueError(e)
 
     def _head_request(self, url, user_agent=_user_agent_firefox,
                       locale='en-US', params=None):
