@@ -228,18 +228,25 @@ UNLOCK TABLES;
 
 LOCK TABLES `mirror_location_mirror_map` WRITE;
 /*!40000 ALTER TABLE `mirror_location_mirror_map` DISABLE KEYS */;
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,1,1,1,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,1,2,2,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,1,3,3,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,1,4,4,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,1,5,5,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,2,6,1,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,2,7,2,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,2,8,3,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,2,9,4,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,2,10,5,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,1,11,6,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `id`, `location_id`, `healthy`) VALUES (1,2,12,6,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,1,1,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,1,2,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,1,3,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,1,4,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,1,5,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,1,6,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,1,7,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,1,8,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,1,9,1);
+
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,2,1,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,2,2,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,2,3,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,2,4,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,2,5,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,2,6,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,2,7,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,2,8,1);
+INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,2,9,1);
 /*!40000 ALTER TABLE `mirror_location_mirror_map` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -247,10 +254,15 @@ LOCK TABLES `mirror_locations` WRITE;
 /*!40000 ALTER TABLE `mirror_locations` DISABLE KEYS */;
 INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/39.0/win64/:lang/Firefox%20Setup%2039.0.exe',1,1,1);
 INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/39.0/mac/:lang/Firefox%2039.0.dmg',1,2,2);
-INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/39.0/win32/:lang/Firefox%20Setup%2039.0.exe',2,3,3);
-INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/43.0.1/win64/:lang/Firefox%20Setup%2043.0.1.exe',3,1,4);
-INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/43.0.1/mac/:lang/Firefox%2043.0.1.dmg',3,2,5);
-INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/43.0.1/win32/:lang/Firefox%20Setup%2043.0.1.exe',3,3,6);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/39.0/win32/:lang/Firefox%20Setup%2039.0.exe',1,3,3);
+
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/39.0/win64/:lang/Firefox%20Setup%2039.0.exe',2,1,4);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/39.0/mac/:lang/Firefox%2039.0.dmg',2,2,5);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/39.0/win32/:lang/Firefox%20Setup%2039.0.exe',2,3,6);
+
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/43.0.1/win64/:lang/Firefox%20Setup%2043.0.1.exe',3,1,7);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/43.0.1/mac/:lang/Firefox%2043.0.1.dmg',3,2,8);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/43.0.1/win32/:lang/Firefox%20Setup%2043.0.1.exe',3,3,9);
 /*!40000 ALTER TABLE `mirror_locations` ENABLE KEYS */;
 UNLOCK TABLES;
 
