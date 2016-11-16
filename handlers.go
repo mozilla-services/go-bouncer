@@ -388,7 +388,7 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// If the user is coming from windows xp or vista, send a sha1
 	// signed product
 	// HACKS
-	if (reqParams.OS == "win" || reqParams.OS == "win64") && isWinXpClient {
+	if reqParams.OS == "win" && isWinXpClient {
 		reqParams.Product = sha1Product(reqParams.Product)
 	}
 
