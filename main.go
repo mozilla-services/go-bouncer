@@ -48,7 +48,7 @@ func main() {
 		cli.StringFlag{
 			Name:   "stub-root-url",
 			Value:  "",
-			Usage:  "Root url of service used to service modified stub installers",
+			Usage:  "Root url of service used to service modified stub installers e.g., https://stubdownloader.services.mozilla.com/",
 			EnvVar: "BOUNCER_STUB_ROOT_URL",
 		},
 	}
