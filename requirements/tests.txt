@@ -1,0 +1,5 @@
+beautifulsoup4==4.5.1
+pytest
+pytest-base-url==1.1.0
+pytest-xdist==1.15.0
+requests==2.11.1
