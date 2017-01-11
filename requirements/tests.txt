@@ -1,4 +1,4 @@
-beautifulsoup4==4.5.1
+beautifulsoup4==4.5.3
 pytest
 pytest-base-url==1.2.0
 pytest-xdist==1.15.0
