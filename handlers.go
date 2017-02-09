@@ -377,6 +377,7 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	if b.StubRootURL != "" &&
 		reqParams.AttributionCode != "" &&
 		reqParams.AttributionSig != "" &&
+		strings.Contains(reqParams.Product, "-stub") &&
 		!isWinXpClient {
 
 		stubURL := b.stubAttributionURL(reqParams)
