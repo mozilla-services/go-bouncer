@@ -1,0 +1,62 @@
+/** Send a notice to #fxtest-alerts on irc.mozilla.org with the build result */
+def ircNotification() {
+  def nick = "fxtest${BUILD_NUMBER}"
+  def channel = '#fx-test-alerts'
+  def result = currentBuild.result ?: 'SUCCESS'
+  def message = "Project ${JOB_NAME} build #${BUILD_NUMBER}: ${result}: ${BUILD_URL}"
+  node {
+    sh """
+        (
+        echo NICK ${nick}
+        echo USER ${nick} 8 * : ${nick}
+        sleep 5
+        echo "JOIN ${channel}"
+        echo "NOTICE ${channel} :${message}"
+        echo QUIT
+        ) | openssl s_client -connect irc.mozilla.org:6697
+    """
+  }
+}
+
+pipeline {
+  agent any
+  options {
+    ansiColor()
+    timestamps()
+    timeout(time: 5, unit: 'MINUTES')
+  }
+  environment {
+    PYTEST_ADDOPTS = "-n=10 --color=yes"
+  }
+  stages {
+    stage('Lint') {
+      steps {
+        sh "tox -c tests/e2e/tox.ini -e flake8"
+      }
+    }
+    stage('Test') {
+      steps {
+        sh "tox -c tests/e2e/tox.ini -e e2e"
+      }
+      post {
+        always {
+          junit 'tests/e2e/results/*.xml'
+          archiveArtifacts 'tests/e2e/results/*'
+        }
+      }
+    }
+  }
+  post {
+    failure {
+      mail(
+        body: "${BUILD_URL}",
+        from: "firefox-test-engineering@mozilla.com",
+        replyTo: "firefox-test-engineering@mozilla.com",
+        subject: "Build failed in Jenkins: ${JOB_NAME} #${BUILD_NUMBER}",
+        to: "fte-ci@mozilla.com")
+    }
+    changed {
+      ircNotification()
+    }
+  }
+}
