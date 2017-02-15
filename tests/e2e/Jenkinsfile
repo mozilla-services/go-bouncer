@@ -1,22 +1,4 @@
-/** Send a notice to #fxtest-alerts on irc.mozilla.org with the build result */
-def ircNotification() {
-  def nick = "fxtest${BUILD_NUMBER}"
-  def channel = '#fx-test-alerts'
-  def result = currentBuild.result ?: 'SUCCESS'
-  def message = "Project ${JOB_NAME} build #${BUILD_NUMBER}: ${result}: ${BUILD_URL}"
-  node {
-    sh """
-        (
-        echo NICK ${nick}
-        echo USER ${nick} 8 * : ${nick}
-        sleep 5
-        echo "JOIN ${channel}"
-        echo "NOTICE ${channel} :${message}"
-        echo QUIT
-        ) | openssl s_client -connect irc.mozilla.org:6697
-    """
-  }
-}
+@Library('fxtest@1.1') _
 
 pipeline {
   agent any
