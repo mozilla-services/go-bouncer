@@ -31,18 +31,29 @@ func init() {
 }
 
 func TestBouncerHandlerAttributionCode(t *testing.T) {
-	w := httptest.NewRecorder()
+	tests := []struct {
+		In  string
+		Out string
+	}{
+		{
+			`http://test/?product=Firefox&os=win&lang=en-US&attribution_code=source%3Dgoogle.com%26medium%3Dorganic%26campaign%3D(not%20set)%26content%3D(not%20set)&attribution_sig=anhmacsig`,
+			`http://download-installer.cdn.mozilla.net/pub/firefox/releases/39.0/win32/en-US/Firefox%20Setup%2039.0.exe`,
+		},
+		{
+			`http://test/?product=Firefox-stub&os=win&lang=en-US&attribution_code=source%3Dgoogle.com%26medium%3Dorganic%26campaign%3D(not%20set)%26content%3D(not%20set)&attribution_sig=anhmacsig`,
+			`https://stub/?attribution_code=source%3Dgoogle.com%26medium%3Dorganic%26campaign%3D%28not+set%29%26content%3D%28not+set%29&attribution_sig=anhmacsig&lang=en-US&os=win&product=firefox-stub`,
+		},
+	}
+	for _, test := range tests {
+		w := httptest.NewRecorder()
 
-	req, err := http.NewRequest("GET",
-		"http://test/?product=Firefox&os=win&lang=en-US&attribution_code=source%3Dgoogle.com%26medium%3Dorganic%26campaign%3D(not%20set)%26content%3D(not%20set)&attribution_sig=anhmacsig",
-		nil)
-	assert.NoError(t, err)
+		req, err := http.NewRequest("GET", test.In, nil)
+		assert.NoError(t, err)
 
-	bouncerHandler.ServeHTTP(w, req)
-	assert.Equal(t, 302, w.Code)
-	assert.Equal(t,
-		"https://stub/?attribution_code=source%3Dgoogle.com%26medium%3Dorganic%26campaign%3D%28not+set%29%26content%3D%28not+set%29&attribution_sig=anhmacsig&lang=en-US&os=win&product=firefox",
-		w.HeaderMap.Get("Location"))
+		bouncerHandler.ServeHTTP(w, req)
+		assert.Equal(t, 302, w.Code)
+		assert.Equal(t, test.Out, w.HeaderMap.Get("Location"))
+	}
 }
 
 func TestBouncerHandlerParams(t *testing.T) {
