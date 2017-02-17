@@ -2,4 +2,4 @@ beautifulsoup4==4.5.3
 pytest==3.0.6
 pytest-base-url==1.2.0
 pytest-xdist==1.15.0
-requests==2.13.0
+requests[security]==2.13.0
