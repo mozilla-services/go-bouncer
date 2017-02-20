@@ -18,7 +18,7 @@ pipeline {
     }
     stage('Test') {
       steps {
-        sh "tox -c tests/e2e/tox.ini -e e2e"
+        sh "tox -c tests/e2e/tox.ini -e py27"
       }
       post {
         always {
@@ -37,7 +37,7 @@ pipeline {
               noUploadOnFailure: false,
               selectedRegion: 'us-east-1',
               showDirectlyInBrowser: false,
-              sourceFile: 'tests/e2e/results/e2e.log',
+              sourceFile: 'tests/e2e/results/py27.log',
               storageClass: 'STANDARD',
               uploadFromSlave: false,
               useServerSideEncryption: false]],
