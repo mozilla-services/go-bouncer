@@ -28,7 +28,7 @@ pipeline {
             consoleLogLevel: 'INFO',
             dontWaitForConcurrentBuildCompletion: false,
             entries: [[
-              bucket: "fx-test-activedata/${BUILD_TAG}",
+              bucket: "net-mozaws-stage-fx-test-activedata/${BUILD_TAG}",
               excludedFile: '',
               flatten: true,
               gzipFiles: true,
