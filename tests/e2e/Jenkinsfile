@@ -18,12 +18,32 @@ pipeline {
     }
     stage('Test') {
       steps {
-        sh "tox -c tests/e2e/tox.ini -e e2e"
+        sh "tox -c tests/e2e/tox.ini -e py27"
       }
       post {
         always {
           junit 'tests/e2e/results/*.xml'
           archiveArtifacts 'tests/e2e/results/*'
+          step([$class: 'S3BucketPublisher',
+            consoleLogLevel: 'INFO',
+            dontWaitForConcurrentBuildCompletion: false,
+            entries: [[
+              bucket: "net-mozaws-stage-fx-test-activedata/${BUILD_TAG}",
+              excludedFile: '',
+              flatten: true,
+              gzipFiles: true,
+              keepForever: false,
+              managedArtifacts: false,
+              noUploadOnFailure: false,
+              selectedRegion: 'us-east-1',
+              showDirectlyInBrowser: false,
+              sourceFile: 'tests/e2e/results/py27.log',
+              storageClass: 'STANDARD',
+              uploadFromSlave: false,
+              useServerSideEncryption: false]],
+            pluginFailureResultConstraint: 'FAILURE',
+            profileName: 'ActiveData',
+            userMetadata: []])
         }
       }
     }
