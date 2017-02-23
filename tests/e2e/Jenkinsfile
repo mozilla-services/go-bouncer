@@ -1,4 +1,4 @@
-@Library('fxtest@1.2') _
+@Library('fxtest@1.3') _
 
 pipeline {
   agent any
