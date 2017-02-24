@@ -1,3 +1,6 @@
+[![Updates](https://pyup.io/repos/github/mozilla-services/go-bouncer/shield.svg)](https://pyup.io/repos/github/mozilla-services/go-bouncer/)
+[![Python 3](https://pyup.io/repos/github/mozilla-services/go-bouncer/python-3-shield.svg)](https://pyup.io/repos/github/mozilla-services/go-bouncer/)
+
 # Bouncer Tests for download.allizom.org
 
 Thank you for checking out Mozilla's Bouncer test suite. Mozilla and [Web QA team](https://quality.mozilla.org/teams/web-qa/) are grateful for the help and hard work of many contributors [past](https://github.com/mozilla/bouncer-tests/graphs/contributors) and [present](https://github.com/mozilla-services/go-bouncer/graphs/contributors) like yourself.
