@@ -216,8 +216,6 @@ LOCK TABLES `mirror_aliases` WRITE;
 /*!40000 ALTER TABLE `mirror_aliases` DISABLE KEYS */;
 INSERT INTO `mirror_aliases` (`id`, `alias`, `related_product`) VALUES (1,'firefox-latest','Firefox');
 INSERT INTO `mirror_aliases` (`id`, `alias`, `related_product`) VALUES (2,'firefox-sha1','Firefox-43.0.1-SSL');
-INSERT INTO `mirror_aliases` (`id`, `alias`, `related_product`) VALUES (3,'firefox-beta-sha1','Firefox-43.0.1-SSL');
-INSERT INTO `mirror_aliases` (`id`, `alias`, `related_product`) VALUES (4,'firefox-esr-sha1','Firefox-43.0.1-SSL');
 /*!40000 ALTER TABLE `mirror_aliases` ENABLE KEYS */;
 UNLOCK TABLES;
 
