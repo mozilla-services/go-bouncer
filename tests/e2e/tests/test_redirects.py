@@ -124,54 +124,24 @@ class TestRedirects(Base):
     @pytest.mark.parametrize(('product_alias'), _winxp_products)
     def test_ie6_winxp_useragent_5_1_redirects_to_correct_version(self, base_url, product_alias):
         user_agent_ie6 = ('Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)')
-
-        self._verify_winxp_redirect_rules(base_url, product_alias, user_agent_ie6)
-
-    @pytest.mark.parametrize(('product_alias'), _winxp_products)
-    def test_ie6_winxp_useragent_5_2_redirects_to_correct_version(self, base_url, product_alias):
-        user_agent_ie6 = ('Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; SV1)')
-
-        self._verify_winxp_redirect_rules(base_url, product_alias, user_agent_ie6)
-
-    def _verify_winxp_redirect_rules(self, base_url, product_alias, user_agent,):
         param = {
             'product': 'firefox-' + product_alias,
             'lang': 'en-US',
             'os': 'win'
         }
-        response = self._head_request(base_url, user_agent=user_agent, params=param)
-        parsed_url = urlparse(response.url)
-        if product_alias in ['stub', 'latest', '42.0', '43.0.1', '44.0']:
-            # rc versions are a moving number, regarless of which version is requested
-            assert 49 <= self._extract_windows_version_num(parsed_url.path)
-        elif 'esr' in product_alias:
-            assert '38.5.1esr.exe' in parsed_url.path
-        elif product_alias in ['beta-latest', '49.0b8', '49.0b10', '49.0b37']:
-            # beta versions are a moving number, regarless of which version is requested
-            # verify version is greater than 49
-            assert 49 < self._extract_windows_version_num(parsed_url.path)
-        elif product_alias in ['firefox-sha1']:
-            assert '49.0b8.exe' in parsed_url.path
-        elif product_alias in ['beta']:
-            # beta versions are a moving number
-            # verify version is greater than or equal to 49
-            assert 49 <= self._extract_windows_version_num(parsed_url.path)
-        elif product_alias is 'sha1':
-            assert 49 <= self._extract_windows_version_num(parsed_url.path)
-        else:
-            raise Exception("An assert for product_alias='%s' hasn't been set." % product_alias)
+        response = self._head_request(base_url, user_agent=user_agent_ie6, params=param)
+        assert '52.0esr.exe' in response.url, param
 
-    def test_ie6_vista_6_0_redirects_to_correct_version(self, base_url):
-        user_agent = ('Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 6.0; SV1; .NET CLR 2.0.50727)')
+    @pytest.mark.parametrize(('product_alias'), _winxp_products)
+    def test_ie6_winxp_useragent_5_2_redirects_to_correct_version(self, base_url, product_alias):
+        user_agent_ie6 = ('Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; SV1)')
         param = {
-            'product': 'firefox-stub',
+            'product': 'firefox-' + product_alias,
             'lang': 'en-US',
             'os': 'win'
         }
-        response = self._head_request(base_url, user_agent=user_agent, params=param)
-        parsed_url = urlparse(response.url)
-        # rc versions are a moving number
-        assert 49 <= self._extract_windows_version_num(parsed_url.path)
+        response = self._head_request(base_url, user_agent=user_agent_ie6, params=param)
+        assert '52.0esr.exe' in response.url, param
 
     def _extract_windows_version_num(self, path):
         return int(path.split('Firefox%20Setup%20')[1].split('.')[0])
