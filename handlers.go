@@ -19,9 +19,7 @@ import (
 
 const DefaultLang = "en-US"
 const DefaultOS = "win"
-const firefoxSHA1ReleaseAliasSuffix = "sha1"
-const firefoxSHA1BetaAliasSuffix = "beta-sha1"
-const firefoxSHA1ESRAliasSuffix = "esr-sha1"
+const firefoxSHA1ESRAliasSuffix = "sha1"
 
 type xpRelease struct {
 	Version string
@@ -142,29 +140,7 @@ func firefoxSha1Product(productSuffix string) string {
 	if strings.HasSuffix(productSuffix, "-complete") || strings.Contains(productSuffix, "-partial-") {
 		return productSuffix
 	}
-	switch productSuffix {
-	// special product manually created for aurora
-	case "aurora", "aurora-stub":
-		return "aurora-sha1"
-	// Bouncer aliases, no version specified
-	case "stub", "latest":
-		return firefoxSHA1ReleaseAliasSuffix
-	case "beta-latest", "beta-stub":
-		return firefoxSHA1BetaAliasSuffix
-	case "esr-latest":
-		return firefoxSHA1ESRAliasSuffix
-	}
-
-	productSuffixParts := strings.SplitN(productSuffix, "-", 2)
-	ver := productSuffixParts[0]
-
-	if strings.Contains(ver, "esr") {
-		return firefoxSHA1ESRAliasSuffix
-	} else if strings.Contains(ver, ".0b") {
-		return firefoxSHA1BetaAliasSuffix
-	}
-	// Fallback to release
-	return firefoxSHA1ReleaseAliasSuffix
+	return firefoxSHA1ESRAliasSuffix
 }
 
 func sha1Product(product string) string {
