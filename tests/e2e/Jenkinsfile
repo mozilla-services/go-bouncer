@@ -1,4 +1,4 @@
-@Library('fxtest@1.1') _
+@Library('fxtest@1.3') _
 
 pipeline {
   agent any
@@ -18,12 +18,13 @@ pipeline {
     }
     stage('Test') {
       steps {
-        sh "tox -c tests/e2e/tox.ini -e e2e"
+        sh "tox -c tests/e2e/tox.ini -e py27"
       }
       post {
         always {
-          junit 'tests/e2e/results/*.xml'
           archiveArtifacts 'tests/e2e/results/*'
+          junit 'tests/e2e/results/*.xml'
+          submitToActiveData('tests/e2e/results/py27.log')
         }
       }
     }
