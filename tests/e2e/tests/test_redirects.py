@@ -130,7 +130,7 @@ class TestRedirects(Base):
             'os': 'win'
         }
         response = self._head_request(base_url, user_agent=user_agent_ie6, params=param)
-        assert '52.0esr.exe' in response.url, param
+        assert '52.0.1esr.exe' in response.url, param
 
     @pytest.mark.parametrize(('product_alias'), _winxp_products)
     def test_ie6_winxp_useragent_5_2_redirects_to_correct_version(self, base_url, product_alias):
@@ -141,7 +141,7 @@ class TestRedirects(Base):
             'os': 'win'
         }
         response = self._head_request(base_url, user_agent=user_agent_ie6, params=param)
-        assert '52.0esr.exe' in response.url, param
+        assert '52.0.1esr.exe' in response.url, param
 
     def _extract_windows_version_num(self, path):
         return int(path.split('Firefox%20Setup%20')[1].split('.')[0])
