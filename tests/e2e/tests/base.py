@@ -3,9 +3,9 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from urllib import urlencode
+from urlparse import urlparse
 
 import requests
-from bs4 import BeautifulSoup
 
 
 class Base:
@@ -14,7 +14,6 @@ class Base:
         'download.cdn.mozilla.net',
         'download-installer.cdn.mozilla.net'
     ]
-
     _user_agent_firefox = ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; '
                            'rv:10.0.1) Gecko/20100101 Firefox/10.0.1')
 
@@ -28,7 +27,7 @@ class Base:
 
         :return: string
         """
-        if 'win' == os:
+        if os in ('win', 'win64'):
             if 'aurora' in alias or 'nightly' in alias:
                 return 'firefox-{0}.en-US.win32.installer.exe'.format(product_version)
             else:
@@ -38,7 +37,7 @@ class Base:
                 return 'firefox-{0}.en-US.mac.dmg'.format(product_version)
             else:
                 return 'Firefox%20{0}.dmg'.format(product_version)
-        elif 'linux' == os:
+        elif os in('linux', 'linux64'):
             if 'aurora' in alias or 'nightly' in alias:
                 return 'firefox-{0}.en-US.linux-i686.tar.bz2'.format(product_version)
             else:
@@ -48,48 +47,58 @@ class Base:
                 (os, alias, product_version)
             raise ValueError(e)
 
-    def _head_request(self, url, user_agent=_user_agent_firefox,
-                      locale='en-US', params=None):
+    def verify_redirect_to_correct_product(self, base_url, fx_pkg_name, get_params):
+        """Given a set of GET params, this method verifies bouncer redirects to
+        the expected Firefox product.
+
+        :arg base_url: The server under test.
+        :arg fx_pkg_name: The full Firefox package name that is the expected download.
+        :arg get_params: The GET params to pass to bouncer.
+        """
+        response = self.request_with_headers(base_url, params=get_params)
+        parsed_url = urlparse(response.url)
+        # verify service is up and a 200 OK is returned
+        assert requests.codes.ok == response.status_code, \
+            'Redirect failed with HTTP status. %s' % \
+            self.response_info_failure_message(base_url, get_params, response)
+        # verify download location
+        assert parsed_url.netloc in self.cdn_netloc_locations, \
+            'Failed, redirected to unknown host. %s' % \
+            self.response_info_failure_message(base_url, get_params, response)
+        # verify Firefox package name and version
+        assert fx_pkg_name in response.url, \
+            'Failed: Expected product str did not match what was returned %s' % \
+            self.response_info_failure_message(base_url, get_params, response)
+
+    def request_with_headers(self, url, params, user_agent=_user_agent_firefox, locale='en-US'):
+        """Make a request that includes 'user-agent', 'accept-language', and 'Connection: close' attributes in the
+        request header. Redirects will be followed.
+        :param url: URL of server to make the request against
+        :param params: GET parameters dict
+        :param user_agent: Browser useragent string
+        :param locale: header accept-language string
+        :return: response object
+        """
         headers = {'user-agent': user_agent,
                    'accept-language': locale,
                    'Connection': 'close'}
-
         try:
-            r = requests.head(url, headers=headers, verify=False, timeout=15,
-                              params=params, allow_redirects=False)
+            response = requests.head(url, headers=headers, verify=False, timeout=15, params=params, allow_redirects=True)
         except requests.RequestException as e:
-            request_url = self._build_request_url(url, params)
-
-            raise AssertionError('Failing URL: %s.\nError message: %s' % (request_url, e))
-
-        if r.status_code == 302 and r.headers['Location']:
-            try:
-                request_url = r.headers['Location']
-                r = requests.head(request_url, headers=headers, verify=False,
-                                  timeout=15, allow_redirects=True)
-            except requests.RequestException as e:
-                raise AssertionError('Failing URL: %s.\nError message: %s' % (request_url, e))
-
-        return r
-
-    def _parse_response(self, content):
-        return BeautifulSoup(content)
+            request_url = '%s/?%s' % (url, urlencode(params))
+            raise AssertionError('Failing URL: %s redirected to %s Error message: %s' % (request_url, response.url, e))
+        return response
 
     def response_info_failure_message(self, url, param, response):
+        """Generate a helpful error message that includes the server URL, GET params,
+        and header information.
         return 'Failed on %s \nUsing %s.\n %s' % (url,
-                                                  param,
-                                                  self.response_info(response))
 
-    def response_info(self, response):
-        url = response.url
-        return 'Response URL: %s\n Response Headers:\n %s' \
-               % (url, self.get_headers(response))
-
-    def get_headers(self, response):
-        return '\n'.join(['%s: %s' % (header, value) for header, value in response.headers.items()])
-
-    def _build_request_url(self, url, params):
-        if params:
-            return '%s/?%s' % (url, urlencode(params))
-        else:
-            return url
+        :param url: The URL that was under test.
+        :param param: The GET params passed to the URL.
+        :param response: The response object that was returned by the server under test.
+        :return string: An error message with helpful debug information.
+        """
+        headers = 'Response Headers: '.join(['%s: %s' % (header, value) for header, value in response.headers.items()])
+        r_url = 'Response URL: %s' % (response.url)
+        return 'Failed on %s Using %s. %s %s.' % (url, param, r_url, headers)
