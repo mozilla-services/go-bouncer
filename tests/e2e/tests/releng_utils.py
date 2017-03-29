@@ -102,7 +102,7 @@ def get_firefox_locales():
     url = _base_url % _firefox_primary_builds_uri
     response = requests.get(url)
     response.raise_for_status()
-    locale_data =  response.json()
+    locale_data = response.json()
     for locale in locale_data:
         versions = locale_data[locale]
         locale_objs.append(FirefoxLocale(locale, versions))
