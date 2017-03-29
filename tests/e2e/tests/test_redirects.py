@@ -4,104 +4,17 @@
 
 import pytest
 import requests
-from urlparse import urlparse
 from urllib import urlencode
+from urlparse import urlparse
 
 from base import Base
-
-LOCALES = (
-    'ach',
-    'af',
-    'an',
-    'ar',
-    'as',
-    'ast',
-    'be',
-    'bg',
-    'bn-BD',
-    'bn-IN',
-    'br',
-    'bs',
-    'ca',
-    'cs',
-    'cy',
-    'da',
-    'de',
-    'el',
-    'en-GB',
-    'en-ZA',
-    'eo',
-    'es-AR',
-    'es-CL',
-    'es-ES',
-    'es-MX',
-    'et',
-    'eu',
-    'fa',
-    'ff',
-    'fi',
-    'fr',
-    'fy-NL',
-    'ga-IE',
-    'gd',
-    'gl',
-    'gu-IN',
-    'he',
-    'hi-IN',
-    'hr',
-    'hsb',
-    'hu',
-    'hy-AM',
-    'id',
-    'is',
-    'it',
-    'ja',
-    'kk',
-    'km',
-    'kn',
-    'ko',
-    'lij',
-    'lt',
-    'lv',
-    'mai',
-    'mk',
-    'ml',
-    'mr',
-    'ms',
-    'nb-NO',
-    'nl',
-    'nn-NO',
-    'or',
-    'pa-IN',
-    'pl',
-    'pt-BR',
-    'pt-PT',
-    'rm',
-    'ro',
-    'ru',
-    'si',
-    'sk',
-    'sl',
-    'son',
-    'sq',
-    'sr',
-    'sv-SE',
-    'ta',
-    'te',
-    'th',
-    'tr',
-    'uk',
-    'vi',
-    'xh',
-    'zh-CN',
-    'zh-TW'
-)
-
-OS = ('win', 'win64', 'linux', 'linux64', 'osx')
+import releng_utils as utils
 
 
 class TestRedirects(Base):
 
+    _locales = utils.get_firefox_locales()
+    _os = ('win', 'win64', 'linux', 'linux64', 'osx')
     _winxp_products = [
         '38.5.1esr',
         '38.5.2esr',
@@ -129,7 +42,7 @@ class TestRedirects(Base):
             'lang': 'en-US',
             'os': 'win'
         }
-        response = self._head_request(base_url, user_agent=user_agent_ie6, params=param)
+        response = self.request_with_headers(base_url, user_agent=user_agent_ie6, params=param)
         assert '52.0.1esr.exe' in response.url, param
 
     @pytest.mark.parametrize(('product_alias'), _winxp_products)
@@ -140,7 +53,7 @@ class TestRedirects(Base):
             'lang': 'en-US',
             'os': 'win'
         }
-        response = self._head_request(base_url, user_agent=user_agent_ie6, params=param)
+        response = self.request_with_headers(base_url, user_agent=user_agent_ie6, params=param)
         assert '52.0.1esr.exe' in response.url, param
 
     def _extract_windows_version_num(self, path):
@@ -152,7 +65,7 @@ class TestRedirects(Base):
             'lang': 'kitty_language',
             'os': 'stella'
         }
-        response = self._head_request(base_url, params=param)
+        response = self.request_with_headers(base_url, params=param)
 
         assert requests.codes.not_found == response.status_code, \
             self.response_info_failure_message(base_url, param, response)
@@ -168,34 +81,29 @@ class TestRedirects(Base):
         assert urlencode(param) == parsed_url.query, \
             self.response_info_failure_message(base_url, param, response)
 
-    @pytest.mark.parametrize('os', OS)
-    @pytest.mark.parametrize('lang', LOCALES)
-    def test_that_checks_redirect_using_locales_and_os(
-        self,
-        base_url,
-        lang,
-        os
-    ):
-        # Ja locale has a special code for mac
+    @pytest.mark.parametrize('os', _os)
+    @pytest.mark.parametrize('locale', _locales)
+    def test_verify_locales_redirect_to_the_expected_product(self, base_url, locale, os):
+        """Verifies the downloaded version of Firefox matches the expected version number
+        and filename when Firefox is requested for a specific OS and locale.
+
+        The test verifies the following aliases: firefox-latest, firefox-esr-latest,
+        firefox-nightly-latest, firefox-beta-latest, firefox-beta-latest, firefox-aurora-latest.
+        """
+        lang = locale.lang
+        # Ja locale has a OSX specific locale
         if lang == 'ja' and os == 'osx':
             lang = 'ja-JP-mac'
 
-        param = {
-            'product': 'firefox-47.0.1',
-            'lang': lang,
-            'os': os
-        }
+        for version in locale.versions:
+            get_params = {
+                'product': 'firefox-' + version,
+                'lang': lang,
+                'os': os
+            }
 
-        response = self._head_request(base_url, params=param)
-
-        parsed_url = urlparse(response.url)
-
-        assert requests.codes.ok == response.status_code, \
-            'Redirect failed with HTTP status. %s' % \
-            self.response_info_failure_message(base_url, param, response)
-
-        assert 'http' == parsed_url.scheme, 'Failed to redirect to the correct scheme. %s' % \
-            self.response_info_failure_message(base_url, param, response)
+            fx_pkg_name = self.get_expected_fx_pkg_str(os, 'latest', version)
+            self.verify_redirect_to_correct_product(base_url, fx_pkg_name, get_params)
 
     def test_stub_installer_redirect_for_en_us_and_win(self, base_url, product):
         param = {
@@ -204,7 +112,7 @@ class TestRedirects(Base):
             'os': 'win'
         }
 
-        response = self._head_request(base_url, params=param)
+        response = self.request_with_headers(base_url, params=param)
 
         parsed_url = urlparse(response.url)
 
