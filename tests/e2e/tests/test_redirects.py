@@ -16,11 +16,11 @@ class TestRedirects(Base):
     _locales = utils.get_firefox_locales()
     _os = ('win', 'win64', 'linux', 'linux64', 'osx')
     _winxp_products = [
-        '38.5.1esr',
-        '38.5.2esr',
-        '38.5.3esr',
-        '38.6.3esr',
-        '40.0.0esr',
+        pytest.mark.xfail(reason='bug 1351900')('38.5.1esr'),
+        pytest.mark.xfail(reason='bug 1351900')('38.5.2esr'),
+        pytest.mark.xfail(reason='bug 1351900')('38.5.3esr'),
+        pytest.mark.xfail(reason='bug 1351900')('38.6.3esr'),
+        pytest.mark.xfail(reason='bug 1351900')('40.0.0esr'),
         'stub',
         'latest',
         'sha1',
@@ -28,10 +28,10 @@ class TestRedirects(Base):
         '43.0.1',
         '44.0',
         'beta',
-        'beta-latest',
-        '49.0b8',
-        '49.0b10',
-        '49.0b37'
+        pytest.mark.xfail(reason='bug 1351900')('beta-latest'),
+        pytest.mark.xfail(reason='bug 1351900')('49.0b8'),
+        pytest.mark.xfail(reason='bug 1351900')('49.0b10'),
+        pytest.mark.xfail(reason='bug 1351900')('49.0b37')
     ]
 
     @pytest.mark.parametrize(('product_alias'), _winxp_products)
@@ -43,7 +43,7 @@ class TestRedirects(Base):
             'os': 'win'
         }
         response = self.request_with_headers(base_url, user_agent=user_agent_ie6, params=param)
-        assert '52.0.1esr.exe' in response.url, param
+        assert '52.0.2esr.exe' in response.url, param
 
     @pytest.mark.parametrize(('product_alias'), _winxp_products)
     def test_ie6_winxp_useragent_5_2_redirects_to_correct_version(self, base_url, product_alias):
@@ -54,7 +54,7 @@ class TestRedirects(Base):
             'os': 'win'
         }
         response = self.request_with_headers(base_url, user_agent=user_agent_ie6, params=param)
-        assert '52.0.1esr.exe' in response.url, param
+        assert '52.0.2esr.exe' in response.url, param
 
     def _extract_windows_version_num(self, path):
         return int(path.split('Firefox%20Setup%20')[1].split('.')[0])
