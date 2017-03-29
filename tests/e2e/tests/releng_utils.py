@@ -13,7 +13,7 @@ class FirefoxLocale:
 
     def parse_versions(self, version_info):
         """Parses a dict and returns a list of Firefox versions,
-        ignoring Auroa and esr builds.
+        ignoring Aurora and ESR builds.
 
         :arg version_info: {string:string} A dictionary with k,v of version and
         os.
@@ -48,7 +48,7 @@ releng_to_bouncer_alias_dict = {
 
 
 def generate_fx_alias_ver_mappings(releng_products, alias_map=releng_to_bouncer_alias_dict):
-    """Parses a dictionary that contain releng product/versions and returns
+    """Parses a dictionary that contains releng product/versions and returns
     a new dictionary that maps go-bouncer aliases to expected Firefox product
     versions.
 
