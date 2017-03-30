@@ -16,11 +16,11 @@ class TestRedirects(Base):
     _locales = utils.get_firefox_locales()
     _os = ('win', 'win64', 'linux', 'linux64', 'osx')
     _winxp_products = [
-        pytest.mark.xfail(reason='bug 1351900')('38.5.1esr'),
-        pytest.mark.xfail(reason='bug 1351900')('38.5.2esr'),
-        pytest.mark.xfail(reason='bug 1351900')('38.5.3esr'),
-        pytest.mark.xfail(reason='bug 1351900')('38.6.3esr'),
-        pytest.mark.xfail(reason='bug 1351900')('40.0.0esr'),
+        '38.5.1esr',
+        '38.5.2esr',
+        '38.5.3esr',
+        '38.6.3esr',
+        '40.0.0esr',
         'stub',
         'latest',
         'sha1',
@@ -28,10 +28,10 @@ class TestRedirects(Base):
         '43.0.1',
         '44.0',
         'beta',
-        pytest.mark.xfail(reason='bug 1351900')('beta-latest'),
-        pytest.mark.xfail(reason='bug 1351900')('49.0b8'),
-        pytest.mark.xfail(reason='bug 1351900')('49.0b10'),
-        pytest.mark.xfail(reason='bug 1351900')('49.0b37')
+        'beta-latest',
+        '49.0b8',
+        '49.0b10',
+        '49.0b37'
     ]
 
     @pytest.mark.parametrize(('product_alias'), _winxp_products)
