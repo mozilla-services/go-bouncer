@@ -48,12 +48,12 @@ class Base:
             raise ValueError(e)
 
     def verify_redirect_to_correct_product(self, base_url, fx_pkg_name, get_params):
-        """Given a set of GET params, this method verifies bouncer redirects to
+        """Given a set of GET params, this method verifies Bouncer redirects to
         the expected Firefox product.
 
         :arg base_url: The server under test.
         :arg fx_pkg_name: The full Firefox package name that is the expected download.
-        :arg get_params: The GET params to pass to bouncer.
+        :arg get_params: The GET params to pass to Bouncer.
         """
         response = self.request_with_headers(base_url, params=get_params)
         parsed_url = urlparse(response.url)

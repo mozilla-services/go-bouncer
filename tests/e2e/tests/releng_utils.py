@@ -61,10 +61,11 @@ def generate_fx_alias_ver_mappings(releng_products, alias_map=releng_to_bouncer_
 
     :arg product_versions: {string:string} the releng object to be walked.
         releng_product/product_version
-    :arg alias_map: {string:string} releng to bouncer alias mappings.
+    :arg alias_map: {string:string} releng to Bouncer alias mappings.
         The default, releng_to_bouncer_alias_dict is adapted from
         https://github.com/mozilla-releng/ship-it/blob/master/kickoff/config.py
-    :returns: {string:string} with product aliases and their  versions numbers"""
+
+    :returns: {string:string} with product aliases and their version numbers"""
     aliases_and_versions = {}
     # create a dict that has {alias: expected_version_num}
     for product, alias in alias_map.iteritems():

@@ -88,10 +88,10 @@ class TestRedirects(Base):
         and filename when Firefox is requested for a specific OS and locale.
 
         The test verifies the following aliases: firefox-latest, firefox-esr-latest,
-        firefox-nightly-latest, firefox-beta-latest, firefox-beta-latest, firefox-aurora-latest.
+        firefox-nightly-latest, firefox-beta-latest, firefox-aurora-latest.
         """
         lang = locale.lang
-        # Ja locale has a OSX specific locale
+        # Ja locale has a macOS-specific locale
         if lang == 'ja' and os == 'osx':
             lang = 'ja-JP-mac'
 
