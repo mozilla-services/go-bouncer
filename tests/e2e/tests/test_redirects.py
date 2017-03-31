@@ -125,5 +125,5 @@ class TestRedirects(Base):
             self.response_info_failure_message(base_url, param, response)
 
         assert parsed_url.netloc in self.cdn_netloc_locations, \
-            'Failed to redirect to the corect host. %s' % \
+            'Failed to redirect to the correct host. %s' % \
             self.response_info_failure_message(base_url, param, response)
