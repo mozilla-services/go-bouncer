@@ -105,9 +105,9 @@ class TestRedirects(Base):
             fx_pkg_name = self.get_expected_fx_pkg_str(os, 'latest', version)
             self.verify_redirect_to_correct_product(base_url, fx_pkg_name, get_params)
 
-    def test_stub_installer_redirect_for_en_us_and_win(self, base_url, product):
+    def test_stub_installer_redirect_for_en_us_and_win(self, base_url):
         param = {
-            'product': product,
+            'product': 'firefox-stub',
             'lang': 'en-US',
             'os': 'win'
         }
@@ -124,6 +124,6 @@ class TestRedirects(Base):
             'Failed to redirect to the correct scheme. %s' % \
             self.response_info_failure_message(base_url, param, response)
 
-        assert 'download-installer.cdn.mozilla.net' == parsed_url.netloc, \
-            'Failed by redirected to incorrect host. %s' % \
+        assert parsed_url.netloc in self.cdn_netloc_locations, \
+            'Failed to redirect to the correct host. %s' % \
             self.response_info_failure_message(base_url, param, response)
