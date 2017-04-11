@@ -56,9 +56,6 @@ class TestRedirects(Base):
         response = self.request_with_headers(base_url, user_agent=user_agent_ie6, params=param)
         assert '52.0.2esr.exe' in response.url, param
 
-    def _extract_windows_version_num(self, path):
-        return int(path.split('Firefox%20Setup%20')[1].split('.')[0])
-
     def test_that_checks_redirect_using_incorrect_query_values(self, base_url):
         param = {
             'product': 'firefox-47.0.1',
@@ -104,26 +101,3 @@ class TestRedirects(Base):
 
             fx_pkg_name = self.get_expected_fx_pkg_str(os, 'latest', version)
             self.verify_redirect_to_correct_product(base_url, fx_pkg_name, get_params)
-
-    def test_stub_installer_redirect_for_en_us_and_win(self, base_url):
-        param = {
-            'product': 'firefox-stub',
-            'lang': 'en-US',
-            'os': 'win'
-        }
-
-        response = self.request_with_headers(base_url, params=param)
-
-        parsed_url = urlparse(response.url)
-
-        assert requests.codes.ok == response.status_code, \
-            'Redirect failed with HTTP status. %s' % \
-            self.response_info_failure_message(base_url, param, response)
-
-        assert 'https' == parsed_url.scheme, \
-            'Failed to redirect to the correct scheme. %s' % \
-            self.response_info_failure_message(base_url, param, response)
-
-        assert parsed_url.netloc in self.cdn_netloc_locations, \
-            'Failed to redirect to the correct host. %s' % \
-            self.response_info_failure_message(base_url, param, response)
