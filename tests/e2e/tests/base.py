@@ -20,10 +20,10 @@ class Base:
     def get_expected_fx_pkg_str(self, os, alias, product_version):
         """Output a string representation of the expected Firefox filename.
 
-        :arg os: string, 'win', 'osx', and 'linux' are currently supported.
-        :arg alias: string, the go-bouncer alias. Examples include firefox-latest,
+        :param os: string, 'win', 'osx', and 'linux' are currently supported.
+        :param alias: string, the go-bouncer alias. Examples include firefox-latest,
         firefox-beta-latest, etc.
-        :arg product_version: string, the Firefox version number.
+        :param product_version: string, the Firefox version number.
 
         :return: string
         """
@@ -51,9 +51,9 @@ class Base:
         """Given a set of GET params, this method verifies Bouncer redirects to
         the expected Firefox product.
 
-        :arg base_url: The server under test.
-        :arg fx_pkg_name: The full Firefox package name that is the expected download.
-        :arg get_params: The GET params to pass to Bouncer.
+        :param base_url: The server under test.
+        :param fx_pkg_name: The full Firefox package name that is the expected download.
+        :param get_params: The GET params to pass to Bouncer.
         """
         response = self.request_with_headers(base_url, params=get_params)
         parsed_url = urlparse(response.url)

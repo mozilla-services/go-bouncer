@@ -15,7 +15,7 @@ class FirefoxLocale:
         """Parses a dict and returns a list of Firefox versions,
         ignoring Aurora and ESR builds.
 
-        :arg version_info: {string:string} A dictionary with k,v of version and
+        :param version_info: {string:string} A dictionary with k,v of version and
         os.
 
         :returns: [string] A list of Firefox versions
@@ -31,7 +31,8 @@ class FirefoxLocale:
         return self.locale
 
 
-_base_url = 'https://product-details.mozilla.org/1.0/%s'
+_product_details_url = 'https://product-details.mozilla.org/1.0/%s'  # mirror of ship-it, not behind vpn
+_ship_it_url = 'https://ship-it.mozilla.org/json/1.0/%s'  # behind vpn
 _firefox_primary_builds_uri = 'firefox_primary_builds.json'
 _firefox_versions_uri = 'firefox_versions.json'
 # mappings adapted off of https://github.com/mozilla-releng/ship-it/blob/master/kickoff/config.py
@@ -59,9 +60,9 @@ def generate_fx_alias_ver_mappings(releng_products, alias_map=releng_to_bouncer_
     stored in releng_to_bouncer_alias_dict. Currently there are 2 releng products
     that do not have associated go-bouncer aliases and have val = None.
 
-    :arg product_versions: {string:string} the releng object to be walked.
+    :param product_versions: {string:string} the releng object to be walked.
         releng_product/product_version
-    :arg alias_map: {string:string} releng to Bouncer alias mappings.
+    :param alias_map: {string:string} releng to Bouncer alias mappings.
         The default, releng_to_bouncer_alias_dict is adapted from
         https://github.com/mozilla-releng/ship-it/blob/master/kickoff/config.py
 
@@ -75,15 +76,17 @@ def generate_fx_alias_ver_mappings(releng_products, alias_map=releng_to_bouncer_
     return aliases_and_versions
 
 
-def fetch_current_fx_product_details():
+def fetch_current_fx_product_details(base_url=_product_details_url):
     """Fetches JSON containing key/val pairings of the current releng aliases
     for Firefox and version numbers as known by Mozilla's Release Engineering Team.
 
     Release Engineering maintains an up-to-date JSON file with the current
     Firefox release values - https://product-details.mozilla.org/1.0/firefox_versions.json.
 
+    :param base_url: The address of the server to pull product details from.
+
     :returns: {string:string} dictionary with releng aliases and version numbers"""
-    url = _base_url % _firefox_versions_uri
+    url = base_url % _firefox_versions_uri
     response = requests.get(url)
     response.raise_for_status()
     releng_products = response.json()
@@ -100,7 +103,7 @@ def get_firefox_locales():
     :returns list: [FirefoxLocale objects] a list of FirefoxLocale objects.
     """
     locale_objs = []
-    url = _base_url % _firefox_primary_builds_uri
+    url = _product_details_url % _firefox_primary_builds_uri
     response = requests.get(url)
     response.raise_for_status()
     locale_data = response.json()
