@@ -24,6 +24,7 @@ class TestSmokeTests(Base):
         assert releng_aliases.keys().sort() == bouncer_aliases.keys().sort()
 
     @pytest.mark.smoketest
+    @pytest.mark.xfail(reason="Our Jenkins CI doesn't have access to ship-it")
     def test_verify_product_details_is_in_sync_with_ship_it(self):
         """Verify https://product-details.mozilla.org/1.0/firefox_versions.json and
         https://ship-it.mozilla.org/1.0/firefox_versions.json are in sync.
