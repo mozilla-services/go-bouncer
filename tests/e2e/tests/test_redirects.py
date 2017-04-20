@@ -15,6 +15,7 @@ class TestRedirects(Base):
 
     _locales = utils.get_firefox_locales()
     _os = ('win', 'win64', 'linux', 'linux64', 'osx')
+    _winxp_esr_version = '52.1.0esr.exe'
     _winxp_products = [
         '38.5.1esr',
         '38.5.2esr',
@@ -43,7 +44,7 @@ class TestRedirects(Base):
             'os': 'win'
         }
         response = self.request_with_headers(base_url, user_agent=user_agent_ie6, params=param)
-        assert '52.0.2esr.exe' in response.url, param
+        assert self._winxp_esr_version in response.url, param
 
     @pytest.mark.parametrize(('product_alias'), _winxp_products)
     def test_ie6_winxp_useragent_5_2_redirects_to_correct_version(self, base_url, product_alias):
@@ -54,7 +55,7 @@ class TestRedirects(Base):
             'os': 'win'
         }
         response = self.request_with_headers(base_url, user_agent=user_agent_ie6, params=param)
-        assert '52.0.2esr.exe' in response.url, param
+        assert self._winxp_esr_version in response.url, param
 
     def test_that_checks_redirect_using_incorrect_query_values(self, base_url):
         param = {
