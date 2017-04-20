@@ -26,7 +26,7 @@ pipeline {
           archiveArtifacts 'tests/e2e/results/*'
           junit 'tests/e2e/results/*.xml'
           submitToActiveData('tests/e2e/results/py27_raw.txt')
-          submitToTreeherder('go-bouncer', 'T', 'Tests', 'tests/e2e/results/py27_tbpl.txt')
+          submitToTreeherder('go-bouncer', 'T', 'Tests', 'tests/e2e/results/*', 'tests/e2e/results/py27_tbpl.txt')
         }
       }
     }
