@@ -93,6 +93,20 @@ def fetch_current_fx_product_details(base_url=_product_details_url):
     return releng_products
 
 
+def get_version_info_for_alias(alias, base_url=_product_details_url):
+    """Using up-to-date information drawn from product details service, find the current version of
+    a Firefox product.
+
+    releng_to_bouncer_alias_dict lists the available aliases.
+
+    :param alias: The go-bouncer alias to get the version of. For example, 'firefox-latest'
+    :param base_url: The url of the service that hosts the product details.
+    :return String: The version number of Firefox
+    """
+    products = get_product_mappings()
+    return products[alias]
+
+
 def get_firefox_locales():
     """Fetches build versions for each localization of Firefox from Mozilla's Release
     Engineering Team.
@@ -111,3 +125,15 @@ def get_firefox_locales():
         versions = locale_data[locale]
         locale_objs.append(FirefoxLocale(locale, versions))
     return locale_objs
+
+
+def get_product_mappings(base_url=_product_details_url):
+    """Get a current list of product details, primary Firefox aliases and the
+    current version numbers.
+    The default url that product information is pulled from is https://product-details.mozilla.org/1.0/firefox_versions.json
+
+    :param base_url: The url of the service that hosts the product details.
+    :return dictionary: Product aliases and version numbers
+    """
+    releng_aliases = fetch_current_fx_product_details(base_url)
+    return generate_fx_alias_ver_mappings(releng_aliases)
