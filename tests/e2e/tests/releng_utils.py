@@ -103,7 +103,7 @@ def get_version_info_for_alias(alias, base_url=_product_details_url):
     :param base_url: The url of the service that hosts the product details.
     :return String: The version number of Firefox
     """
-    products = get_product_mappings()
+    products = get_product_mappings(base_url)
     return products[alias]
 
 
