@@ -15,24 +15,27 @@ class TestRedirects(Base):
 
     _locales = utils.get_firefox_locales()
     _os = ('win', 'win64', 'linux', 'linux64', 'osx')
-    _winxp_esr_version = '52.1.0esr.exe'
+    _winxp_esr_version = utils.get_version_info_for_alias('firefox-esr-latest')
     _winxp_products = [
-        '38.5.1esr',
-        '38.5.2esr',
-        '38.5.3esr',
-        '38.6.3esr',
-        '40.0.0esr',
         'stub',
         'latest',
         'sha1',
-        '42.0',
-        '43.0.1',
-        '44.0',
+        'esr-latest',
+        'esr-sha1',
+        'esr-stub',
         'beta',
         'beta-latest',
+        'beta-sha',
+        'beta-stub',
+        '38.5.1esr',
+        '40.0.0esr',
+        '58.0.0esr',
+        '42.0',
+        '43.0.1',
         '49.0b8',
-        '49.0b10',
-        '49.0b37'
+        '49.0b8-ssl',
+        '100.0',
+        'cats'
     ]
 
     @pytest.mark.parametrize(('product_alias'), _winxp_products)
