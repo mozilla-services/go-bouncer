@@ -21,7 +21,6 @@ class TestRedirects(Base):
         'latest',
         'sha1',
         'esr-latest',
-        'esr-sha1',
         'esr-stub',
         'beta',
         'beta-latest',
