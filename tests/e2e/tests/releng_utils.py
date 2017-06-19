@@ -38,9 +38,9 @@ _firefox_versions_uri = 'firefox_versions.json'
 # mappings adapted off of https://github.com/mozilla-releng/ship-it/blob/master/kickoff/config.py
 releng_to_bouncer_alias_dict = {
     'FIREFOX_AURORA': 'firefox-aurora-latest',
-    'FIREFOX_ESR_NEXT': 'firefox-esr-latest',
+    'FIREFOX_ESR_NEXT': None,   # no checks to run on this product
     'LATEST_FIREFOX_VERSION': 'firefox-latest',
-    'FIREFOX_ESR': None,  # no checks to run on this product
+    'FIREFOX_ESR': 'firefox-esr-latest',
     'FIREFOX_NIGHTLY': 'firefox-nightly-latest',
     'LATEST_FIREFOX_OLDER_VERSION': None,  # no checks to run on this product
     'LATEST_FIREFOX_RELEASED_DEVEL_VERSION': 'firefox-beta-latest',
