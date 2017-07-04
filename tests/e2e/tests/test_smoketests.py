@@ -38,23 +38,29 @@ class TestSmokeTests(Base):
         assert ship_it == product_details, 'ship-it and product-details are out of sync'
 
     @pytest.mark.smoketest
-    @pytest.mark.parametrize('os', ('win', 'osx', 'linux'))
-    def test_verify_firefox_aliases_redirect_to_correct_products(self, base_url, os):
+    def test_verify_firefox_aliases_redirect_to_correct_products(self, base_url, alias, version, os):
         """Verifies the downloaded version of Firefox matches the expected version number
         and filename when a resource is requested using a go-bouncer alias.
 
         The test verifies the following aliases: firefox-latest, firefox-esr-latest,
         firefox-nightly-latest, firefox-beta-latest, firefox-beta-latest, firefox-aurora-latest.
         """
-        releng_aliases = utils.fetch_current_fx_product_details()
-        expected_products = utils.generate_fx_alias_ver_mappings(releng_aliases)
         get_params = {
-            'product': 'alias',
+            'product': alias,
             'lang': 'en-US',
             'os': os
         }
-        for alias, product_version in expected_products.iteritems():
-            fx_pkg_name = self.get_expected_fx_pkg_str(os, alias, product_version)
-            # set the GET params that will be sent to bouncer.
-            get_params['product'] = alias
-            self.verify_redirect_to_correct_product(base_url, fx_pkg_name, get_params)
+        fx_pkg_name = self.get_expected_fx_pkg_str(os, alias, version)
+        # set the GET params that will be sent to bouncer.
+        self.verify_redirect_to_correct_product(base_url, fx_pkg_name, get_params)
+
+
+def pytest_generate_tests(metafunc):
+    if 'alias' in metafunc.fixturenames:
+        products = utils.fetch_current_fx_product_details()
+        aliases = utils.generate_fx_alias_ver_mappings(products)
+        argvalues = []
+        for os in ('win', 'osx', 'linux'):
+            for alias, version in aliases.items():
+                argvalues.append((alias, version, os))
+        metafunc.parametrize(['alias', 'version', 'os'], argvalues)
