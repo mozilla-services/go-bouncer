@@ -86,7 +86,7 @@ class Base:
             response = requests.head(url, headers=headers, verify=False, timeout=15, params=params, allow_redirects=True)
         except requests.RequestException as e:
             request_url = '%s/?%s' % (url, urlencode(params))
-            raise AssertionError('Failing URL: %s redirected to %s Error message: %s' % (request_url, response.url, e))
+            raise AssertionError('Failing URL: %s. %s' % (request_url, e))
         return response
 
     def response_info_failure_message(self, url, param, response):
