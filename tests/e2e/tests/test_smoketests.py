@@ -24,20 +24,6 @@ class TestSmokeTests(Base):
         assert releng_aliases.keys().sort() == bouncer_aliases.keys().sort()
 
     @pytest.mark.smoketest
-    @pytest.mark.xfail(reason="Our Jenkins CI doesn't have access to ship-it")
-    def test_verify_product_details_is_in_sync_with_ship_it(self):
-        """Verify https://product-details.mozilla.org/1.0/firefox_versions.json and
-        https://ship-it.mozilla.org/1.0/firefox_versions.json are in sync.
-
-        Product-details is a mirror of ship-it. Ship-it is behind vpn. Services
-        such as download.mozilla.org and mozilla.org pull product information from
-        product-details.
-        """
-        ship_it = utils.fetch_current_fx_product_details(utils._ship_it_url)
-        product_details = utils.fetch_current_fx_product_details()
-        assert ship_it == product_details, 'ship-it and product-details are out of sync'
-
-    @pytest.mark.smoketest
     def test_verify_firefox_aliases_redirect_to_correct_products(self, base_url, alias, version, os):
         """Verifies the downloaded version of Firefox matches the expected version number
         and filename when a resource is requested using a go-bouncer alias.
