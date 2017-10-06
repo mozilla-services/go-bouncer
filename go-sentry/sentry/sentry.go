@@ -124,8 +124,6 @@ func (s *Sentry) checkLocation(mirror *bouncer.MirrorsActiveResult, location *bo
 	} else if strings.Contains(location.Path, "/seamonkey/") {
 		if strings.Contains(location.Path, "2.0.5") || strings.Contains(location.Path, "2.0.6") {
 			lang = "zh-CN"
-		} else {
-			lang = "tr"
 		}
 	} else if strings.Contains(strings.ToLower(location.Path), "-euballot") {
 		lang = "sv-SE"
