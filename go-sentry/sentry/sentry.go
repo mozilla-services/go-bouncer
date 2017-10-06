@@ -105,7 +105,33 @@ func (s *Sentry) checkLocation(mirror *bouncer.MirrorsActiveResult, location *bo
 		"location": location.Path,
 	})
 
-	path := strings.Replace(location.Path, ":lang", "en-US", -1)
+	lang := "en-US"
+
+	if strings.Contains(location.Path, "/firefox/") &&
+		!strings.Contains(location.Path, "/namoroka/") &&
+		!strings.Contains(location.Path, "/devpreview/") &&
+		!strings.Contains(location.Path, "3.6b1") &&
+		!strings.Contains(location.Path, "wince-arm") &&
+		!strings.Contains(strings.ToLower(location.Path), "euballot") {
+
+		lang = "zh-TW"
+	} else if strings.Contains(location.Path, "/thunderbird/") {
+		if strings.Contains(location.Path, "3.1a1") {
+			lang = "tr"
+		} else {
+			lang = "zh-TW"
+		}
+	} else if strings.Contains(location.Path, "/seamonkey/") {
+		if strings.Contains(location.Path, "2.0.5") || strings.Contains(location.Path, "2.0.6") {
+			lang = "zh-CN"
+		} else {
+			lang = "en-US"
+		}
+	} else if strings.Contains(strings.ToLower(location.Path), "-euballot") {
+		lang = "sv-SE"
+	}
+
+	path := strings.Replace(location.Path, ":lang", lang, -1)
 	url := mirror.BaseURL + path
 
 	start := time.Now()
