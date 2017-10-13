@@ -61,6 +61,7 @@ func Main(c *cli.Context) {
 		log.Fatalf("Could not open DB: %v", err)
 	}
 	defer db.Close()
+	db.SetConnMaxLifetime(60 * time.Second)
 
 	bouncerHandler := &BouncerHandler{
 		db:                 db,
