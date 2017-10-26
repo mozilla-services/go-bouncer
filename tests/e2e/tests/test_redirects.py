@@ -83,7 +83,7 @@ class TestRedirects(Base):
             self.response_info_failure_message(base_url, param, response)
 
     @pytest.mark.parametrize('os', _os)
-    @pytest.mark.parametrize('locale', _locales)
+    @pytest.mark.parametrize('locale', _locales, ids=lambda l: l.lang)
     def test_verify_locales_redirect_to_the_expected_product(self, base_url, locale, os):
         """Verifies the downloaded version of Firefox matches the expected version number
         and filename when Firefox is requested for a specific OS and locale.
