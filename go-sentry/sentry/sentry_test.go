@@ -59,11 +59,11 @@ func TestCheckLocation(t *testing.T) {
 		Path string
 		Lang string
 	}{
-		{"/firefox/releases/39.0/win32/:lang/Firefox%20Setup%2039.0.exe", "zh-TW"},
-		{"/thunderbird/releases/3.1a1/win32/:lang/Firefox%20Setup%2039.0.exe", "tr"},
-		{"/thunderbird/releases/39.0/win32/:lang/Firefox%20Setup%2039.0.exe", "zh-TW"},
-		{"/seamonkey/releases/39.0/win32/:lang/Firefox%20Setup%2039.0.exe", "tr"},
-		{"/firefox/releases/39.0/win32/:lang/Firefox%20Setup%2039.0-euBallot.exe", "sv-SE"},
+		{"/firefox/releases/39.0/win32/:lang/Firefox%20Setup%2039.0.exe", "en-US"},
+		{"/thunderbird/releases/3.1a1/win32/:lang/Firefox%20Setup%2039.0.exe", "en-US"},
+		{"/thunderbird/releases/39.0/win32/:lang/Firefox%20Setup%2039.0.exe", "en-US"},
+		{"/seamonkey/releases/39.0/win32/:lang/Firefox%20Setup%2039.0.exe", "en-US"},
+		{"/firefox/releases/39.0/win32/:lang/Firefox%20Setup%2039.0-euBallot.exe", "en-US"},
 	}
 
 	for _, loc := range locations {
