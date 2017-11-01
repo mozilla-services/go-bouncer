@@ -83,7 +83,7 @@ class Base:
                    'accept-language': locale,
                    'Connection': 'close'}
         try:
-            response = requests.head(url, headers=headers, verify=False, timeout=15, params=params, allow_redirects=True)
+            response = requests.head(url, headers=headers, verify=True, timeout=15, params=params, allow_redirects=True)
         except requests.RequestException as e:
             request_url = '%s/?%s' % (url, urlencode(params))
             raise AssertionError('Failing URL: %s redirected to %s Error message: %s' % (request_url, response.url, e))

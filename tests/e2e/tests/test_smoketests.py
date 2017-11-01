@@ -4,8 +4,8 @@
 
 import pytest
 
-from base import Base
-import releng_utils as utils
+from . import releng_utils as utils
+from .base import Base
 
 
 class TestSmokeTests(Base):
