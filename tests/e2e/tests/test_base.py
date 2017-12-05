@@ -58,17 +58,11 @@ class Base:
         response = self.request_with_headers(base_url, params=get_params)
         parsed_url = urlparse(response.url)
         # verify service is up and a 200 OK is returned
-        assert requests.codes.ok == response.status_code, \
-            'Redirect failed with HTTP status. %s' % \
-            self.response_info_failure_message(base_url, get_params, response)
+        assert requests.codes.ok == response.status_code
         # verify download location
-        assert parsed_url.netloc in self.cdn_netloc_locations, \
-            'Failed, redirected to unknown host. %s' % \
-            self.response_info_failure_message(base_url, get_params, response)
+        assert parsed_url.netloc in self.cdn_netloc_locations
         # verify Firefox package name and version
-        assert fx_pkg_name in response.url, \
-            'Failed: Expected product str did not match what was returned %s' % \
-            self.response_info_failure_message(base_url, get_params, response)
+        assert fx_pkg_name in response.url
 
     def request_with_headers(self, url, params, user_agent=_user_agent_firefox, locale='en-US'):
         """Make a request that includes 'user-agent', 'accept-language', and 'Connection: close' attributes in the

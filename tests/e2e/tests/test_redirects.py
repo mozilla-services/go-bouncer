@@ -9,7 +9,7 @@ import pytest
 import requests
 
 from . import releng_utils as utils
-from .base import Base
+from .test_base import Base
 
 
 class TestRedirects(Base):
