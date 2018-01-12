@@ -84,7 +84,7 @@ func TestBouncerShouldPinHttps(t *testing.T) {
 	req.Header.Set("X-Forwarded-Proto", "http")
 	assert.Equal(t, false, bouncerHandler.shouldPinHttps(req))
 
-	req.Header.Del("X-Forwarded-Proto", "http")
+	req.Header.Del("X-Forwarded-Proto")
 	assert.Equal(t, false, bouncerHandler.shouldPinHttps(req))
 }
 
