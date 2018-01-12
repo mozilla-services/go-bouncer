@@ -72,6 +72,7 @@ func TestBouncerHandlerParams(t *testing.T) {
 func TestBouncerShouldPinHttps(t *testing.T) {
 	bouncerHandler.PinHttpsHeaderName = ""
 	req, err := http.NewRequest("GET", "http://test/?product=firefox-latest&os=osx&lang=en-US", nil)
+	assert.NoError(t, err)
 	assert.Equal(t, false, bouncerHandler.shouldPinHttps(req))
 
 	req.Header.Set("X-Forwarded-Proto", "https")
