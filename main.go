@@ -36,6 +36,12 @@ func main() {
 			EnvVar: "BOUNCER_DB_DSN",
 		},
 		cli.StringFlag{
+			Name:   "pin-https-header-name",
+			Value:  "X-Forwarded-Proto",
+			Usage:  "If this flag is set and the request header value equals https, an https redirect will always be returned",
+			EnvVar: "BOUNCER_PIN_HTTPS_HEADER_NAME",
+		},
+		cli.StringFlag{
 			Name:   "pinned-baseurl-http",
 			Usage:  "if this flag is set it will always be the base url for http products. Scheme should be excluded, e.g.,: pinned-cdn.mozilla.com/pub",
 			EnvVar: "BOUNCER_PINNED_BASEURL_HTTP",
@@ -66,6 +72,7 @@ func Main(c *cli.Context) {
 	bouncerHandler := &BouncerHandler{
 		db:                 db,
 		CacheTime:          time.Duration(c.Int("cache-time")) * time.Second,
+		PinHttpsHeaderName: c.String("pin-https-header-name"),
 		PinnedBaseURLHttp:  c.String("pinned-baseurl-http"),
 		PinnedBaseURLHttps: c.String("pinned-baseurl-https"),
 		StubRootURL:        c.String("stub-root-url"),
