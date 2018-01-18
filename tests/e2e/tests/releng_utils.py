@@ -4,33 +4,6 @@
 
 import requests
 
-
-class FirefoxLocale:
-
-    def __init__(self, locale, version_info):
-        self.lang = locale
-        self.versions = self.parse_versions(version_info)
-
-    def parse_versions(self, version_info):
-        """Parses a dict and returns a list of Firefox versions,
-        ignoring Aurora and ESR builds.
-
-        :param version_info: {string:string} A dictionary with k,v of version and
-        os.
-
-        :returns: [string] A list of Firefox versions
-        """
-        versions = []
-        for version, os in version_info.items():
-            # remove all aurora builds and esr builds
-            if 'a' not in version and 'esr' not in version:
-                versions.append(version)
-        return versions
-
-    def __repr__(self):
-        return self.locale
-
-
 _product_details_url = 'https://product-details.mozilla.org/1.0/%s'  # mirror of ship-it, not behind vpn
 _ship_it_url = 'https://ship-it.mozilla.org/json/1.0/%s'  # behind vpn
 _firefox_primary_builds_uri = 'firefox_primary_builds.json'
@@ -113,18 +86,11 @@ def get_firefox_locales():
 
     Release Engineering maintains an up-to-date JSON file with the current
     Firefox release values - https://product-details.mozilla.org/1.0/firefox_primary_builds.json.
-
-    :returns list: [FirefoxLocale objects] a list of FirefoxLocale objects.
     """
-    locale_objs = []
     url = _product_details_url % _firefox_primary_builds_uri
     response = requests.get(url)
     response.raise_for_status()
-    locale_data = response.json()
-    for locale in locale_data:
-        versions = locale_data[locale]
-        locale_objs.append(FirefoxLocale(locale, versions))
-    return locale_objs
+    return response.json()
 
 
 def get_product_mappings(base_url=_product_details_url):
