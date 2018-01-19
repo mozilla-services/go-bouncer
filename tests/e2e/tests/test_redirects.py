@@ -112,7 +112,6 @@ def pytest_generate_tests(metafunc):
         locales = utils.get_firefox_locales()
         _versions = filter(valid_version, utils.get_product_mappings().values())
         for locale, versions in locales.items():
-            print(locale, versions, _versions)
             for version in [v for v in versions if v in _versions]:
                 argvalues.append((locale, version))
         metafunc.parametrize(['locale', 'version'], argvalues)
