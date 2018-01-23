@@ -1,9 +1,5 @@
 pipeline {
-  agent {
-    dockerfile {
-      dir 'tests/e2e'
-    }
-  }
+  agent any
   libraries {
     lib('fxtest@1.10')
   }
@@ -14,11 +10,21 @@ pipeline {
   }
   stages {
     stage('Lint') {
+      agent {
+        dockerfile {
+          dir 'tests/e2e'
+        }
+      }
       steps {
         sh "flake8 tests/e2e/"
       }
     }
     stage('Test') {
+      agent {
+        dockerfile {
+          dir 'tests/e2e'
+        }
+      }
       environment {
         PYTEST_PROCESSES = "${PYTEST_PROCESSES ?: "auto"}"
         PULSE = credentials('PULSE')
