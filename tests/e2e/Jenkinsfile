@@ -5,7 +5,7 @@ pipeline {
     }
   }
   libraries {
-    lib('fxtest@1.9')
+    lib('fxtest@1.10')
   }
   options {
     ansiColor('xterm')
@@ -34,6 +34,7 @@ pipeline {
       }
       post {
         always {
+          stash includes: 'tests/e2e/results/*', name: 'results'
           archiveArtifacts 'tests/e2e/results/*'
           junit 'tests/e2e/results/*.xml'
           submitToActiveData('tests/e2e/results/raw.txt')
@@ -43,6 +44,19 @@ pipeline {
     }
   }
   post {
+    always {
+      unstash 'results'
+      publishHTML(target: [
+        allowMissing: false,
+        alwaysLinkToLastBuild: true,
+        keepAll: true,
+        reportDir: 'results',
+        reportFiles: "index.html",
+        reportName: 'HTML Report'])
+    }
+    changed {
+      ircNotification()
+    }
     failure {
       emailext(
         attachLog: true,
@@ -51,9 +65,6 @@ pipeline {
         replyTo: '$DEFAULT_REPLYTO',
         subject: '$DEFAULT_SUBJECT',
         to: '$DEFAULT_RECIPIENTS')
-    }
-    changed {
-      ircNotification()
     }
   }
 }
