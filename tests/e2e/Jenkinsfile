@@ -19,15 +19,15 @@ pipeline {
       }
     }
     stage('Test') {
-    environment {
-      PYTEST_PROCESSES = "${PYTEST_PROCESSES ?: "auto"}"
-      PULSE = credentials('PULSE')
-    }
+      environment {
+        PYTEST_PROCESSES = "${PYTEST_PROCESSES ?: "auto"}"
+        PULSE = credentials('PULSE')
+      }
       steps {
-        sh "pytest tests/e2e/ --junit-xml=tests/e2e/results/junit.xml" +
+        sh "pytest tests/e2e/ " +
         "-n=${PYTEST_PROCESSES} " +
         "--color=yes " +
-        "--html=tests/e2e/results/index.html " +
+        "--junit-xml=tests/e2e/results/junit.xml --html=tests/e2e/results/index.html " +
         "--self-contained-html " +
         "--log-raw=tests/e2e/results/raw.txt " +
         "--log-tbpl=tests/e2e/results/tbpl.txt"
