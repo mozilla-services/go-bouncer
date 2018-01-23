@@ -35,7 +35,7 @@ pipeline {
           "--color=yes " +
           "--junit-xml=tests/e2e/results/junit.xml " +
           "--log-raw=tests/e2e/results/raw.txt " +
-          "--log-tbpl=tests/e2e/results/tbpl.txt" +
+          "--log-tbpl=tests/e2e/results/tbpl.txt " +
           "tests/e2e/"
       }
       post {
