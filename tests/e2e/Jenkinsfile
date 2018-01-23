@@ -1,5 +1,9 @@
 pipeline {
-  agent any
+  agent {
+    dockerfile {
+      dir 'tests/e2e'
+    }
+  }
   libraries {
     lib('fxtest@1.9')
   }
@@ -18,19 +22,22 @@ pipeline {
   stages {
     stage('Lint') {
       steps {
-        sh "tox -c tests/e2e/tox.ini -e flake8"
+        sh "flake8 tests/e2e/"
       }
     }
     stage('Test') {
       steps {
-        sh "tox -c tests/e2e/tox.ini -e py27"
+        sh "pytest tests/e2e/ --junit-xml=tests/e2e/results/junit.xml" +
+        "--html=tests/e2e/results/index.html --self-contained-html " +
+        "--log-raw=tests/results/raw.txt" +
+        "--log-tbpl=tests/e2e/results/tbpl.txt"
       }
       post {
         always {
           archiveArtifacts 'tests/e2e/results/*'
           junit 'tests/e2e/results/*.xml'
-          submitToActiveData('tests/e2e/results/py27_raw.txt')
-          submitToTreeherder('go-bouncer', 'T', 'Tests', 'tests/e2e/results/*', 'tests/e2e/results/py27_tbpl.txt')
+          submitToActiveData('tests/e2e/results/raw.txt')
+          submitToTreeherder('go-bouncer', 'T', 'Tests', 'tests/e2e/results/*', 'tests/e2e/results/tbpl.txt')
         }
       }
     }
@@ -39,6 +46,7 @@ pipeline {
     failure {
       emailext(
         attachLog: true,
+        attachmentsPattern: 'tests/e2e/results/index.html',
         body: '$BUILD_URL\n\n$FAILED_TESTS',
         replyTo: '$DEFAULT_REPLYTO',
         subject: '$DEFAULT_SUBJECT',
