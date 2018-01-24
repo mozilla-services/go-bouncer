@@ -5,40 +5,42 @@
 
 Thank you for checking out Mozilla's Bouncer test suite. Mozilla and [Web QA team](https://quality.mozilla.org/teams/web-qa/) are grateful for the help and hard work of many contributors [past](https://github.com/mozilla/bouncer-tests/graphs/contributors) and [present](https://github.com/mozilla-services/go-bouncer/graphs/contributors) like yourself.
 
-## Getting involved as a contributor
+## Getting involved
 
-We love working with contributors to fill out the test coverage for Bouncer Tests, but it does require a few skills. You will need to know some Python and you will need some basic familiarity with [GitHub](https://guides.github.com/).
+We love working with contributors to improve test coverage our projects, but it
+does require a few skills. By contributing to our test suite you will have an
+opportunity to learn and/or improve your skills with Python, Selenium
+WebDriver, GitHub, virtual environments, the Page Object Model, and more.
 
-If you need to brush up on programming but are eager to start contributing immediately, please consider helping us [find bugs in Mozilla Firefox](https://oneanddone.mozilla.org/team/2/) or [find bugs in the Mozilla websites](https://oneanddone.mozilla.org/team/6/) tested by the Web QA team.
+Our [new contributor guide][guide] should help you to get started, and will
+also point you in the right direction if you need to ask questions.
 
-To brush up on Python skills before engaging with us, [Dive Into Python](http://www.diveintopython.net/toc/) is an excellent resource. MIT also has [lecture notes on Python](http://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-189-a-gentle-introduction-to-programming-using-python-january-iap-2011/) available through their open courseware. The programming concepts you will need to know include functions, working with classes, and some object oriented programming basics.
+## How to run the tests
 
-## Questions are always welcome
+### Clone the repository
 
-While we take pains to keep our documentation updated, the best source of information is those of us who work on the project. Don't be afraid to join us in [irc.mozilla.org](https://wiki.mozilla.org/IRC) [#mozwebqa](http://chat.mibbit.com/?server=irc.mozilla.org&channel=#mozwebqa) to ask questions about Bouncer Tests. Mozilla also hosts the [#mozillians](http://chat.mibbit.com/?server=irc.mozilla.org&channel=#mozillians) chat room to answer your general questions about contributing to Mozilla.
+If you have cloned this project already, then you can skip this; otherwise
+you'll need to clone this repo using Git. If you do not know how to clone a
+GitHub repository, check out this [help page][git clone] from GitHub.
 
-## How to set up and build Bouncer tests locally
-
-This repository contains tests suite used to test Mozilla's Bouncer. Mozilla maintains a guide to run automated tests on our [QMO website](https://quality.mozilla.org/docs/webqa/running-webqa-automated-tests/).
-
-You will need to install the following:
-
-* **Git**: If you have cloned this project already then you can skip this! GitHub has excellent guides for [Windows](https://help.github.com/articles/set-up-git/#platform-windows), [OS X](https://help.github.com/articles/set-up-git/#platform-mac) and [Linux](https://help.github.com/articles/set-up-git/#platform-linux).
-* **Python**: Before you will be able to run these tests you will need to have [Python 2.6](https://www.python.org/download/releases/2.6/) installed.
-* **Tox**: You will need to [install Tox](https://testrun.org/tox/latest/install.html) to manage the virtual environments and run the tests.
+If you think you would like to contribute to the tests by writing or
+maintaining them in the future, it would be a good idea to create a fork of
+this repository first, and then clone that. GitHub also has great instructions
+for [forking a repository][git fork].
 
 ### Running tests locally
 
-To run these tests, use:
+Then you can run the tests using [Docker][]:
 
 ```bash
-tox -e e2e -- --base-url=http://bouncer-bouncer.stage.mozaws.net
+$ docker build -t bouncer-tests .
+$ docker run -it bouncer-tests
 ```
 
 Use `-k` to run a specific test. For example,
 
 ```bash
-tox -e e2e -- --base-url=http://bouncer-bouncer.stage.mozaws.net -k test_that_checks_redirect_using_incorrect_query_values
+docker run -it bouncer-tests pytest -k test_that_checks_redirect_using_incorrect_query_values
 ```
 
 ## Writing tests
@@ -60,3 +62,8 @@ This Source Code Form is subject to the terms of the Mozilla Public
 License, v. 2.0. If a copy of the MPL was not distributed with this
 file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ```
+
+[Docker]: https://www.docker.com
+[guide]: http://firefox-test-engineering.readthedocs.io/en/latest/guide/index.html
+[git clone]: https://help.github.com/articles/cloning-a-repository/
+[git fork]: https://help.github.com/articles/fork-a-repo/

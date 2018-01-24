@@ -1,41 +1,57 @@
 pipeline {
   agent any
   libraries {
-    lib('fxtest@1.9')
+    lib('fxtest@1.10')
   }
   options {
     ansiColor('xterm')
     timestamps()
     timeout(time: 5, unit: 'MINUTES')
   }
-  environment {
-    PYTEST_PROCESSES = "${PYTEST_PROCESSES ?: "auto"}"
-    PYTEST_ADDOPTS =
-      "-n=${PYTEST_PROCESSES} " +
-      "--color=yes"
-    PULSE = credentials('PULSE')
-  }
   stages {
     stage('Lint') {
+      agent {
+        dockerfile {
+          dir 'tests/e2e'
+        }
+      }
       steps {
-        sh "tox -c tests/e2e/tox.ini -e flake8"
+        sh "flake8 tests/e2e/"
       }
     }
     stage('Test') {
+      agent {
+        dockerfile {
+          dir 'tests/e2e'
+        }
+      }
+      environment {
+        PYTEST_PROCESSES = "${PYTEST_PROCESSES ?: "auto"}"
+        PULSE = credentials('PULSE')
+      }
       steps {
-        sh "tox -c tests/e2e/tox.ini -e py27"
+        sh "pytest " +
+          "-n=${PYTEST_PROCESSES} " +
+          "--color=yes " +
+          "--junit-xml=tests/e2e/results/junit.xml " +
+          "--log-raw=tests/e2e/results/raw.txt " +
+          "--log-tbpl=tests/e2e/results/tbpl.txt " +
+          "tests/e2e/"
       }
       post {
         always {
           archiveArtifacts 'tests/e2e/results/*'
           junit 'tests/e2e/results/*.xml'
-          submitToActiveData('tests/e2e/results/py27_raw.txt')
-          submitToTreeherder('go-bouncer', 'T', 'Tests', 'tests/e2e/results/*', 'tests/e2e/results/py27_tbpl.txt')
+          submitToActiveData('tests/e2e/results/raw.txt')
+          submitToTreeherder('go-bouncer', 'T', 'Tests', 'tests/e2e/results/*', 'tests/e2e/results/tbpl.txt')
         }
       }
     }
   }
   post {
+    changed {
+      ircNotification()
+    }
     failure {
       emailext(
         attachLog: true,
@@ -43,9 +59,6 @@ pipeline {
         replyTo: '$DEFAULT_REPLYTO',
         subject: '$DEFAULT_SUBJECT',
         to: '$DEFAULT_RECIPIENTS')
-    }
-    changed {
-      ircNotification()
     }
   }
 }
