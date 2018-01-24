@@ -30,7 +30,7 @@ for [forking a repository][git fork].
 
 ### Running tests locally
 
-To run these tests, use:
+Then you can run the tests using [Docker][]:
 
 ```bash
 $ docker build -t bouncer-tests .
@@ -63,6 +63,7 @@ License, v. 2.0. If a copy of the MPL was not distributed with this
 file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ```
 
+[Docker]: https://www.docker.com
 [guide]: http://firefox-test-engineering.readthedocs.io/en/latest/guide/index.html
 [git clone]: https://help.github.com/articles/cloning-a-repository/
 [git fork]: https://help.github.com/articles/fork-a-repo/
