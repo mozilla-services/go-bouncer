@@ -56,13 +56,14 @@ class Base:
         :param get_params: The GET params to pass to Bouncer.
         """
         response = self.request_with_headers(base_url, params=get_params)
+        request_url = response.history[0].url
         parsed_url = urlparse(response.url)
         # verify service is up and a 200 OK is returned
-        assert requests.codes.ok == response.status_code
+        assert requests.codes.ok == response.status_code, request_url
         # verify download location
-        assert parsed_url.netloc in self.cdn_netloc_locations
+        assert parsed_url.netloc in self.cdn_netloc_locations, request_url
         # verify Firefox package name and version
-        assert fx_pkg_name in response.url
+        assert fx_pkg_name in response.url, request_url
 
     def request_with_headers(self, url, params, user_agent=_user_agent_firefox, locale='en-US'):
         """Make a request that includes 'user-agent', 'accept-language', and 'Connection: close' attributes in the

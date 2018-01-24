@@ -83,25 +83,35 @@ class TestRedirects(Base):
             self.response_info_failure_message(base_url, param, response)
 
     @pytest.mark.parametrize('os', _os)
-    @pytest.mark.parametrize('locale', _locales, ids=lambda l: l.lang)
-    def test_verify_locales_redirect_to_the_expected_product(self, base_url, locale, os):
+    def test_verify_locales_redirect_to_the_expected_product(self, base_url, locale, os, version):
         """Verifies the downloaded version of Firefox matches the expected version number
         and filename when Firefox is requested for a specific OS and locale.
-
-        The test verifies the following aliases: firefox-latest, firefox-esr-latest,
-        firefox-nightly-latest, firefox-beta-latest, firefox-aurora-latest.
         """
-        lang = locale.lang
         # Ja locale has a macOS-specific locale
-        if lang == 'ja' and os == 'osx':
-            lang = 'ja-JP-mac'
+        if locale == 'ja' and os == 'osx':
+            locale = 'ja-JP-mac'
 
-        for version in locale.versions:
-            get_params = {
-                'product': 'firefox-' + version,
-                'lang': lang,
-                'os': os
-            }
+        get_params = {
+            'product': 'firefox-' + version,
+            'lang': locale,
+            'os': os
+        }
 
-            fx_pkg_name = self.get_expected_fx_pkg_str(os, 'latest', version)
-            self.verify_redirect_to_correct_product(base_url, fx_pkg_name, get_params)
+        fx_pkg_name = self.get_expected_fx_pkg_str(os, 'latest', version)
+        self.verify_redirect_to_correct_product(base_url, fx_pkg_name, get_params)
+
+
+def pytest_generate_tests(metafunc):
+    if 'locale' in metafunc.fixturenames:
+        argvalues = []
+
+        def valid_version(version):
+            # there are no builds for aurora locales
+            return 'a' not in version
+
+        locales = utils.get_firefox_locales()
+        _versions = filter(valid_version, utils.get_product_mappings().values())
+        for locale, versions in locales.items():
+            for version in [v for v in versions if v in _versions]:
+                argvalues.append((locale, version))
+        metafunc.parametrize(['locale', 'version'], argvalues)
