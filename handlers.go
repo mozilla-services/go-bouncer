@@ -219,6 +219,7 @@ type BouncerHandler struct {
 	db *bouncer.DB
 
 	CacheTime          time.Duration
+	PinHttpsHeaderName string
 	PinnedBaseURLHttp  string
 	PinnedBaseURLHttps string
 	StubRootURL        string
@@ -247,7 +248,7 @@ func randomMirror(mirrors []bouncer.MirrorsResult) *bouncer.MirrorsResult {
 
 // URL returns the final redirect URL given a lang, os and product
 // if the string is == "", no mirror or location was found
-func (b *BouncerHandler) URL(lang, os, product string) (string, error) {
+func (b *BouncerHandler) URL(pinHttps bool, lang, os, product string) (string, error) {
 	product, err := b.db.AliasFor(product)
 	if err != nil {
 		return "", err
@@ -277,7 +278,7 @@ func (b *BouncerHandler) URL(lang, os, product string) (string, error) {
 		return "", err
 	}
 
-	mirrorBaseURL, err := b.mirrorBaseURL(sslOnly, lang, locationID)
+	mirrorBaseURL, err := b.mirrorBaseURL(pinHttps || sslOnly, lang, locationID)
 	if err != nil || mirrorBaseURL == "" {
 		return "", err
 	}
@@ -332,6 +333,14 @@ func (b *BouncerHandler) stubAttributionURL(reqParams *BouncerParams) string {
 	return b.StubRootURL + "?" + query.Encode()
 }
 
+func (b *BouncerHandler) shouldPinHttps(req *http.Request) bool {
+	if b.PinHttpsHeaderName == "" {
+		return false
+	}
+
+	return req.Header.Get(b.PinHttpsHeaderName) == "https"
+}
+
 func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	reqParams := BouncerParamsFromValues(req.URL.Query())
 
@@ -369,7 +378,7 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		reqParams.Product = sha1Product(reqParams.Product)
 	}
 
-	url, err := b.URL(reqParams.Lang, reqParams.OS, reqParams.Product)
+	url, err := b.URL(b.shouldPinHttps(req), reqParams.Lang, reqParams.OS, reqParams.Product)
 	if err != nil {
 		http.Error(w, "Internal Server Error.", http.StatusInternalServerError)
 		log.Println(err)

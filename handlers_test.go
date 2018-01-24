@@ -20,13 +20,15 @@ func init() {
 	}
 
 	bouncerHandler = &BouncerHandler{
-		db:          testDB,
-		StubRootURL: "https://stub/",
+		db:                 testDB,
+		StubRootURL:        "https://stub/",
+		PinHttpsHeaderName: "X-Forwarded-Proto",
 	}
 	bouncerHandlerPinned = &BouncerHandler{
 		db:                 testDB,
 		PinnedBaseURLHttp:  "download-sha1.cdn.mozilla.net/pub",
 		PinnedBaseURLHttps: "download-sha1.cdn.mozilla.net/pub",
+		PinHttpsHeaderName: "X-Forwarded-Proto",
 	}
 }
 
@@ -67,6 +69,26 @@ func TestBouncerHandlerParams(t *testing.T) {
 	assert.Equal(t, "http://www.mozilla.org/", w.HeaderMap.Get("Location"))
 }
 
+func TestBouncerShouldPinHttps(t *testing.T) {
+	bouncerHandler.PinHttpsHeaderName = ""
+	req, err := http.NewRequest("GET", "http://test/?product=firefox-latest&os=osx&lang=en-US", nil)
+	assert.NoError(t, err)
+	assert.Equal(t, false, bouncerHandler.shouldPinHttps(req))
+
+	req.Header.Set("X-Forwarded-Proto", "https")
+	assert.Equal(t, false, bouncerHandler.shouldPinHttps(req))
+
+	bouncerHandler.PinHttpsHeaderName = "X-Forwarded-Proto"
+
+	assert.Equal(t, true, bouncerHandler.shouldPinHttps(req))
+
+	req.Header.Set("X-Forwarded-Proto", "http")
+	assert.Equal(t, false, bouncerHandler.shouldPinHttps(req))
+
+	req.Header.Del("X-Forwarded-Proto")
+	assert.Equal(t, false, bouncerHandler.shouldPinHttps(req))
+}
+
 func TestBouncerHandlerPrintQuery(t *testing.T) {
 	w := httptest.NewRecorder()
 
@@ -84,19 +106,22 @@ func TestBouncerHandlerPinnedValid(t *testing.T) {
 		URL              string
 		ExpectedLocation string
 		UserAgent        string
+		XForwardedProto  string
 	}{
-		{"http://test/?product=firefox-latest&os=osx&lang=en-US", "http://download-sha1.cdn.mozilla.net/pub/firefox/releases/39.0/mac/en-US/Firefox%2039.0.dmg", defaultUA},
-		{"http://test/?product=firefox-latest&os=win64&lang=en-US", "http://download-sha1.cdn.mozilla.net/pub/firefox/releases/39.0/win64/en-US/Firefox%20Setup%2039.0.exe", defaultUA},
-		{"http://test/?product=Firefox-SSL&os=win64&lang=en-US", "https://download-sha1.cdn.mozilla.net/pub/firefox/releases/39.0/win64/en-US/Firefox%20Setup%2039.0.exe", defaultUA},
-		{"http://test/?product=Firefox-SSL&os=win&lang=en-US", "https://download-sha1.cdn.mozilla.net/pub/firefox/releases/43.0.1/win32/en-US/Firefox%20Setup%2043.0.1.exe", "Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)"},  // Windows XP
-		{"http://test/?product=Firefox-SSL&os=win&lang=en-US", "https://download-sha1.cdn.mozilla.net/pub/firefox/releases/43.0.1/win32/en-US/Firefox%20Setup%2043.0.1.exe", "Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 6.0; SV1; .NET CLR 2.0.50727)"},  // Windows Vista
-		{"http://test/?product=Firefox-SSL&os=win64&lang=en-US", "https://download-sha1.cdn.mozilla.net/pub/firefox/releases/39.0/win64/en-US/Firefox%20Setup%2039.0.exe", "Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)"},    // Windows XP 64 bit - should get normal win64 build
-		{"http://test/?product=Firefox-stub&os=win&lang=en-US", "https://download-sha1.cdn.mozilla.net/pub/firefox/releases/43.0.1/win32/en-US/Firefox%20Setup%2043.0.1.exe", "Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)"}, // Windows XP no stub
+		{"http://test/?product=firefox-latest&os=osx&lang=en-US", "http://download-sha1.cdn.mozilla.net/pub/firefox/releases/39.0/mac/en-US/Firefox%2039.0.dmg", defaultUA, "http"},
+		{"http://test/?product=firefox-latest&os=win64&lang=en-US", "http://download-sha1.cdn.mozilla.net/pub/firefox/releases/39.0/win64/en-US/Firefox%20Setup%2039.0.exe", defaultUA, "http"},
+		{"http://test/?product=firefox-latest&os=win64&lang=en-US", "https://download-sha1.cdn.mozilla.net/pub/firefox/releases/39.0/win64/en-US/Firefox%20Setup%2039.0.exe", defaultUA, "https"},
+		{"http://test/?product=Firefox-SSL&os=win64&lang=en-US", "https://download-sha1.cdn.mozilla.net/pub/firefox/releases/39.0/win64/en-US/Firefox%20Setup%2039.0.exe", defaultUA, "http"},
+		{"http://test/?product=Firefox-SSL&os=win&lang=en-US", "https://download-sha1.cdn.mozilla.net/pub/firefox/releases/43.0.1/win32/en-US/Firefox%20Setup%2043.0.1.exe", "Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)", "http"},  // Windows XP
+		{"http://test/?product=Firefox-SSL&os=win&lang=en-US", "https://download-sha1.cdn.mozilla.net/pub/firefox/releases/43.0.1/win32/en-US/Firefox%20Setup%2043.0.1.exe", "Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 6.0; SV1; .NET CLR 2.0.50727)", "http"},  // Windows Vista
+		{"http://test/?product=Firefox-SSL&os=win64&lang=en-US", "https://download-sha1.cdn.mozilla.net/pub/firefox/releases/39.0/win64/en-US/Firefox%20Setup%2039.0.exe", "Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)", "http"},    // Windows XP 64 bit - should get normal win64 build
+		{"http://test/?product=Firefox-stub&os=win&lang=en-US", "https://download-sha1.cdn.mozilla.net/pub/firefox/releases/43.0.1/win32/en-US/Firefox%20Setup%2043.0.1.exe", "Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)", "http"}, // Windows XP no stub
 	}
 
 	for _, testRequest := range testRequests {
 		w := httptest.NewRecorder()
 		req, err := http.NewRequest("GET", testRequest.URL, nil)
+		req.Header.Set("X-Forwarded-Proto", testRequest.XForwardedProto)
 		assert.NoError(t, err, "url: %v ua: %v", testRequest.URL, testRequest.UserAgent)
 
 		req.Header.Set("User-Agent", testRequest.UserAgent)
