@@ -34,12 +34,15 @@ pipeline {
           "-n=${PYTEST_PROCESSES} " +
           "--color=yes " +
           "--junit-xml=tests/e2e/results/junit.xml " +
+          "--html=tests/e2e/results/index.html " +
+          "--self-contained-html " +
           "--log-raw=tests/e2e/results/raw.txt " +
           "--log-tbpl=tests/e2e/results/tbpl.txt " +
           "tests/e2e/"
       }
       post {
         always {
+          stash includes: 'tests/e2e/results/*', name: 'results'
           archiveArtifacts 'tests/e2e/results/*'
           junit 'tests/e2e/results/*.xml'
           submitToActiveData('tests/e2e/results/raw.txt')
@@ -49,6 +52,16 @@ pipeline {
     }
   }
   post {
+    always {
+      unstash 'results'
+      publishHTML(target: [
+        allowMissing: false,
+        alwaysLinkToLastBuild: true,
+        keepAll: true,
+        reportDir: 'tests/e2e/results',
+        reportFiles: 'index.html',
+        reportName: 'HTML Report'])
+    }
     changed {
       ircNotification()
     }
