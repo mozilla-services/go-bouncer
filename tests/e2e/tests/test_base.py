@@ -2,7 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from urllib import urlencode
 from urlparse import urlparse
 
 import requests
@@ -77,12 +76,7 @@ class Base:
         headers = {'user-agent': user_agent,
                    'accept-language': locale,
                    'Connection': 'close'}
-        try:
-            response = requests.head(url, headers=headers, verify=True, timeout=15, params=params, allow_redirects=True)
-        except requests.RequestException as e:
-            request_url = '%s/?%s' % (url, urlencode(params))
-            raise AssertionError('Failing URL: %s redirected to %s Error message: %s' % (request_url, response.url, e))
-        return response
+        return requests.head(url, headers=headers, verify=True, timeout=15, params=params, allow_redirects=True)
 
     def response_info_failure_message(self, url, param, response):
         """Generate a helpful error message that includes the server URL, GET params,
