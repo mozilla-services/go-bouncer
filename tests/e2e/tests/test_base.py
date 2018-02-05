@@ -55,7 +55,7 @@ class Base:
         :param get_params: The GET params to pass to Bouncer.
         """
         response = self.request_with_headers(base_url, params=get_params)
-        request_url = response.history[0].url
+        request_url = response.history[0].url if response.history else response.url
         parsed_url = urlparse(response.url)
         # verify service is up and a 200 OK is returned
         assert requests.codes.ok == response.status_code, request_url
