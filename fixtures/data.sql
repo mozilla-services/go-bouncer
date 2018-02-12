@@ -226,25 +226,6 @@ UNLOCK TABLES;
 
 LOCK TABLES `mirror_location_mirror_map` WRITE;
 /*!40000 ALTER TABLE `mirror_location_mirror_map` DISABLE KEYS */;
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,1,1,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,1,2,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,1,3,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,1,4,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,1,5,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,1,6,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,1,7,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,1,8,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,1,9,1);
-
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,2,1,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,2,2,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,2,3,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,2,4,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,2,5,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,2,6,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,2,7,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,2,8,1);
-INSERT INTO `mirror_location_mirror_map` (`active`, `mirror_id`, `location_id`, `healthy`) VALUES (1,2,9,1);
 /*!40000 ALTER TABLE `mirror_location_mirror_map` ENABLE KEYS */;
 UNLOCK TABLES;
 
