@@ -5,5 +5,5 @@ pytest==3.4.1
 pytest-base-url==1.4.1
 pytest-metadata==1.6.0
 pytest-html==1.16.1
-pytest-xdist==1.22.0
+pytest-xdist==1.22.1
 requests[security]==2.18.4
