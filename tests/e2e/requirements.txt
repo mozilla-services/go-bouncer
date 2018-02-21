@@ -1,7 +1,7 @@
 flake8==3.5.0
 flake8-isort==2.3
 mozlog==3.7
-pytest==3.4.0
+pytest==3.4.1
 pytest-base-url==1.4.1
 pytest-metadata==1.5.1
 pytest-html==1.16.1
