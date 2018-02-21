@@ -91,14 +91,10 @@ type MirrorsResult struct {
 }
 
 // Mirrors returns a list of valid mirrors
-func (d *DB) Mirrors(sslOnly bool, lang, locationID string, healthyOnly bool) ([]MirrorsResult, error) {
+func (d *DB) Mirrors(sslOnly bool) ([]MirrorsResult, error) {
 	baseURLPrefix := "http://"
 	if sslOnly {
 		baseURLPrefix = "https://"
-	}
-	healthy := 1
-	if !healthyOnly {
-		healthy = 0
 	}
 	rows, err := d.Query(`
       SELECT
@@ -107,20 +103,13 @@ func (d *DB) Mirrors(sslOnly bool, lang, locationID string, healthyOnly bool) ([
             rating
         FROM 
             mirror_mirrors
-        JOIN
-            mirror_location_mirror_map ON mirror_mirrors.id = mirror_location_mirror_map.mirror_id
-        LEFT JOIN
-            mirror_lmm_lang_exceptions AS lang_exc ON (mirror_location_mirror_map.id = lang_exc.location_mirror_map_id AND NOT lang_exc.language = ?)
         INNER JOIN
             geoip_mirror_region_map ON (geoip_mirror_region_map.mirror_id = mirror_mirrors.id)
         WHERE
-            mirror_location_mirror_map.location_id = ? AND
             mirror_mirrors.active='1' AND 
-            mirror_location_mirror_map.active ='1' AND
-            mirror_location_mirror_map.healthy = ? AND
-            mirror_mirrors.baseurl LIKE '`+baseURLPrefix+`%'
+            mirror_mirrors.baseurl LIKE '` + baseURLPrefix + `%'
         ORDER BY rating
-	`, lang, locationID, healthy)
+	`)
 
 	if err != nil {
 		return nil, err

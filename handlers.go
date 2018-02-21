@@ -270,7 +270,7 @@ func (b *BouncerHandler) URL(pinHttps bool, lang, os, product string) (string, e
 		return "", err
 	}
 
-	locationID, locationPath, err := b.db.Location(productID, osID)
+	_, locationPath, err := b.db.Location(productID, osID)
 	switch {
 	case err == sql.ErrNoRows:
 		return "", nil
@@ -278,7 +278,7 @@ func (b *BouncerHandler) URL(pinHttps bool, lang, os, product string) (string, e
 		return "", err
 	}
 
-	mirrorBaseURL, err := b.mirrorBaseURL(pinHttps || sslOnly, lang, locationID)
+	mirrorBaseURL, err := b.mirrorBaseURL(pinHttps || sslOnly)
 	if err != nil || mirrorBaseURL == "" {
 		return "", err
 	}
@@ -288,7 +288,7 @@ func (b *BouncerHandler) URL(pinHttps bool, lang, os, product string) (string, e
 	return mirrorBaseURL + locationPath, nil
 }
 
-func (b *BouncerHandler) mirrorBaseURL(sslOnly bool, lang, locationID string) (string, error) {
+func (b *BouncerHandler) mirrorBaseURL(sslOnly bool) (string, error) {
 	if b.PinnedBaseURLHttps != "" && sslOnly {
 		return "https://" + b.PinnedBaseURLHttps, nil
 	}
@@ -297,17 +297,9 @@ func (b *BouncerHandler) mirrorBaseURL(sslOnly bool, lang, locationID string) (s
 		return "http://" + b.PinnedBaseURLHttp, nil
 	}
 
-	mirrors, err := b.db.Mirrors(sslOnly, lang, locationID, true)
+	mirrors, err := b.db.Mirrors(sslOnly)
 	if err != nil {
 		return "", err
-	}
-
-	if len(mirrors) == 0 {
-		// try again, looking for unhealthy mirrors
-		mirrors, err = b.db.Mirrors(sslOnly, lang, locationID, false)
-		if err != nil {
-			return "", err
-		}
 	}
 
 	if len(mirrors) == 0 {

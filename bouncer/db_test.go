@@ -45,11 +45,11 @@ func TestProductForLanguage(t *testing.T) {
 }
 
 func TestMirrors(t *testing.T) {
-	mirrors, err := testDB.Mirrors(false, "en-US", "1", true)
+	mirrors, err := testDB.Mirrors(false)
 	assert.NoError(t, err)
 	assert.Len(t, mirrors, 1)
 
-	mirrors, err = testDB.Mirrors(true, "en-US", "1", true)
+	mirrors, err = testDB.Mirrors(true)
 	assert.NoError(t, err)
 	assert.Len(t, mirrors, 1)
 	assert.Equal(t, "2", mirrors[0].ID)
