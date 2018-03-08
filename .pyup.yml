@@ -2,9 +2,6 @@ schedule: "every day"
 search: False
 update: insecure
 requirements:
-  - tests/e2e/requirements/tests.txt:
-      update: security
-      pin: True
-  - tests/e2e/requirements/flake8.txt
+  - tests/e2e/requirements.txt:
       update: security
       pin: True
