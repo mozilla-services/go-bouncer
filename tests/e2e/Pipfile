@@ -1,0 +1,22 @@
+[[source]]
+
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[dev-packages]
+
+
+
+[packages]
+
+"flake8" = "==3.5.0"
+"flake8-isort" = "==2.4"
+mozlog = "==3.7"
+pytest = "==3.4.2"
+pytest-base-url = "==1.4.1"
+pytest-metadata = "==1.6.0"
+pytest-html = "==1.16.1"
+pytest-xdist = "==1.22.2"
+requests = {extras = ["security"], version = "==2.18.4"}

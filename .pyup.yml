@@ -2,6 +2,8 @@ schedule: "every day"
 search: False
 update: insecure
 requirements:
-  - tests/e2e/requirements.txt:
+  - tests/e2e:
+      - Pipfile
+      - pipenv.txt
       update: security
       pin: True
