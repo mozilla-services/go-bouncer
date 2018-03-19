@@ -3,7 +3,7 @@ RUN apk add --update gcc libffi-dev musl-dev openssl-dev python-dev
 WORKDIR /src
 
 COPY Pipfile pipenv.txt /src/
-RUN pip install -r pipenv.txt
+RUN pip install --disable-pip-version-check -r pipenv.txt
 RUN pipenv install --system --skip-lock
 
 COPY . /src
