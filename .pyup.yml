@@ -1,6 +1,5 @@
 schedule: "every week on monday"
 search: False
 requirements:
-  - tests/e2e/Pipfile:
-      pin: True
+  - tests/e2e/Pipfile
   - tests/e2e/pipenv.txt
