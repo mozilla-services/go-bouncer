@@ -11,11 +11,16 @@ name = "pypi"
 
 [packages]
 
-"flake8" = "==3.5.0"
-"flake8-isort" = "==2.4"
+flake8 = "==3.5.0"
+flake8-isort = "==2.5"
 mozlog = "==3.7"
-pytest = "==3.4.2"
+pytest = "==3.5.0"
 pytest-base-url = "==1.4.1"
-pytest-html = "==1.16.1"
+pytest-html = "==1.17.0"
 pytest-xdist = "==1.22.2"
-requests = {extras = ["security"], version = "==2.18.4"}
+
+
+[packages.requests]
+
+extras = [ "security",]
+version = "==2.18.4"
