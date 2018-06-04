@@ -71,6 +71,7 @@ pipeline {
       ircNotification()
     }
     failure {
+      ircNotification('#releaseduty')
       emailext(
         attachLog: true,
         body: '$BUILD_URL\n\n$FAILED_TESTS',
