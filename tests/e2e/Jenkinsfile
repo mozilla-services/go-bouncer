@@ -1,12 +1,14 @@
 #!/usr/bin/env groovy
 
+def branch = env.BRANCH_NAME ?: 'master'
+
 pipeline {
   agent any
   libraries {
     lib('fxtest@1.10')
   }
   triggers {
-    pollSCM(env.BRANCH_NAME == 'master' ? 'H/5 * * * *' : '')
+    pollSCM(branch == 'master' ? 'H/5 * * * *' : '')
   }
   options {
     ansiColor('xterm')
