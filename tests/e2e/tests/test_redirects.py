@@ -16,7 +16,7 @@ class TestRedirects(Base):
 
     _locales = utils.get_firefox_locales()
     _os = ('win', 'win64', 'linux', 'linux64', 'osx')
-    _winxp_esr_version = utils.get_version_info_for_alias('firefox-esr-latest')
+    _winxp_esr_version = '52.9.0esr.exe'
     _winxp_products = [
         'stub',
         'latest',
