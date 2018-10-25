@@ -30,10 +30,9 @@ func main() {
 			EnvVar: "BOUNCER_ADDR",
 		},
 		cli.StringFlag{
-			Name:   "db-dsn",
-			Value:  "user:password@tcp(localhost:3306)/bouncer",
-			Usage:  "database DSN (https://github.com/go-sql-driver/mysql#dsn-data-source-name)",
-			EnvVar: "BOUNCER_DB_DSN",
+			Name:   "locations-file",
+			Usage:  "Location file.",
+			EnvVar: "BOUNCER_LOCATION_FILE",
 		},
 		cli.StringFlag{
 			Name:   "pin-https-header-name",
@@ -62,15 +61,12 @@ func main() {
 }
 
 func Main(c *cli.Context) {
-	db, err := bouncer.NewDB(c.String("db-dsn"))
+	locations, err := ParseLocationsFile(c.String("locations-file"))
 	if err != nil {
-		log.Fatalf("Could not open DB: %v", err)
+		log.Fatal("Error parsing locations-file: ", err)
 	}
-	defer db.Close()
-	db.SetConnMaxLifetime(300 * time.Second)
-
 	bouncerHandler := &BouncerHandler{
-		db:                 db,
+		Locations:          locations,
 		CacheTime:          time.Duration(c.Int("cache-time")) * time.Second,
 		PinHttpsHeaderName: c.String("pin-https-header-name"),
 		PinnedBaseURLHttp:  c.String("pinned-baseurl-http"),
@@ -79,7 +75,6 @@ func Main(c *cli.Context) {
 	}
 
 	healthHandler := &HealthHandler{
-		db:        db,
 		CacheTime: 5 * time.Second,
 	}
 

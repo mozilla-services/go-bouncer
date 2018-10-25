@@ -1,8 +1,8 @@
 package main
 
 import (
-	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"math/rand"
@@ -179,24 +179,15 @@ func (h *HealthResult) JSON() []byte {
 
 // HealthHandler returns 200 if the app looks okay
 type HealthHandler struct {
-	db *bouncer.DB
-
 	CacheTime time.Duration
 }
 
 func (h *HealthHandler) check() *HealthResult {
 	result := &HealthResult{
-		DB:      true,
 		Healthy: true,
 		Version: bouncer.Version,
 	}
 
-	err := h.db.Ping()
-	if err != nil {
-		result.DB = false
-		result.Healthy = false
-		log.Printf("HealthHandler err: %v", err)
-	}
 	return result
 }
 
@@ -216,8 +207,7 @@ func (h *HealthHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 // BouncerHandler is the primary handler for this application
 type BouncerHandler struct {
-	db *bouncer.DB
-
+	Locations          ProductLocationsMap
 	CacheTime          time.Duration
 	PinHttpsHeaderName string
 	PinnedBaseURLHttp  string
@@ -249,33 +239,24 @@ func randomMirror(mirrors []bouncer.MirrorsResult) *bouncer.MirrorsResult {
 // URL returns the final redirect URL given a lang, os and product
 // if the string is == "", no mirror or location was found
 func (b *BouncerHandler) URL(pinHttps bool, lang, os, product string) (string, error) {
+	/* TODO: Fix Aliasing
 	product, err := b.db.AliasFor(product)
 	if err != nil {
 		return "", err
 	}
+	*/
 
-	osID, err := b.db.OSID(os)
-	switch {
-	case err == sql.ErrNoRows:
+	productData, ok := b.Locations[ProductName(product)]
+	fmt.Println(product)
+	if !ok {
 		return "", nil
-	case err != nil:
-		return "", err
 	}
 
-	productID, sslOnly, err := b.db.ProductForLanguage(product, lang)
-	switch {
-	case err == sql.ErrNoRows:
-		return "", nil
-	case err != nil:
-		return "", err
-	}
+	sslOnly := productData.SSLOnly
 
-	_, locationPath, err := b.db.Location(productID, osID)
-	switch {
-	case err == sql.ErrNoRows:
+	locationPath, ok := productData.Locations[OsName(os)]
+	if !ok {
 		return "", nil
-	case err != nil:
-		return "", err
 	}
 
 	mirrorBaseURL, err := b.mirrorBaseURL(pinHttps || sslOnly)
@@ -283,9 +264,7 @@ func (b *BouncerHandler) URL(pinHttps bool, lang, os, product string) (string, e
 		return "", err
 	}
 
-	locationPath = strings.Replace(locationPath, ":lang", lang, -1)
-
-	return mirrorBaseURL + locationPath, nil
+	return mirrorBaseURL + locationPath.ToString(lang), nil
 }
 
 func (b *BouncerHandler) mirrorBaseURL(sslOnly bool) (string, error) {
@@ -297,21 +276,7 @@ func (b *BouncerHandler) mirrorBaseURL(sslOnly bool) (string, error) {
 		return "http://" + b.PinnedBaseURLHttp, nil
 	}
 
-	mirrors, err := b.db.Mirrors(sslOnly)
-	if err != nil {
-		return "", err
-	}
-
-	if len(mirrors) == 0 {
-		return "", nil
-	}
-
-	mirror := randomMirror(mirrors)
-	if mirror == nil {
-		return "", nil
-	}
-
-	return mirror.BaseURL, nil
+	return "", errors.New("No mirror found.")
 }
 
 func (b *BouncerHandler) stubAttributionURL(reqParams *BouncerParams) string {
