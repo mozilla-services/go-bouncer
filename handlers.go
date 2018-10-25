@@ -207,7 +207,7 @@ func (h *HealthHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 // BouncerHandler is the primary handler for this application
 type BouncerHandler struct {
-	Locations          ProductLocationsMap
+	Locations          BouncerMap
 	CacheTime          time.Duration
 	PinHttpsHeaderName string
 	PinnedBaseURLHttp  string
@@ -239,15 +239,12 @@ func randomMirror(mirrors []bouncer.MirrorsResult) *bouncer.MirrorsResult {
 // URL returns the final redirect URL given a lang, os and product
 // if the string is == "", no mirror or location was found
 func (b *BouncerHandler) URL(pinHttps bool, lang, os, product string) (string, error) {
-	/* TODO: Fix Aliasing
-	product, err := b.db.AliasFor(product)
-	if err != nil {
-		return "", err
+	aliasedProduct, ok := b.Locations.Aliases[NewAliasName(product)]
+	if ok {
+		product = string(aliasedProduct)
 	}
-	*/
 
-	productData, ok := b.Locations[ProductName(product)]
-	fmt.Println(product)
+	productData, ok := b.Locations.ProductLocationMap[ProductName(product)]
 	if !ok {
 		return "", nil
 	}

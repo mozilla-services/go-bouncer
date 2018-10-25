@@ -14,11 +14,25 @@ func (l Location) ToString(lang string) string {
 
 type OsName string
 type ProductName string
+type AliasName string
+
+func NewProductName(s string) ProductName {
+	return ProductName(strings.TrimSpace(strings.ToLower(s)))
+}
+
+func NewAliasName(s string) AliasName {
+	return AliasName(strings.TrimSpace(strings.ToLower(s)))
+}
 
 type LocationsMap map[OsName]Location
 type ProductInfo struct {
 	Locations LocationsMap
 	SSLOnly   bool
+}
+
+type BouncerMap struct {
+	ProductLocationMap map[ProductName]ProductInfo
+	Aliases            map[AliasName]ProductName
 }
 type ProductLocationsMap map[ProductName]ProductInfo
 
@@ -28,23 +42,30 @@ type LocationsFile struct {
 		SSLOnly   bool `json:"ssl_only"`
 		Locations map[OsName]Location
 	}
+	Aliases map[string]string
 }
 
-func ParseLocationsFile(file string) (ProductLocationsMap, error) {
-	plm := make(ProductLocationsMap)
+func ParseLocationsFile(file string) (BouncerMap, error) {
+	bouncerMap := BouncerMap{
+		ProductLocationMap: make(ProductLocationsMap),
+		Aliases:            make(map[AliasName]ProductName),
+	}
+
 	f, err := os.Open(file)
 	defer f.Close()
 	if err != nil {
-		return plm, err
+		return bouncerMap, err
 	}
 
 	lf := LocationsFile{}
 	err = json.NewDecoder(f).Decode(&lf)
 	if err != nil {
-		return plm, err
+		return bouncerMap, err
 	}
+
+	plm := bouncerMap.ProductLocationMap
 	for _, product := range lf.Products {
-		pName := ProductName(strings.TrimSpace(strings.ToLower(product.Name)))
+		pName := NewProductName(product.Name)
 		plm[pName] = ProductInfo{
 			SSLOnly:   product.SSLOnly,
 			Locations: make(LocationsMap),
@@ -54,5 +75,12 @@ func ParseLocationsFile(file string) (ProductLocationsMap, error) {
 			plm[pName].Locations[os] = path
 		}
 	}
-	return plm, nil
+
+	aliases := bouncerMap.Aliases
+	for alias, product := range lf.Aliases {
+		aliasName := NewAliasName(alias)
+		productName := NewProductName(product)
+		aliases[aliasName] = productName
+	}
+	return bouncerMap, nil
 }
