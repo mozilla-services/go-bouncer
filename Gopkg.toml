@@ -29,7 +29,4 @@
   name = "github.com/codegangsta/cli"
 
 [[constraint]]
-  name = "github.com/go-sql-driver/mysql"
-
-[[constraint]]
   name = "github.com/stretchr/testify"

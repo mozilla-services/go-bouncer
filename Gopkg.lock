@@ -13,11 +13,6 @@
   revision = "bca61c476e3c752594983e4c9bcd5f62fb09f157"
 
 [[projects]]
-  name = "github.com/go-sql-driver/mysql"
-  packages = ["."]
-  revision = "fb7299726d2e68745a8805b14f2ff44b5c2cfa84"
-
-[[projects]]
   name = "github.com/stretchr/testify"
   packages = ["assert"]
   revision = "5ab65693f48b284b3f7a83114dd7b166b45f0193"
