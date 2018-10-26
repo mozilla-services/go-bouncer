@@ -1,0 +1,35 @@
+{
+    "products": [
+        {
+            "ssl_only": false,
+            "name": "Firefox",
+            "locations": {
+                "win64": "/firefox/releases/39.0/win64/:lang/Firefox%20Setup%2039.0.exe",
+                "osx": "/firefox/releases/39.0/mac/:lang/Firefox%2039.0.dmg",
+                "win": "/firefox/releases/39.0/win32/:lang/Firefox%20Setup%2039.0.exe"
+            }
+        },
+        {
+            "ssl_only": true,
+            "name": "Firefox-SSL",
+            "locations": {
+                "win64": "/firefox/releases/39.0/win64/:lang/Firefox%20Setup%2039.0.exe",
+                "osx": "/firefox/releases/39.0/mac/:lang/Firefox%2039.0.dmg",
+                "win": "/firefox/releases/39.0/win32/:lang/Firefox%20Setup%2039.0.exe"
+            }
+        },
+        {
+            "ssl_only": true,
+            "name": "Firefox-43.0.1-SSL",
+            "locations": {
+                "win64": "/firefox/releases/43.0.1/win64/:lang/Firefox%20Setup%2043.0.1.exe",
+                "osx": "/firefox/releases/43.0.1/mac/:lang/Firefox%2043.0.1.dmg",
+                "win": "/firefox/releases/43.0.1/win32/:lang/Firefox%20Setup%2043.0.1.exe"
+            }
+        }
+    ],
+    "aliases": {
+        "firefox-latest": "Firefox",
+        "firefox-sha1": "Firefox-43.0.1-SSL"
+    }
+}

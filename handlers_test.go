@@ -6,7 +6,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/mozilla-services/go-bouncer/bouncer"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -14,18 +13,20 @@ var bouncerHandler *BouncerHandler
 var bouncerHandlerPinned *BouncerHandler
 
 func init() {
-	testDB, err := bouncer.NewDB("root@tcp(127.0.0.1:3306)/bouncer_test")
+	bouncerMap, err := ParseLocationsFile("./fixtures/bouncer.data.json")
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	bouncerHandler = &BouncerHandler{
-		db:                 testDB,
+		Locations:          bouncerMap,
+		PinnedBaseURLHttp:  "download-installer.cdn.mozilla.net/pub",
+		PinnedBaseURLHttps: "download-installer.cdn.mozilla.net/pub",
 		StubRootURL:        "https://stub/",
 		PinHttpsHeaderName: "X-Forwarded-Proto",
 	}
 	bouncerHandlerPinned = &BouncerHandler{
-		db:                 testDB,
+		Locations:          bouncerMap,
 		PinnedBaseURLHttp:  "download-sha1.cdn.mozilla.net/pub",
 		PinnedBaseURLHttps: "download-sha1.cdn.mozilla.net/pub",
 		PinHttpsHeaderName: "X-Forwarded-Proto",

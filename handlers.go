@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"math/rand"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -213,27 +212,6 @@ type BouncerHandler struct {
 	PinnedBaseURLHttp  string
 	PinnedBaseURLHttps string
 	StubRootURL        string
-}
-
-func randomMirror(mirrors []bouncer.MirrorsResult) *bouncer.MirrorsResult {
-	totalRatings := 0
-	for _, m := range mirrors {
-		totalRatings += m.Rating
-	}
-	for _, m := range mirrors {
-		// Intn(x) returns from [0,x) and we need [1,x], so adding 1
-		rand := rand.Intn(totalRatings) + 1
-		if rand <= m.Rating {
-			return &m
-		}
-		totalRatings -= m.Rating
-	}
-
-	// This shouldn't happen
-	if len(mirrors) == 0 {
-		return nil
-	}
-	return &mirrors[0]
 }
 
 // URL returns the final redirect URL given a lang, os and product
