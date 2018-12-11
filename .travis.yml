@@ -9,7 +9,7 @@ before_script:
 install: true
 
 go:
-  - 1.9
+  - 1.11
 
 script:
   - |
