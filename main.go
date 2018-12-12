@@ -85,6 +85,7 @@ func Main(c *cli.Context) {
 
 	mux := http.NewServeMux()
 
+	mux.Handle("/__lbheartbeat__", healthHandler)
 	mux.Handle("/__heartbeat__", healthHandler)
 	mux.Handle("/", bouncerHandler)
 
