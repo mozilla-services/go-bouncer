@@ -337,7 +337,7 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	reqParams := BouncerParamsFromValues(req.URL.Query())
 
 	if reqParams.Product == "" {
-		http.Redirect(w, req, "http://www.mozilla.org/", 302)
+		http.Redirect(w, req, "https://www.mozilla.org/", 302)
 		return
 	}
 
