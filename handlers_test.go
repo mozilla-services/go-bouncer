@@ -66,7 +66,7 @@ func TestBouncerHandlerParams(t *testing.T) {
 
 	bouncerHandler.ServeHTTP(w, req)
 	assert.Equal(t, 302, w.Code)
-	assert.Equal(t, "http://www.mozilla.org/", w.HeaderMap.Get("Location"))
+	assert.Equal(t, "https://www.mozilla.org/", w.HeaderMap.Get("Location"))
 }
 
 func TestBouncerShouldPinHttps(t *testing.T) {
