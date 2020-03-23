@@ -17,7 +17,7 @@ mozlog = "==6.0"
 pytest = "==5.4.1"
 pytest-base-url = "==1.4.1"
 pytest-html = "==2.1.1"
-pytest-xdist = "==1.27.0"
+pytest-xdist = "==1.31.0"
 
 
 [packages.requests]
