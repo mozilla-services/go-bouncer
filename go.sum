@@ -1,0 +1,8 @@
+github.com/Sirupsen/logrus v0.8.7 h1:hGa+d4KZNNNDmzAj6vlkeOQsgjrh8zg4EXB81mWoTm4=
+github.com/Sirupsen/logrus v0.8.7/go.mod h1:rmk17hk6i8ZSAJkSDa7nOxamrG+SP4P0mm+DAvExv4U=
+github.com/codegangsta/cli v1.8.1-0.20150711215404-bca61c476e3c h1:EEGVs+1A4JOx+zqRqDmBu6YDQMluO+ztMtS4CRXnelA=
+github.com/codegangsta/cli v1.8.1-0.20150711215404-bca61c476e3c/go.mod h1:/qJNoX69yVSKu5o4jLyXAENLRyk1uhi7zkbQ3slBdOA=
+github.com/go-sql-driver/mysql v1.2.1-0.20150620200312-fb7299726d2e h1:ioPnThLwzWivBeJuBogvcsPSArM9658XM3MyHoac4E0=
+github.com/go-sql-driver/mysql v1.2.1-0.20150620200312-fb7299726d2e/go.mod h1:zAC/RDZ24gD3HViQzih4MyKcchzm+sOG5ZlKdlhCg5w=
+github.com/stretchr/testify v0.0.0-20150507120808-5ab65693f48b h1:gBeMp8yzycRL5Rk7ggLmhB8/M9XgTmhO7nv7UmtDBdE=
+github.com/stretchr/testify v0.0.0-20150507120808-5ab65693f48b/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXfy6kDkUVs=
