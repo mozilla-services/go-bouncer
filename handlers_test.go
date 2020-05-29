@@ -103,7 +103,7 @@ func TestShouldAttribute(t *testing.T) {
 		},
 		{
 			&BouncerParams{
-				OS:              "win-aarch64",
+				OS:              "win64-aarch64",
 				Product:         "Firefox",
 				AttributionCode: "att-code",
 				AttributionSig:  "att-sig",
@@ -114,7 +114,7 @@ func TestShouldAttribute(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(fmt.Sprintf("OS: %s, Product: %s, Code: %s, Sig: %s", test.In.OS, test.In.Product, test.In.AttributionCode, test.In.AttributionSig), func(t *testing.T) {
-			assert.Equal(t, bouncerHandler.shouldAttribute(test.In), test.Out)
+			assert.Equal(t, test.Out, bouncerHandler.shouldAttribute(test.In))
 		})
 	}
 }
