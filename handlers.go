@@ -351,7 +351,7 @@ func (b *BouncerHandler) shouldAttribute(reqParams *BouncerParams) bool {
 	}
 
 	// Exclude updates
-	if strings.Contains(reqParams.Product, "-partial") || strings.Contains(reqParams.Product, "-partial") {
+	if strings.Contains(reqParams.Product, "-partial") || strings.Contains(reqParams.Product, "-complete") {
 		return false
 	}
 
