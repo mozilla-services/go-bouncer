@@ -32,6 +32,90 @@ func init() {
 	}
 }
 
+func TestShouldAttribute(t *testing.T) {
+	tests := []struct {
+		In  *BouncerParams
+		Out bool
+	}{
+		{
+			&BouncerParams{
+				OS:              "win",
+				Product:         "Firefox",
+				AttributionCode: "att-code",
+				AttributionSig:  "att-sig",
+			},
+			true,
+		},
+		{
+			&BouncerParams{
+				OS:              "osx",
+				Product:         "Firefox",
+				AttributionCode: "att-code",
+				AttributionSig:  "att-sig",
+			},
+			false,
+		},
+		{
+			&BouncerParams{
+				OS:              "win",
+				Product:         "Firefox",
+				AttributionCode: "",
+				AttributionSig:  "att-sig",
+			},
+			false,
+		},
+		{
+			&BouncerParams{
+				OS:              "win",
+				Product:         "Firefox-partial",
+				AttributionCode: "att-code",
+				AttributionSig:  "att-sig",
+			},
+			false,
+		},
+		{
+			&BouncerParams{
+				OS:              "win",
+				Product:         "Firefox-complete",
+				AttributionCode: "att-code",
+				AttributionSig:  "att-sig",
+			},
+			false,
+		},
+		{
+			&BouncerParams{
+				OS:              "win",
+				Product:         "Firefox-msi",
+				AttributionCode: "att-code",
+				AttributionSig:  "att-sig",
+			},
+			false,
+		},
+		{
+			&BouncerParams{
+				OS:              "win64",
+				Product:         "Firefox",
+				AttributionCode: "att-code",
+				AttributionSig:  "att-sig",
+			},
+			true,
+		},
+		{
+			&BouncerParams{
+				OS:              "win-aarch64",
+				Product:         "Firefox",
+				AttributionCode: "att-code",
+				AttributionSig:  "att-sig",
+			},
+			true,
+		},
+	}
+
+	for _, test := range tests {
+		assert.Equal(t, bouncerHandler.shouldAttribute(test.In), test.Out)
+	}
+}
+
 func TestBouncerHandlerAttributionCode(t *testing.T) {
 	tests := []struct {
 		In  string

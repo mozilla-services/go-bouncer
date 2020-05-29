@@ -334,6 +334,16 @@ func (b *BouncerHandler) shouldPinHttps(req *http.Request) bool {
 }
 
 func (b *BouncerHandler) shouldAttribute(reqParams *BouncerParams) bool {
+	validOs := func() bool {
+		// Only include windows.
+		for _, s := range []string{"win", "win64", "win64-aarch64"} {
+			if reqParams.OS == s {
+				return true
+			}
+		}
+		return false
+	}
+
 	if b.StubRootURL == "" {
 		return false
 	}
@@ -345,14 +355,15 @@ func (b *BouncerHandler) shouldAttribute(reqParams *BouncerParams) bool {
 		return false
 	}
 
-	// Only include windows.
-	if reqParams.OS != "win" && reqParams.OS != "win64" {
+	if !validOs() {
 		return false
 	}
 
 	// Exclude updates
-	if strings.Contains(reqParams.Product, "-partial") || strings.Contains(reqParams.Product, "-complete") {
-		return false
+	for _, s := range []string{"-partial", "-complete", "-msi"} {
+		if strings.Contains(reqParams.Product, s) {
+			return false
+		}
 	}
 
 	return true
