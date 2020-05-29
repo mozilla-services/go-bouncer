@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -112,7 +113,9 @@ func TestShouldAttribute(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		assert.Equal(t, bouncerHandler.shouldAttribute(test.In), test.Out)
+		t.Run(fmt.Sprintf("OS: %s, Product: %s, Code: %s, Sig: %s", test.In.OS, test.In.Product, test.In.AttributionCode, test.In.AttributionSig), func(t *testing.T) {
+			assert.Equal(t, bouncerHandler.shouldAttribute(test.In), test.Out)
+		})
 	}
 }
 
