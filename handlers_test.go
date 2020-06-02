@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -32,14 +33,104 @@ func init() {
 	}
 }
 
+func TestShouldAttribute(t *testing.T) {
+	tests := []struct {
+		In  *BouncerParams
+		Out bool
+	}{
+		{
+			&BouncerParams{
+				OS:              "win",
+				Product:         "Firefox",
+				AttributionCode: "att-code",
+				AttributionSig:  "att-sig",
+			},
+			true,
+		},
+		{
+			&BouncerParams{
+				OS:              "osx",
+				Product:         "Firefox",
+				AttributionCode: "att-code",
+				AttributionSig:  "att-sig",
+			},
+			false,
+		},
+		{
+			&BouncerParams{
+				OS:              "win",
+				Product:         "Firefox",
+				AttributionCode: "",
+				AttributionSig:  "att-sig",
+			},
+			false,
+		},
+		{
+			&BouncerParams{
+				OS:              "win",
+				Product:         "Firefox-partial",
+				AttributionCode: "att-code",
+				AttributionSig:  "att-sig",
+			},
+			false,
+		},
+		{
+			&BouncerParams{
+				OS:              "win",
+				Product:         "Firefox-complete",
+				AttributionCode: "att-code",
+				AttributionSig:  "att-sig",
+			},
+			false,
+		},
+		{
+			&BouncerParams{
+				OS:              "win",
+				Product:         "Firefox-msi",
+				AttributionCode: "att-code",
+				AttributionSig:  "att-sig",
+			},
+			false,
+		},
+		{
+			&BouncerParams{
+				OS:              "win64",
+				Product:         "Firefox",
+				AttributionCode: "att-code",
+				AttributionSig:  "att-sig",
+			},
+			true,
+		},
+		{
+			&BouncerParams{
+				OS:              "win64-aarch64",
+				Product:         "Firefox",
+				AttributionCode: "att-code",
+				AttributionSig:  "att-sig",
+			},
+			true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(fmt.Sprintf("OS: %s, Product: %s, Code: %s, Sig: %s", test.In.OS, test.In.Product, test.In.AttributionCode, test.In.AttributionSig), func(t *testing.T) {
+			assert.Equal(t, test.Out, bouncerHandler.shouldAttribute(test.In))
+		})
+	}
+}
+
 func TestBouncerHandlerAttributionCode(t *testing.T) {
 	tests := []struct {
 		In  string
 		Out string
 	}{
 		{
+			`http://test/?product=Firefox&os=osx&lang=en-US&attribution_code=source%3Dgoogle.com%26medium%3Dorganic%26campaign%3D(not%20set)%26content%3D(not%20set)&attribution_sig=anhmacsig`,
+			`http://download-installer.cdn.mozilla.net/pub/firefox/releases/39.0/mac/en-US/Firefox%2039.0.dmg`,
+		},
+		{
 			`http://test/?product=Firefox&os=win&lang=en-US&attribution_code=source%3Dgoogle.com%26medium%3Dorganic%26campaign%3D(not%20set)%26content%3D(not%20set)&attribution_sig=anhmacsig`,
-			`http://download-installer.cdn.mozilla.net/pub/firefox/releases/39.0/win32/en-US/Firefox%20Setup%2039.0.exe`,
+			`https://stub/?attribution_code=source%3Dgoogle.com%26medium%3Dorganic%26campaign%3D%28not+set%29%26content%3D%28not+set%29&attribution_sig=anhmacsig&lang=en-US&os=win&product=firefox`,
 		},
 		{
 			`http://test/?product=Firefox-stub&os=win&lang=en-US&attribution_code=source%3Dgoogle.com%26medium%3Dorganic%26campaign%3D(not%20set)%26content%3D(not%20set)&attribution_sig=anhmacsig`,

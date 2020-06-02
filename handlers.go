@@ -333,6 +333,42 @@ func (b *BouncerHandler) shouldPinHttps(req *http.Request) bool {
 	return req.Header.Get(b.PinHttpsHeaderName) == "https"
 }
 
+func (b *BouncerHandler) shouldAttribute(reqParams *BouncerParams) bool {
+	validOs := func() bool {
+		// Only include windows.
+		for _, s := range []string{"win", "win64", "win64-aarch64"} {
+			if reqParams.OS == s {
+				return true
+			}
+		}
+		return false
+	}
+
+	if b.StubRootURL == "" {
+		return false
+	}
+
+	if reqParams.AttributionCode == "" {
+		return false
+	}
+	if reqParams.AttributionSig == "" {
+		return false
+	}
+
+	if !validOs() {
+		return false
+	}
+
+	// Exclude updates
+	for _, s := range []string{"-partial", "-complete", "-msi"} {
+		if strings.Contains(reqParams.Product, s) {
+			return false
+		}
+	}
+
+	return true
+}
+
 func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	reqParams := BouncerParamsFromValues(req.URL.Query())
 
@@ -351,12 +387,7 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	isWinXpClient := isWindowsXPUserAgent(req.UserAgent())
 
 	// If the client is not WinXP and attribution_code is set, redirect to the stub service
-	if b.StubRootURL != "" &&
-		reqParams.AttributionCode != "" &&
-		reqParams.AttributionSig != "" &&
-		strings.Contains(reqParams.Product, "-stub") &&
-		!isWinXpClient {
-
+	if b.shouldAttribute(reqParams) && !isWinXpClient {
 		stubURL := b.stubAttributionURL(reqParams)
 		http.Redirect(w, req, stubURL, 302)
 		return
