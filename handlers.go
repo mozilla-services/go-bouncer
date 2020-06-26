@@ -28,8 +28,20 @@ type xpRelease struct {
 // detects Windows XP and Vista clients
 var windowsXPRegex = regexp.MustCompile(`Windows (?:NT 5.1|XP|NT 5.2|NT 6.0)`)
 
+// detects OSX 10.9, 10.11 and 10.12 clients
+// Examples:
+// Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/601.7.8 (KHTML, like Gecko) Version/9.1.3 Safari/537.86.7
+// Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36
+// Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9) AppleWebKit/537.71 (KHTML, like Gecko) Version/7.0 Safari/537.71
+// Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0
+var deprecatedOSXRegex = regexp.MustCompile(`^Mozilla/5.0 \(Macintosh; Intel Mac OS X 10[\._](9|10|11)`)
+
 var tBirdWinXPLastRelease = xpRelease{"38.5.0"}
 var tBirdWinXPLastBeta = xpRelease{"43.0b1"}
+
+func isDeprecatedOSXAgent(userAgent string) bool {
+	return deprecatedOSXRegex.MatchString(userAgent)
+}
 
 func isWindowsXPUserAgent(userAgent string) bool {
 	return windowsXPRegex.MatchString(userAgent)
@@ -157,6 +169,16 @@ func sha1Product(product string) string {
 		return "thunderbird-" + tBirdSha1Product(productParts[1])
 	}
 
+	return product
+}
+
+func osxEsrProduct(product string) string {
+	if product == "firefox-pkg-latest-ssl" {
+		return "firefox-esr-next-pkg-latest-ssl"
+	}
+	if product == "firefox-latest-ssl" {
+		return "firefox-esr-next-latest-ssl"
+	}
 	return product
 }
 
@@ -396,9 +418,12 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// HACKS
 	// If the user is coming from windows xp or vista, send a sha1
 	// signed product
+	// If the user is coming from an old version of OSX, change their product to ESR
 	// HACKS
 	if reqParams.OS == "win" && isWinXpClient {
 		reqParams.Product = sha1Product(reqParams.Product)
+	} else if reqParams.OS == "osx" && isDeprecatedOSXAgent(req.UserAgent()) {
+		reqParams.Product = osxEsrProduct(reqParams.Product)
 	}
 
 	url, err := b.URL(b.shouldPinHttps(req), reqParams.Lang, reqParams.OS, reqParams.Product)
