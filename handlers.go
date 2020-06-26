@@ -28,7 +28,7 @@ type xpRelease struct {
 // detects Windows XP and Vista clients
 var windowsXPRegex = regexp.MustCompile(`Windows (?:NT 5.1|XP|NT 5.2|NT 6.0)`)
 
-// detects OSX 10.9, 10.11 and 10.12 clients
+// detects OSX 10.9, 10.10 and 10.11 clients
 // Examples:
 // Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/601.7.8 (KHTML, like Gecko) Version/9.1.3 Safari/537.86.7
 // Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36
