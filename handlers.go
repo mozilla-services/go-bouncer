@@ -35,6 +35,8 @@ var windowsXPRegex = regexp.MustCompile(`Windows (?:NT 5.1|XP|NT 5.2|NT 6.0)`)
 // Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9) AppleWebKit/537.71 (KHTML, like Gecko) Version/7.0 Safari/537.71
 // Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0
 var deprecatedOSXRegex = regexp.MustCompile(`^Mozilla/5.0 \(Macintosh; Intel Mac OS X 10[\._](9|10|11)`)
+var deprecatedOSXPkgProduct = "firefox-esr-next-pkg-latest-ssl"
+var deprecatedOSXDmgProduct = "firefox-esr-next-latest-ssl"
 
 var tBirdWinXPLastRelease = xpRelease{"38.5.0"}
 var tBirdWinXPLastBeta = xpRelease{"43.0b1"}
@@ -174,10 +176,10 @@ func sha1Product(product string) string {
 
 func osxEsrProduct(product string) string {
 	if product == "firefox-pkg-latest-ssl" {
-		return "firefox-esr-next-pkg-latest-ssl"
+		return deprecatedOSXPkgProduct
 	}
 	if product == "firefox-latest-ssl" {
-		return "firefox-esr-next-latest-ssl"
+		return deprecatedOSXDmgProduct
 	}
 	return product
 }
