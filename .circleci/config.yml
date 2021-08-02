@@ -58,9 +58,9 @@ jobs:
           name: Install MySQL CLI; Import test data
           command: |
             sudo apt update && sudo apt install -y default-mysql-client
-            mysql -e 'create database bouncer_test;'
-            mysql bouncer_test < ./fixtures/schema.sql
-            mysql bouncer_test < ./fixtures/data.sql
+            mysql -h 127.0.0.1 --port=3306 -e 'create database bouncer_test;'
+            mysql -h 127.0.0.1 --port=3306 bouncer_test < ./fixtures/schema.sql
+            mysql -h 127.0.0.1 --port=3306 bouncer_test < ./fixtures/data.sql
       - run:
           name: Get dependencies
           command: |
