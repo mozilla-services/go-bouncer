@@ -358,14 +358,14 @@ func (b *BouncerHandler) shouldPinHttps(req *http.Request) bool {
 	return req.Header.Get(b.PinHttpsHeaderName) == "https"
 }
 
-func fromRTAMO(attribution_code string, referer string) bool {
+func fromRTAMO(attribution_code string) bool {
 	// base64 decode the attribution_code value to see if it matches the RTAMO regex
 	// This uses '.' as padding because Bedrock is using this library to encode the values:
 	// https://pypi.org/project/querystringsafe-base64/
 	var base64Decoder = base64.URLEncoding.WithPadding('.')
 	sDec, err := base64Decoder.DecodeString(attribution_code)
 	if err != nil {
-		log.Printf("Error decoding string: %s ", err.Error())
+		log.Printf("Error decoding %s: %s ", attribution_code, err.Error())
 		return false
 	}
 	q, err := url.ParseQuery(string(sDec))
@@ -380,7 +380,7 @@ func fromRTAMO(attribution_code string, referer string) bool {
 		log.Printf("Error matching RTAMO regex: %s", err.Error())
 		return false
 	}
-	if matched && (referer == "https://www.mozilla.org/") {
+	if matched {
 		return true
 	}
 	return false
@@ -422,8 +422,12 @@ func (b *BouncerHandler) shouldAttribute(reqParams *BouncerParams) bool {
 	// Check if the request is coming from RTAMO, and if so, only attribute
 	// if there is a referer header from https://www.mozilla.org/
 	// https://github.com/mozilla-services/go-bouncer/issues/347
-	if !fromRTAMO(reqParams.AttributionCode, reqParams.Referer) {
-		return false
+	if fromRTAMO(reqParams.AttributionCode) {
+		if reqParams.Referer != "https://www.mozilla.org/" {
+			return false
+		} else {
+			return true
+		}
 	}
 
 	return true
