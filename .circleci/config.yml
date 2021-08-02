@@ -68,7 +68,7 @@ jobs:
       - run:
           name: Go test
           command: |
-            go test
+            go test -v
 
   deploy:
     docker:
