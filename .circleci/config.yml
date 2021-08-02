@@ -42,7 +42,6 @@ jobs:
     docker:
       - image: circleci/golang:1.14
       - image: circleci/mysql:5.7
-    working_directory: /dockerflow
     steps:
       - checkout
       - run:
