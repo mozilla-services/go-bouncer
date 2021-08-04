@@ -423,7 +423,13 @@ func (b *BouncerHandler) shouldAttribute(reqParams *BouncerParams) bool {
 	// if there is a referer header from https://www.mozilla.org/
 	// https://github.com/mozilla-services/go-bouncer/issues/347
 	if fromRTAMO(reqParams.AttributionCode) {
-		if reqParams.Referer != "https://www.mozilla.org/" {
+		refererMatch, err := regexp.MatchString(`^https://www.mozilla.org/`, reqParams.Referer)
+		if err != nil {
+			log.Printf("Error matching www.mozilla.org regex: %s", err.Error())
+			return false
+		}
+
+		if !refererMatch {
 			return false
 		} else {
 			return true

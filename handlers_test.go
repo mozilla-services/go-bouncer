@@ -131,10 +131,20 @@ func TestShouldAttribute(t *testing.T) {
 			},
 			true,
 		},
+		{
+			&BouncerParams{
+				OS:              "win",
+				Product:         "firefox-stub",
+				AttributionCode: "c291cmNlPWFkZG9ucy5tb3ppbGxhLm9yZyZtZWRpdW09cmVmZXJyYWwmY2FtcGFpZ249bm9uLWZ4LWJ1dHRvbiZjb250ZW50PXJ0YTplMkk1WkdJeE5tRTBMVFpsWkdNdE5EZGxZeTFoTVdZMExXSTROakk1TW1Wa01qRXhaSDAmZXhwZXJpbWVudD0obm90IHNldCkmdmFyaWF0aW9uPShub3Qgc2V0KSZ1YT1lZGdlJnZpc2l0X2lkPShub3Qgc2V0KQ..",
+				AttributionSig:  "att-sig",
+				Referer:         "https://www.mozilla.org/test/other/paths",
+			},
+			true,
+		},
 	}
 
 	for _, test := range tests {
-		t.Run(fmt.Sprintf("OS: %s, Product: %s, Code: %s, Sig: %s", test.In.OS, test.In.Product, test.In.AttributionCode, test.In.AttributionSig), func(t *testing.T) {
+		t.Run(fmt.Sprintf("OS: %s, Product: %s, Code: %s, Sig: %s, Referer: %s", test.In.OS, test.In.Product, test.In.AttributionCode, test.In.AttributionSig, test.In.Referer), func(t *testing.T) {
 			assert.Equal(t, test.Out, bouncerHandler.shouldAttribute(test.In))
 		})
 	}
