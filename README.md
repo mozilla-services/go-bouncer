@@ -1,4 +1,4 @@
-# go-bouncer [![Build Status](https://travis-ci.org/mozilla-services/go-bouncer.svg?branch=master)](https://travis-ci.org/mozilla-services/go-bouncer) [![GoDoc](https://godoc.org/github.com/mozilla-services/go-bouncer?status.svg)](https://godoc.org/github.com/mozilla-services/go-bouncer)
+# go-bouncer [![CircleCI](https://circleci.com/gh/mozilla-services/go-bouncer/tree/master.svg?style=svg)](https://circleci.com/gh/mozilla-services/go-bouncer/?branch=master) [![GoDoc](https://godoc.org/github.com/mozilla-services/go-bouncer?status.svg)](https://godoc.org/github.com/mozilla-services/go-bouncer)
 
 A Go port of the [user facing portion](https://github.com/mozilla/tuxedo/tree/master/bouncer) as part of the [Bouncer project](https://wiki.mozilla.org/Bouncer).
 

@@ -38,6 +38,38 @@ jobs:
           paths:
             - /cache/docker.tar
 
+  test:
+    docker:
+      - image: circleci/golang:1.14
+      - image: circleci/mysql:5.7
+    steps:
+      - checkout
+      - run:
+          name: Waiting for MySQL to be ready
+          command: |
+            for i in `seq 1 10`;
+            do
+              nc -z 127.0.0.1 3306 && echo Success && exit 0
+              echo -n .
+              sleep 1
+            done
+            echo Failed waiting for MySQL && exit 1
+      - run:
+          name: Install MySQL CLI; Import test data
+          command: |
+            sudo apt update && sudo apt install -y default-mysql-client
+            mysql -u root -h 127.0.0.1 --port=3306 -e 'create database bouncer_test;'
+            mysql -u root -h 127.0.0.1 --port=3306 bouncer_test < ./fixtures/schema.sql
+            mysql -u root -h 127.0.0.1 --port=3306 bouncer_test < ./fixtures/data.sql
+      - run:
+          name: Get dependencies
+          command: |
+            go get
+      - run:
+          name: Go test
+          command: |
+            go test -v
+
   deploy:
     docker:
       - image: docker:18.02.0-ce
@@ -66,9 +98,14 @@ jobs:
             fi
 workflows:
   version: 2
-  build-deploy:
+  build-test-deploy:
     jobs:
       - build:
+          filters:
+            tags:
+              only: /.*/
+
+      - test:
           filters:
             tags:
               only: /.*/
