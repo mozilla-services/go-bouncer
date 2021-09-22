@@ -412,8 +412,11 @@ func (b *BouncerHandler) shouldAttribute(reqParams *BouncerParams) bool {
 		return false
 	}
 
-	// Exclude updates
-	for _, s := range []string{"-partial", "-complete", "-msi"} {
+	// Exclude updates, MSI, and MSIX installers
+    // Technically, -msi covers -msix as well, but both are here to
+    // prevent a future footgun where -msi is removed, but we still
+    // need -msix covered.
+	for _, s := range []string{"-partial", "-complete", "-msi", "-msix"} {
 		if strings.Contains(reqParams.Product, s) {
 			return false
 		}
