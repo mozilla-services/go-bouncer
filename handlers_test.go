@@ -94,6 +94,15 @@ func TestShouldAttribute(t *testing.T) {
 		},
 		{
 			&BouncerParams{
+				OS:              "win",
+				Product:         "Firefox-msix",
+				AttributionCode: "att-code",
+				AttributionSig:  "att-sig",
+			},
+			false,
+		},
+		{
+			&BouncerParams{
 				OS:              "win64",
 				Product:         "Firefox",
 				AttributionCode: "att-code",
