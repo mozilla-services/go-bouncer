@@ -1,8 +1,7 @@
 package main
 
-//go:generate ./version.sh
-
 import (
+	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
@@ -10,6 +9,11 @@ import (
 	"github.com/codegangsta/cli"
 	"github.com/mozilla-services/go-bouncer/bouncer"
 	_ "github.com/mozilla-services/go-bouncer/mozlog"
+)
+
+const (
+	// versionFilePath is the path to the `version.json` file in the Docker container.
+	versionFilePath = "/app/version.json"
 )
 
 func main() {
@@ -61,6 +65,17 @@ func main() {
 	app.RunAndExitOnError()
 }
 
+func versionHandler(w http.ResponseWriter, req *http.Request) {
+	versionFile, err := ioutil.ReadFile(versionFilePath)
+	if err != nil {
+		http.Error(w, "Could not read version file.", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(versionFile)
+}
+
 func Main(c *cli.Context) {
 	db, err := bouncer.NewDB(c.String("db-dsn"))
 	if err != nil {
@@ -87,6 +102,7 @@ func Main(c *cli.Context) {
 
 	mux.Handle("/__lbheartbeat__", healthHandler)
 	mux.Handle("/__heartbeat__", healthHandler)
+	mux.HandleFunc("/__version__", versionHandler)
 	mux.Handle("/", bouncerHandler)
 
 	server := &http.Server{
