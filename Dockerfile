@@ -1,11 +1,13 @@
-FROM golang:1.13
+FROM golang:1.20
 
 ENV PROJECT=github.com/mozilla-services/go-bouncer
 
-COPY version.json /app/version.json
-COPY . /go/src/$PROJECT
+COPY . /app
 
 EXPOSE 8000
 
-RUN go install $PROJECT
+WORKDIR /app
+
+RUN go install -mod vendor $PROJECT
+
 CMD ["go-bouncer", "--addr", "127.0.0.1:8000"]
