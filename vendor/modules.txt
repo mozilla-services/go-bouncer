@@ -4,9 +4,15 @@ github.com/Sirupsen/logrus
 # github.com/codegangsta/cli v1.8.1-0.20150711215404-bca61c476e3c
 ## explicit
 github.com/codegangsta/cli
+# github.com/davecgh/go-spew v1.1.1
+github.com/davecgh/go-spew/spew
 # github.com/go-sql-driver/mysql v1.2.1-0.20150620200312-fb7299726d2e
 ## explicit
 github.com/go-sql-driver/mysql
-# github.com/stretchr/testify v0.0.0-20150507120808-5ab65693f48b
+# github.com/pmezard/go-difflib v1.0.0
+github.com/pmezard/go-difflib/difflib
+# github.com/stretchr/testify v1.8.2
 ## explicit
 github.com/stretchr/testify/assert
+# gopkg.in/yaml.v3 v3.0.1
+gopkg.in/yaml.v3
