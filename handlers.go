@@ -38,6 +38,13 @@ var deprecatedOSXRegex = regexp.MustCompile(`^Mozilla/5.0 \(Macintosh; Intel Mac
 var deprecatedOSXPkgProduct = "firefox-esr-next-pkg-latest-ssl"
 var deprecatedOSXDmgProduct = "firefox-esr-next-latest-ssl"
 
+// detects Windows 7 / 8 / 8.1 clients
+var windows7Regex = regexp.MustCompile(`Windows (?:NT 6.[123])`)
+var deprecatedWin7ExeProduct = "firefox-esr-next-latest-ssl"
+var deprecatedWin7MsiProduct = "firefox-esr-next-msi-latest-ssl"
+
+// detects 64-bit windows
+var win64Regex = regexp.MustCompile(`; (?:Win|WOW)64`)
 
 var tBirdWinXPLastRelease = xpRelease{"38.5.0"}
 var tBirdWinXPLastBeta = xpRelease{"43.0b1"}
@@ -48,6 +55,10 @@ func isDeprecatedOSXAgent(userAgent string) bool {
 
 func isWindowsXPUserAgent(userAgent string) bool {
 	return windowsXPRegex.MatchString(userAgent)
+}
+
+func isWindows7UserAgent(userAgent string) bool {
+	return windows7Regex.MatchString(userAgent)
 }
 
 func isNotNumber(r rune) bool {
@@ -183,6 +194,29 @@ func osxEsrProduct(product string) string {
 		return deprecatedOSXDmgProduct
 	}
 	return product
+}
+
+func win7EsrProduct(product string) string {
+	if product == "firefox-latest-ssl" {
+		return deprecatedWin7ExeProduct
+	}
+	if product == "firefox-msi-latest-ssl" {
+		return deprecatedWin7MsiProduct
+	}
+	if product == "firefox-stub" {
+		return deprecatedWin7ExeProduct
+	}
+	return product
+}
+
+func win7EsrOS(product string, ua string) string {
+	if product != "firefox-stub" {
+		return ""
+	}
+	if win64Regex.MatchString(ua) {
+		return "win64"
+	}
+	return "win"
 }
 
 // HealthResult represents service health
@@ -462,11 +496,18 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// HACKS
 	// If the user is coming from 32-bit windows xp or vista, send a sha1 signed product.
 	// If the user is coming from an old version of OSX, change their product to ESR
+	// If the user is coming from windows 7/8/8.1, change their product to ESR
 	// HACKS
 	if reqParams.OS == "win" && isWinXpClient {
 		reqParams.Product = sha1Product(reqParams.Product)
 	} else if reqParams.OS == "osx" && isDeprecatedOSXAgent(req.UserAgent()) {
 		reqParams.Product = osxEsrProduct(reqParams.Product)
+	} else if strings.HasPrefix(reqParams.OS, "win") && isWindows7UserAgent(req.UserAgent()) {
+		reqParams.Product = win7EsrProduct(reqParams.Product)
+		os := win7EsrOS(reqParams.Product, req.UserAgent())
+		if os != "" {
+			reqParams.OS = os
+		}
 	}
 
 	// If the client is not WinXP and attribution_code is set, redirect to the stub service
