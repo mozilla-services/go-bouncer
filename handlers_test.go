@@ -311,6 +311,63 @@ func TestIsWindowsXPUserAgent(t *testing.T) {
 	}
 }
 
+func TestIsWindows7UserAgent(t *testing.T) {
+	uas := []struct {
+		UA	string
+		IsWin7	bool
+	}{
+		{"Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0", false},                                           // firefox XP
+		{"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:31.0) Gecko/20130401 Firefox/31.0", true},                                     // firefox win7
+		{"Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2224.3 Safari/537.36", false},        // Chrome XP
+		{"Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2225.0 Safari/537.36", true},  // Chrome win8.1
+		{"Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)", false},                                 // IE XP
+		{"Mozilla/4.0 (compatible; MSIE 6.1; Windows XP)", false},                                                              // IE XP
+		{"Mozilla/5.0 (Windows; U; MSIE 7.0; Windows NT 6.0; en-US)", false},                                                   // IE Vista
+		{"Mozilla/5.0 (Windows; U; MSIE 7.0; Windows NT 6.1; en-US)", true},                                                    // IE win7
+		{"Mozilla/5.0 (Windows NT 6.2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36 Edg/109.0.1518.115", true},      // Edge win8
+		{"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Edg/114.0.1823.58", false}, // Edge win10
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/601.7.8 (KHTML, like Gecko) Version/9.1.3 Safari/537.86.7", false},      // Safari OSX 10.9.5
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36", false},   // Chrome OSX 10.9.5
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9) AppleWebKit/537.71 (KHTML, like Gecko) Version/7.0 Safari/537.71", false},             // Safari OSX 10.9
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0", false},                          // Firefox OSX 10.11
+                {"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/602.4.8 (KHTML, like Gecko) Version/10.0.3 Safari/602.4.8", false},     // Safari OSX 10.12
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36", false}, // Chrome OSX 10.12
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:100.0) Gecko/20100101 Firefox/100.0", false},                         // Firefox OSX 10.13
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.1 Safari/605.1.15", false},
+	}
+	for _, ua := range uas {
+		assert.Equal(t, ua.IsWin7, isWindows7UserAgent(ua.UA), "ua: %v", ua.UA)
+	}
+}
+
+func TestIsDeprecatedOSXAgent(t *testing.T) {
+	uas := []struct {
+	UA           string
+		isDeprecated bool
+	}{
+		{"Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0", false},                                           // firefox XP
+		{"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:31.0) Gecko/20130401 Firefox/31.0", false},                                    // firefox non-XP
+		{"Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2224.3 Safari/537.36", false},        // Chrome XP
+		{"Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2225.0 Safari/537.36", false}, // Chrome non-XP
+		{"Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)", false},                                 // IE XP
+		{"Mozilla/4.0 (compatible; MSIE 6.1; Windows XP)", false},                                                              // IE XP
+		{"Mozilla/5.0 (Windows; U; MSIE 7.0; Windows NT 6.0; en-US)", false},                                                   // IE Vista
+		{"Mozilla/5.0 (Windows; U; MSIE 7.0; Windows NT 6.1; en-US)", false},                                                   // IE non-XP
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/601.7.8 (KHTML, like Gecko) Version/9.1.3 Safari/537.86.7", false},     // Safari OSX 10.9.5
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36", false},  // Chrome OSX 10.9.5
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9) AppleWebKit/537.71 (KHTML, like Gecko) Version/7.0 Safari/537.71", false},            // Safari OSX 10.9
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0", false},                          // Firefox OSX 10.11
+                {"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/602.4.8 (KHTML, like Gecko) Version/10.0.3 Safari/602.4.8", true},     // Safari OSX 10.12
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36", true}, // Chrome OSX 10.12
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:100.0) Gecko/20100101 Firefox/100.0", true},                         // Firefox OSX 10.13
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.1 Safari/605.1.15", false},
+	}
+	for _, ua := range uas {
+		assert.Equal(t, ua.isDeprecated, isDeprecatedOSXAgent(ua.UA), "ua: %v", ua.UA)
+	}
+}
+
+
 func TestSha1Product(t *testing.T) {
 	// Ignore products ending with sha1
 	assert.Equal(t, "firefox-something-sha1", sha1Product("firefox-something-sha1"))
@@ -400,6 +457,41 @@ func TestSha1Product(t *testing.T) {
 	assert.Equal(t, "thunderbird-43.0b1", sha1Product("thunderbird-44.0b1"))
 
 	assert.Equal(t, "thunderbird-42.0b1", sha1Product("thunderbird-42.0b1"))
+}
+
+func TestOsxEsrProduct(t *testing.T) {
+	assert.Equal(t, "firefox-esr-next-pkg-latest-ssl", osxEsrProduct("firefox-pkg-latest-ssl"))
+	assert.Equal(t, "firefox-esr-next-latest-ssl", osxEsrProduct("firefox-latest-ssl"))
+}
+
+func TestWin7EsrProduct(t *testing.T) {
+	assert.Equal(t, "firefox-esr-next-latest-ssl", win7EsrProduct("firefox-latest-ssl"))
+	assert.Equal(t, "firefox-esr-next-latest-ssl", win7EsrProduct("firefox-stub"))
+	assert.Equal(t, "firefox-esr-next-msi-latest-ssl", win7EsrProduct("firefox-msi-latest-ssl"))
+	assert.Equal(t, "firefox-msix-latest-ssl", win7EsrProduct("firefox-msix-latest-ssl"))
+	assert.Equal(t, "firefox-pkg-latest-ssl", win7EsrProduct("firefox-pkg-latest-ssl"))
+}
+
+func TestWin7EsrOS(t *testing.T) {
+	uas := []struct {
+		UA string
+		os string
+	}{
+		{"Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0", "win"},                                           // firefox XP
+		{"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:31.0) Gecko/20130401 Firefox/31.0", "win64"},                                     // firefox win7
+		{"Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2224.3 Safari/537.36", "win"},        // Chrome XP
+		{"Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2225.0 Safari/537.36", "win64"},  // Chrome win8.1
+		{"Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)", "win"},                                 // IE XP
+		{"Mozilla/4.0 (compatible; MSIE 6.1; Windows XP)", "win"},                                                              // IE XP
+		{"Mozilla/5.0 (Windows; U; MSIE 7.0; Windows NT 6.0; en-US)", "win"},                                                   // IE Vista
+		{"Mozilla/5.0 (Windows; U; MSIE 7.0; Windows NT 6.1; en-US)", "win"},                                                    // IE win7
+		{"Mozilla/5.0 (Windows NT 6.2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36 Edg/109.0.1518.115", "win"},      // Edge win8
+		{"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Edg/114.0.1823.58", "win64"}, // Edge win10
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/601.7.8 (KHTML, like Gecko) Version/9.1.3 Safari/537.86.7", "win"},      // Safari OSX 10.9.5
+	}
+	for _, ua := range uas {
+		assert.Equal(t, ua.os, win7EsrOS("firefox-stub", ua.UA), "ua: %v", ua.UA)
+	}
 }
 
 func BenchmarkSha1Product(b *testing.B) {
