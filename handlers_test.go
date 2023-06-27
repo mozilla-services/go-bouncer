@@ -311,30 +311,6 @@ func TestIsWindowsXPUserAgent(t *testing.T) {
 	}
 }
 
-func TestIsDeprecatedOSXAgent(t *testing.T) {
-	uas := []struct {
-		UA           string
-		isDeprecated bool
-	}{
-		{"Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0", false},                                           // firefox XP
-		{"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:31.0) Gecko/20130401 Firefox/31.0", false},                                    // firefox non-XP
-		{"Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2224.3 Safari/537.36", false},        // Chrome XP
-		{"Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2225.0 Safari/537.36", false}, // Chrome non-XP
-		{"Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)", false},                                 // IE XP
-		{"Mozilla/4.0 (compatible; MSIE 6.1; Windows XP)", false},                                                              // IE XP
-		{"Mozilla/5.0 (Windows; U; MSIE 7.0; Windows NT 6.0; en-US)", false},                                                   // IE Vista
-		{"Mozilla/5.0 (Windows; U; MSIE 7.0; Windows NT 6.1; en-US)", false},                                                   // IE non-XP
-		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/601.7.8 (KHTML, like Gecko) Version/9.1.3 Safari/537.86.7", true},
-		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36", true},
-		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9) AppleWebKit/537.71 (KHTML, like Gecko) Version/7.0 Safari/537.71", true},
-		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0", true},
-		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.1 Safari/605.1.15", false},
-	}
-	for _, ua := range uas {
-		assert.Equal(t, ua.isDeprecated, isDeprecatedOSXAgent(ua.UA), "ua: %v", ua.UA)
-	}
-}
-
 func TestSha1Product(t *testing.T) {
 	// Ignore products ending with sha1
 	assert.Equal(t, "firefox-something-sha1", sha1Product("firefox-something-sha1"))
@@ -424,11 +400,6 @@ func TestSha1Product(t *testing.T) {
 	assert.Equal(t, "thunderbird-43.0b1", sha1Product("thunderbird-44.0b1"))
 
 	assert.Equal(t, "thunderbird-42.0b1", sha1Product("thunderbird-42.0b1"))
-}
-
-func TestOsxEsrProduct(t *testing.T) {
-	assert.Equal(t, "firefox-esr-next-pkg-latest-ssl", osxEsrProduct("firefox-pkg-latest-ssl"))
-	assert.Equal(t, "firefox-esr-next-latest-ssl", osxEsrProduct("firefox-latest-ssl"))
 }
 
 func BenchmarkSha1Product(b *testing.B) {
