@@ -435,19 +435,18 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	isWinXpClient := isWindowsXPUserAgent(req.UserAgent())
 
+	// HACKS
+	// If the user is coming from 32-bit windows xp or vista, send a sha1 signed product.
+	// HACKS
+	if reqParams.OS == "win" && isWinXpClient {
+		reqParams.Product = sha1Product(reqParams.Product)
+	}
+
 	// If the client is not WinXP and attribution_code is set, redirect to the stub service
 	if b.shouldAttribute(reqParams) && !isWinXpClient {
 		stubURL := b.stubAttributionURL(reqParams)
 		http.Redirect(w, req, stubURL, 302)
 		return
-	}
-
-	// HACKS
-	// If the user is coming from windows xp or vista, send a sha1
-	// signed product
-	// HACKS
-	if reqParams.OS == "win" && isWinXpClient {
-		reqParams.Product = sha1Product(reqParams.Product)
 	}
 
 	url, err := b.URL(b.shouldPinHttps(req), reqParams.Lang, reqParams.OS, reqParams.Product)
