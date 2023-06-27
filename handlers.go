@@ -29,8 +29,22 @@ type xpRelease struct {
 // detects Windows XP and Vista clients
 var windowsXPRegex = regexp.MustCompile(`Windows (?:NT 5.1|XP|NT 5.2|NT 6.0)`)
 
+// detects OSX 10.12, 10.11 and 10.12 clients
+// Examples:
+// Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/602.4.8 (KHTML, like Gecko) Version/10.0.3 Safari/602.4.8
+// Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+// Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:100.0) Gecko/20100101 Firefox/100.0
+var deprecatedOSXRegex = regexp.MustCompile(`^Mozilla/5.0 \(Macintosh; Intel Mac OS X 10[\._](12|13|14)`)
+var deprecatedOSXPkgProduct = "firefox-esr-next-pkg-latest-ssl"
+var deprecatedOSXDmgProduct = "firefox-esr-next-latest-ssl"
+
+
 var tBirdWinXPLastRelease = xpRelease{"38.5.0"}
 var tBirdWinXPLastBeta = xpRelease{"43.0b1"}
+
+func isDeprecatedOSXAgent(userAgent string) bool {
+	return deprecatedOSXRegex.MatchString(userAgent)
+}
 
 func isWindowsXPUserAgent(userAgent string) bool {
 	return windowsXPRegex.MatchString(userAgent)
@@ -158,6 +172,16 @@ func sha1Product(product string) string {
 		return "thunderbird-" + tBirdSha1Product(productParts[1])
 	}
 
+	return product
+}
+
+func osxEsrProduct(product string) string {
+	if product == "firefox-pkg-latest-ssl" {
+		return deprecatedOSXPkgProduct
+	}
+	if product == "firefox-latest-ssl" {
+		return deprecatedOSXDmgProduct
+	}
 	return product
 }
 
@@ -437,9 +461,12 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	// HACKS
 	// If the user is coming from 32-bit windows xp or vista, send a sha1 signed product.
+	// If the user is coming from an old version of OSX, change their product to ESR
 	// HACKS
 	if reqParams.OS == "win" && isWinXpClient {
 		reqParams.Product = sha1Product(reqParams.Product)
+	} else if reqParams.OS == "osx" && isDeprecatedOSXAgent(req.UserAgent()) {
+		reqParams.Product = osxEsrProduct(reqParams.Product)
 	}
 
 	// If the client is not WinXP and attribution_code is set, redirect to the stub service
