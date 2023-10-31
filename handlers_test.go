@@ -54,7 +54,7 @@ func TestShouldAttribute(t *testing.T) {
 				AttributionCode: "att-code",
 				AttributionSig:  "att-sig",
 			},
-			false,
+			true,
 		},
 		{
 			&BouncerParams{
@@ -166,7 +166,7 @@ func TestBouncerHandlerAttributionCode(t *testing.T) {
 	}{
 		{
 			`http://test/?product=Firefox&os=osx&lang=en-US&attribution_code=source%3Dgoogle.com%26medium%3Dorganic%26campaign%3D(not%20set)%26content%3D(not%20set)&attribution_sig=anhmacsig`,
-			`http://download-installer.cdn.mozilla.net/pub/firefox/releases/39.0/mac/en-US/Firefox%2039.0.dmg`,
+			`https://stub/?attribution_code=source%3Dgoogle.com%26medium%3Dorganic%26campaign%3D%28not+set%29%26content%3D%28not+set%29&attribution_sig=anhmacsig&lang=en-US&os=osx&product=firefox`,
 		},
 		{
 			`http://test/?product=Firefox&os=win&lang=en-US&attribution_code=source%3Dgoogle.com%26medium%3Dorganic%26campaign%3D(not%20set)%26content%3D(not%20set)&attribution_sig=anhmacsig`,
