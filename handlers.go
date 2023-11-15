@@ -365,7 +365,7 @@ func fromRTAMO(attribution_code string) bool {
 func (b *BouncerHandler) shouldAttribute(reqParams *BouncerParams) bool {
 	validOs := func() bool {
 		// Only include windows.
-		for _, s := range []string{"win", "win64", "win64-aarch64"} {
+		for _, s := range []string{"win", "win64", "win64-aarch64", "osx"} {
 			if reqParams.OS == s {
 				return true
 			}
