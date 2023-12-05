@@ -4,7 +4,11 @@
 # DOCKER_USER    - login info for docker hub
 # DOCKER_PASS
 #
-version: 2
+version: 2.1
+
+orbs:
+  codecov: codecov/codecov@3.2.4
+
 jobs:
   build:
     docker:
@@ -68,7 +72,8 @@ jobs:
       - run:
           name: Go test
           command: |
-            go test -v
+            go test -v -mod vendor -covermode=atomic -coverprofile=coverage.txt ./...
+      - codecov/upload
 
   deploy:
     docker:
