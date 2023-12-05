@@ -29,3 +29,4 @@ _testmain.go
 
 /go-bouncer
 /go-sentry/go-sentry
+/coverage.txt
