@@ -1,4 +1,4 @@
-FROM golang:1.20
+FROM golang:1.20-bullseye
 
 ENV PROJECT=github.com/mozilla-services/go-bouncer
 
