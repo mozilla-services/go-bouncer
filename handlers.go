@@ -364,7 +364,6 @@ func fromRTAMO(attribution_code string) bool {
 
 func (b *BouncerHandler) shouldAttribute(reqParams *BouncerParams) bool {
 	validOs := func() bool {
-		// Only include windows.
 		for _, s := range []string{"win", "win64", "win64-aarch64", "osx"} {
 			if reqParams.OS == s {
 				return true
@@ -389,9 +388,9 @@ func (b *BouncerHandler) shouldAttribute(reqParams *BouncerParams) bool {
 	}
 
 	// Exclude updates, MSI, and MSIX installers
-    // Technically, -msi covers -msix as well, but both are here to
-    // prevent a future footgun where -msi is removed, but we still
-    // need -msix covered.
+	// Technically, -msi covers -msix as well, but both are here to
+	// prevent a future footgun where -msi is removed, but we still
+	// need -msix covered.
 	for _, s := range []string{"-partial", "-complete", "-msi", "-msix"} {
 		if strings.Contains(reqParams.Product, s) {
 			return false
