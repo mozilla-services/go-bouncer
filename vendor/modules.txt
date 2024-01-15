@@ -7,8 +7,8 @@ github.com/codegangsta/cli
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
 github.com/davecgh/go-spew/spew
-# github.com/go-sql-driver/mysql v1.2.1-0.20150620200312-fb7299726d2e
-## explicit
+# github.com/go-sql-driver/mysql v1.7.1
+## explicit; go 1.13
 github.com/go-sql-driver/mysql
 # github.com/pmezard/go-difflib v1.0.0
 ## explicit
