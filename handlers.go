@@ -23,6 +23,7 @@ const (
 	DefaultOS                 = "win"
 	firefoxSHA1ESRAliasSuffix = "sha1"
 	fxPre2024LastNightly      = "firefox-nightly-pre2024"
+	fxPre2024LastBeta         = "127.0b9"
 )
 
 type xpRelease struct {
@@ -184,6 +185,14 @@ func pre2024Product(product string) string {
 		return fxPre2024LastNightly
 	case "nightly-latest-ssl", "nightly-latest-l10n-ssl":
 		return fxPre2024LastNightly + "-ssl"
+	case "beta-latest-ssl":
+		return "firefox-" + fxPre2024LastBeta + "-ssl"
+	case "beta-latest":
+		return "firefox-" + fxPre2024LastBeta
+	case "devedition-latest-ssl":
+		return "devedition-" + fxPre2024LastBeta + "-ssl"
+	case "devedition-latest":
+		return "devedition-" + fxPre2024LastBeta
 	}
 
 	return product
