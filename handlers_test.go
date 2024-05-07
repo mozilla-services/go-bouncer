@@ -285,6 +285,9 @@ func TestBouncerHandlerValid(t *testing.T) {
 		{"http://test/?product=Firefox-nightly-latest-ssl&os=win&lang=en-US", "https://download-installer.cdn.mozilla.net/pub/firefox/nightly/2024/05/2024-05-06-09-48-55-mozilla-central-l10n/firefox-127.0a1.en-US.win32.installer.exe", "NSIS InetBgDL (Mozilla)"}, // old stub
 		{"http://test/?product=Firefox-nightly-latest-ssl&os=win&lang=en-US", "https://download-installer.cdn.mozilla.net/pub/firefox/nightly/latest-mozilla-central-l10n/firefox-128.0a1.en-US.win32.installer.exe", "NSIS InetBgDL (Mozilla 2024)"}, // new stub
 		{"http://test/?product=Firefox-nightly-latest-ssl&os=win&lang=en-US", "https://download-installer.cdn.mozilla.net/pub/firefox/nightly/latest-mozilla-central-l10n/firefox-128.0a1.en-US.win32.installer.exe", defaultUA},
+		{"http://test/?product=partner-firefox-release-unitedinternet-foo-latest&os=win&lang=de", "http://download-installer.cdn.mozilla.net/pub/firefox/releases/partners/foo/bar/126.0.1/win32/de/Firefox%20Setup%20126.0.1.exe", "NSIS InetBgDL (Mozilla)"}, // old stub
+		{"http://test/?product=partner-firefox-release-unitedinternet-foo-latest&os=win&lang=de", "http://download-installer.cdn.mozilla.net/pub/firefox/releases/partners/foo/bar/39.0/win32/de/Firefox%20Setup%2039.0.exe", "NSIS InetBgDL (Mozilla 2024)"}, // new stub
+		{"http://test/?product=partner-firefox-release-unitedinternet-foo-latest&os=win&lang=de", "http://download-installer.cdn.mozilla.net/pub/firefox/releases/partners/foo/bar/39.0/win32/de/Firefox%20Setup%2039.0.exe", defaultUA},
 	}
 
 	for _, testRequest := range testRequests {

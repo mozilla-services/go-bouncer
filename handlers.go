@@ -170,6 +170,8 @@ var fxPre2024LastESR = xpRelease{"115.12.0"}
 
 var pre2024StubUA = "NSIS InetBgDL (Mozilla)"
 
+var fxPartnerAlias = regexp.MustCompile(`^partner-firefox-release-([^-]*)-(.*)-latest$`)
+
 func isPre2024StubUserAgent(userAgent string) bool {
 	return pre2024StubUA == userAgent
 }
@@ -179,6 +181,11 @@ func pre2024Product(product string) string {
 	if len(productParts) == 1 {
 		return product
 	}
+	partnerMatch := fxPartnerAlias.FindStringSubmatch(product)
+	if partnerMatch != nil && partnerMatch[1] == "unitedinternet" {
+		return "firefox-" + fxPre2024LastRelease.Version + "-unitedinternet-" + partnerMatch[2]
+	}
+
 	if productParts[0] != "firefox" {
 		return product
 	}
