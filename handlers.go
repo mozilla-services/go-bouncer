@@ -18,9 +18,12 @@ import (
 	"github.com/mozilla-services/go-bouncer/bouncer"
 )
 
-const DefaultLang = "en-US"
-const DefaultOS = "win"
-const firefoxSHA1ESRAliasSuffix = "sha1"
+const (
+	DefaultLang               = "en-US"
+	DefaultOS                 = "win"
+	firefoxSHA1ESRAliasSuffix = "sha1"
+	fxPre2024LastNightly      = "firefox-127.0a1"
+)
 
 type xpRelease struct {
 	Version string
@@ -159,6 +162,32 @@ func sha1Product(product string) string {
 	}
 
 	return product
+}
+
+// detect stub installers that pin the "DigiCert SHA2 Assured ID Code Signing CA" intermediate
+
+func isPre2024StubUserAgent(userAgent string) bool {
+	return "NSIS InetBgDL (Mozilla)" == userAgent
+}
+
+func pre2024Product(product string) string {
+	productParts := strings.SplitN(product, "-", 2)
+	if len(productParts) < 2 {
+		return product
+	}
+	if productParts[0] != "firefox" {
+		return product
+	}
+
+	switch productParts[1] {
+	case "nightly-latest", "nightly-latest-l10n":
+		return fxPre2024LastNightly
+	case "nightly-latest-ssl", "nightly-latest-l10n-ssl":
+		return fxPre2024LastNightly + "-ssl"
+	}
+
+	return product
+
 }
 
 // HealthResult represents service health
@@ -433,6 +462,7 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 
 	isWinXpClient := isWindowsXPUserAgent(req.UserAgent())
+	isPre2024Stub := isPre2024StubUserAgent(req.UserAgent())
 
 	// If the client is not WinXP and attribution_code is set, redirect to the stub service
 	if b.shouldAttribute(reqParams) && !isWinXpClient {
@@ -447,6 +477,10 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// HACKS
 	if reqParams.OS == "win" && isWinXpClient {
 		reqParams.Product = sha1Product(reqParams.Product)
+	}
+	// If the user is an "old" stub installer, send a pre-2024-cert-rotation product
+	if isPre2024Stub {
+		reqParams.Product = pre2024Product(reqParams.Product)
 	}
 
 	url, err := b.URL(b.shouldPinHttps(req), reqParams.Lang, reqParams.OS, reqParams.Product)
