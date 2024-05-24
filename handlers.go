@@ -22,7 +22,7 @@ const (
 	DefaultLang               = "en-US"
 	DefaultOS                 = "win"
 	firefoxSHA1ESRAliasSuffix = "sha1"
-	fxPre2024LastNightly      = "firefox-127.0a1"
+	fxPre2024LastNightly      = "firefox-nightly-pre2024"
 )
 
 type xpRelease struct {

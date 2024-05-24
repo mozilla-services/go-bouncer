@@ -301,8 +301,8 @@ INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`
 INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-nightly-latest',1,1,1,5,0);
 INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-nightly-latest-l10n-SSL',1,1,1,6,1);
 INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-nightly-latest-l10n',1,1,1,7,0);
-INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-127.0a1-SSL',1,1,1,8,1);
-INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-127.0a1',1,1,1,9,0);
+INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-nightly-pre2024-SSL',1,1,1,8,1);
+INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-nightly-pre2024',1,1,1,9,0);
 /*!40000 ALTER TABLE `mirror_products` ENABLE KEYS */;
 UNLOCK TABLES;
 
