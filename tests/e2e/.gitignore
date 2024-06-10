@@ -1,5 +1,0 @@
-.cache
-.DS_Store
-*.pyc
-Pipfile.lock
-results/
