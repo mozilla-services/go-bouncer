@@ -301,6 +301,11 @@ func TestBouncerHandlerValid(t *testing.T) {
 		{"http://test/?product=Firefox-devedition-latest-ssl&os=win&lang=en-US", "https://download-installer.cdn.mozilla.net/pub/devedition/releases/127.0b9/win32/en-US/Firefox%20Setup%20127.0b9.exe", "NSIS InetBgDL (Mozilla)"},      // old stub
 		{"http://test/?product=Firefox-devedition-latest-ssl&os=win&lang=en-US", "https://download-installer.cdn.mozilla.net/pub/devedition/releases/128.0b1/win32/en-US/Firefox%20Setup%20128.0b1.exe", "NSIS InetBgDL (Mozilla 2024)"}, // new stub
 		{"http://test/?product=Firefox-devedition-latest-ssl&os=win&lang=en-US", "https://download-installer.cdn.mozilla.net/pub/devedition/releases/128.0b1/win32/en-US/Firefox%20Setup%20128.0b1.exe", defaultUA},
+		{"http://test/?product=Firefox-latest&os=win&lang=en-US", "http://download-installer.cdn.mozilla.net/pub/firefox/releases/127.0/win32/en-US/Firefox%20Setup%20127.0.exe", "NSIS InetBgDL (Mozilla)"}, // old stub
+		{"http://test/?product=Firefox-latest-ssl&os=win&lang=en-US", "https://download-installer.cdn.mozilla.net/pub/firefox/releases/127.0/win32/en-US/Firefox%20Setup%20127.0.exe", "NSIS InetBgDL (Mozilla)"}, // old stub
+		{"http://test/?product=partner-firefox-release-unitedinternet-foo-latest&os=win&lang=de", "http://download-installer.cdn.mozilla.net/pub/firefox/releases/partners/foo/bar/127.0/win32/de/Firefox%20Setup%20127.0.exe", "NSIS InetBgDL (Mozilla)"}, // old stub
+		{"http://test/?product=partner-firefox-release-unitedinternet-foo-latest&os=win&lang=de", "http://download-installer.cdn.mozilla.net/pub/firefox/releases/partners/foo/bar/39.0/win32/de/Firefox%20Setup%2039.0.exe", "NSIS InetBgDL (Mozilla 2024)"}, // new stub
+		{"http://test/?product=partner-firefox-release-unitedinternet-foo-latest&os=win&lang=de", "http://download-installer.cdn.mozilla.net/pub/firefox/releases/partners/foo/bar/39.0/win32/de/Firefox%20Setup%2039.0.exe", defaultUA},
 	}
 
 	for _, testRequest := range testRequests {

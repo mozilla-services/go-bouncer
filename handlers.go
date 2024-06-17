@@ -24,6 +24,7 @@ const (
 	firefoxSHA1ESRAliasSuffix = "sha1"
 	fxPre2024LastNightly      = "firefox-nightly-pre2024"
 	fxPre2024LastBeta         = "127.0b9"
+	fxPre2024LastRelease      = "127.0"
 )
 
 type xpRelease struct {
@@ -35,6 +36,8 @@ var windowsXPRegex = regexp.MustCompile(`Windows (?:NT 5.1|XP|NT 5.2|NT 6.0)`)
 
 var tBirdWinXPLastRelease = xpRelease{"38.5.0"}
 var tBirdWinXPLastBeta = xpRelease{"43.0b1"}
+
+var fxPartnerAlias = regexp.MustCompile(`^partner-firefox-release-([^-]*)-(.*)-latest$`)
 
 func isWindowsXPUserAgent(userAgent string) bool {
 	return windowsXPRegex.MatchString(userAgent)
@@ -176,6 +179,12 @@ func pre2024Product(product string) string {
 	if len(productParts) < 2 {
 		return product
 	}
+
+	partnerMatch := fxPartnerAlias.FindStringSubmatch(product)
+	if partnerMatch != nil && partnerMatch[1] == "unitedinternet" {
+		return "firefox-" + fxPre2024LastRelease + "-unitedinternet-" + partnerMatch[2]
+	}
+
 	if productParts[0] != "firefox" {
 		return product
 	}
@@ -193,6 +202,10 @@ func pre2024Product(product string) string {
 		return "devedition-" + fxPre2024LastBeta + "-ssl"
 	case "devedition-latest":
 		return "devedition-" + fxPre2024LastBeta
+        case "latest-ssl":
+		return "firefox-" + fxPre2024LastRelease + "-ssl"
+        case "latest":
+		return "firefox-" + fxPre2024LastRelease
 	}
 
 	return product
