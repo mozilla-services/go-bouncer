@@ -25,22 +25,43 @@ const (
 	fxPre2024LastNightly      = "firefox-nightly-pre2024"
 	fxPre2024LastBeta         = "127.0b9"
 	fxPre2024LastRelease      = "127.0"
+	esr115Product             = "firefox-esr115-latest-ssl"
 )
 
 type xpRelease struct {
 	Version string
 }
 
-// detects Windows XP and Vista clients
-var windowsXPRegex = regexp.MustCompile(`Windows (?:NT 5.1|XP|NT 5.2|NT 6.0)`)
+var (
+	// detects Windows XP and Vista clients
+	windowsXPRegex = regexp.MustCompile(`Windows (?:NT 5\.1|XP|NT 5\.2|NT 6\.0)`)
+	// detects windows 7/8/8.1 clients
+	windowsRegexForESR115 = regexp.MustCompile(`Windows (?:NT 6\.(1|2|3))`)
+	// this is used to verify the referer header
+	mozorgRegex = regexp.MustCompile(`^https://www\.mozilla\.org/`)
+	// detects partner aliases
+	fxPartnerAlias = regexp.MustCompile(`^partner-firefox-release-([^-]*)-(.*)-latest$`)
+	// detects x64 clients
+	win64Regex = regexp.MustCompile(`Win64|WOW64`)
+)
 
 var tBirdWinXPLastRelease = xpRelease{"38.5.0"}
 var tBirdWinXPLastBeta = xpRelease{"43.0b1"}
 
-var fxPartnerAlias = regexp.MustCompile(`^partner-firefox-release-([^-]*)-(.*)-latest$`)
-
 func isWindowsXPUserAgent(userAgent string) bool {
 	return windowsXPRegex.MatchString(userAgent)
+}
+
+func isUserAgentOnlyCompatibleWithESR115(userAgent string) bool {
+	return windowsRegexForESR115.MatchString(userAgent)
+}
+
+func hasMozorgReferrer(referrer string) bool {
+	return mozorgRegex.MatchString(referrer)
+}
+
+func isWin64UserAgent(userAgent string) bool {
+	return win64Regex.MatchString(userAgent)
 }
 
 func isNotNumber(r rune) bool {
@@ -202,9 +223,9 @@ func pre2024Product(product string) string {
 		return "devedition-" + fxPre2024LastBeta + "-ssl"
 	case "devedition-latest":
 		return "devedition-" + fxPre2024LastBeta
-        case "latest-ssl":
+	case "latest-ssl":
 		return "firefox-" + fxPre2024LastRelease + "-ssl"
-        case "latest":
+	case "latest":
 		return "firefox-" + fxPre2024LastRelease
 	}
 
@@ -452,17 +473,7 @@ func (b *BouncerHandler) shouldAttribute(reqParams *BouncerParams) bool {
 	// if there is a referer header from https://www.mozilla.org/
 	// https://github.com/mozilla-services/go-bouncer/issues/347
 	if fromRTAMO(reqParams.AttributionCode) {
-		refererMatch, err := regexp.MatchString(`^https://www.mozilla.org/`, reqParams.Referer)
-		if err != nil {
-			log.Printf("Error matching www.mozilla.org regex: %s", err.Error())
-			return false
-		}
-
-		if !refererMatch {
-			return false
-		} else {
-			return true
-		}
+		return hasMozorgReferrer(reqParams.Referer)
 	}
 
 	return true
@@ -485,6 +496,16 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	isWinXpClient := isWindowsXPUserAgent(req.UserAgent())
 	isPre2024Stub := isPre2024StubUserAgent(req.UserAgent())
+	// We want to return ESR115 when... the product is for Firefox
+	shouldReturnESR115 := strings.HasPrefix(reqParams.Product, "firefox-") &&
+		// and the product is _not_ an MSI build
+		!strings.Contains(reqParams.Product, "-msi") &&
+		// and the OS param specifies windows
+		strings.HasPrefix(reqParams.OS, "win") &&
+		// and the User-Agent says it's a Windows 7/8/8.1 client
+		isUserAgentOnlyCompatibleWithESR115(req.UserAgent()) &&
+		// and the request doesn't come from mozilla.org
+		!hasMozorgReferrer(reqParams.Referer)
 
 	// If the client is not WinXP and attribution_code is set, redirect to the stub service
 	if b.shouldAttribute(reqParams) && !isWinXpClient {
@@ -494,13 +515,19 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 
 	// HACKS
-	// If the user is coming from windows xp or vista, send a sha1
-	// signed product
-	// HACKS
+	// If the user is coming from windows xp or vista, send a sha1 signed product.
 	if reqParams.OS == "win" && isWinXpClient {
 		reqParams.Product = sha1Product(reqParams.Product)
 	}
-	// If the user is an "old" stub installer, send a pre-2024-cert-rotation product
+	// Send the latest compatible ESR product if we detect that this is the best option for the client.
+	if shouldReturnESR115 {
+		// Override the OS if we detect a x64 client that attempts to get a stub installer.
+		if strings.Contains(reqParams.Product, "-stub") && isWin64UserAgent(req.UserAgent()) {
+			reqParams.OS = "win64"
+		}
+		reqParams.Product = esr115Product
+	}
+	// If the user is an "old" stub installer, send a pre-2024-cert-rotation product.
 	if isPre2024Stub {
 		reqParams.Product = pre2024Product(reqParams.Product)
 	}
