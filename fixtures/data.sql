@@ -302,6 +302,12 @@ INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/f
 INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/partners/foo/bar/127.0/win64/:lang/Firefox%20Setup%20127.0.exe',19,1,49);
 INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/partners/foo/bar/127.0/mac/:lang/Firefox%20127.0.dmg',19,2,50);
 INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/partners/foo/bar/127.0/win32/:lang/Firefox%20Setup%20127.0.exe',19,3,51);
+
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/115.16.1esr/win64/:lang/Firefox%20Setup%20115.16.1esr.exe',20,1,52);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/115.16.1esr/win32/:lang/Firefox%20Setup%20115.16.1esr.exe',20,3,53);
+
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/131.0.3/win64/en-US/Firefox%20Setup%20131.0.3.msi',21,1,54);
+
 /*!40000 ALTER TABLE `mirror_locations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -359,6 +365,8 @@ INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`
 INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-127.0-SSL',1,1,1,17,1);
 INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-partner-unitedinternet-foo',1,1,1,18,0);
 INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-127.0-unitedinternet-foo',1,1,1,19,0);
+INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-esr115-latest-SSL',1,1,1,20,1);
+INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-msi-latest-SSL',1,1,1,21,1);
 /*!40000 ALTER TABLE `mirror_products` ENABLE KEYS */;
 UNLOCK TABLES;
 
