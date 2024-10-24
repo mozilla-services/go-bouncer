@@ -5,7 +5,7 @@ set -e
 docker kill bouncer-test-mysql || true
 docker rm bouncer-test-mysql || true
 
-docker run -v "$PWD/fixtures:/fixtures" -d --name bouncer-test-mysql \
+docker run -v "$PWD/docker/initdb.d/:/fixtures" -d --name bouncer-test-mysql \
     -p 3306:3306 \
     -e MYSQL_ALLOW_EMPTY_PASSWORD="yes" \
     -e MYSQL_DATABASE="bouncer_test" \
@@ -13,5 +13,5 @@ docker run -v "$PWD/fixtures:/fixtures" -d --name bouncer-test-mysql \
 
 sleep 20
 
-docker exec bouncer-test-mysql sh -c "mysql bouncer_test < /fixtures/schema.sql"
-docker exec bouncer-test-mysql sh -c "mysql bouncer_test < /fixtures/data.sql"
+docker exec bouncer-test-mysql sh -c "mysql bouncer_test < /fixtures/01-schema.sql"
+docker exec bouncer-test-mysql sh -c "mysql bouncer_test < /fixtures/02-data.sql"

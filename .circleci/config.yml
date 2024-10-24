@@ -63,8 +63,8 @@ jobs:
           command: |
             sudo apt update && sudo apt install -y default-mysql-client
             mysql -u root -h 127.0.0.1 --port=3306 -e 'create database bouncer_test;'
-            mysql -u root -h 127.0.0.1 --port=3306 bouncer_test < ./fixtures/schema.sql
-            mysql -u root -h 127.0.0.1 --port=3306 bouncer_test < ./fixtures/data.sql
+            mysql -u root -h 127.0.0.1 --port=3306 bouncer_test < ./docker/initdb.d/01-schema.sql
+            mysql -u root -h 127.0.0.1 --port=3306 bouncer_test < ./docker/initdb.d/02-data.sql
       - run:
           name: Get dependencies
           command: |

@@ -1,0 +1,8 @@
+.circleci/
+.github/
+docker/
+scripts/
+
+**/*_test.go
+README.md
+compose.yaml
