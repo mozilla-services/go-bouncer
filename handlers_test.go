@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/mozilla-services/go-bouncer/bouncer"
@@ -149,6 +150,17 @@ func TestShouldAttribute(t *testing.T) {
 				Referer:         "https://www.mozilla.org/test/other/paths",
 			},
 			true,
+		},
+		{
+			&BouncerParams{
+				OS:              "win",
+				Product:         "firefox-stub",
+				AttributionCode: "c291cmNlPWFkZG9ucy5tb3ppbGxhLm9yZyZtZWRpdW09cmVmZXJyYWwmY2FtcGFpZ249bm9uLWZ4LWJ1dHRvbiZjb250ZW50PXJ0YTplMkk1WkdJeE5tRTBMVFpsWkdNdE5EZGxZeTFoTVdZMExXSTROakk1TW1Wa01qRXhaSDAmZXhwZXJpbWVudD0obm90IHNldCkmdmFyaWF0aW9uPShub3Qgc2V0KSZ1YT1lZGdlJnZpc2l0X2lkPShub3Qgc2V0KQ..",
+				AttributionSig:  "att-sig",
+				// Bogus referer
+				Referer: "https://www-mozilla.org/",
+			},
+			false,
 		},
 	}
 
@@ -301,9 +313,9 @@ func TestBouncerHandlerValid(t *testing.T) {
 		{"http://test/?product=Firefox-devedition-latest-ssl&os=win&lang=en-US", "https://download-installer.cdn.mozilla.net/pub/devedition/releases/127.0b9/win32/en-US/Firefox%20Setup%20127.0b9.exe", "NSIS InetBgDL (Mozilla)"},      // old stub
 		{"http://test/?product=Firefox-devedition-latest-ssl&os=win&lang=en-US", "https://download-installer.cdn.mozilla.net/pub/devedition/releases/128.0b1/win32/en-US/Firefox%20Setup%20128.0b1.exe", "NSIS InetBgDL (Mozilla 2024)"}, // new stub
 		{"http://test/?product=Firefox-devedition-latest-ssl&os=win&lang=en-US", "https://download-installer.cdn.mozilla.net/pub/devedition/releases/128.0b1/win32/en-US/Firefox%20Setup%20128.0b1.exe", defaultUA},
-		{"http://test/?product=Firefox-latest&os=win&lang=en-US", "http://download-installer.cdn.mozilla.net/pub/firefox/releases/127.0/win32/en-US/Firefox%20Setup%20127.0.exe", "NSIS InetBgDL (Mozilla)"}, // old stub
-		{"http://test/?product=Firefox-latest-ssl&os=win&lang=en-US", "https://download-installer.cdn.mozilla.net/pub/firefox/releases/127.0/win32/en-US/Firefox%20Setup%20127.0.exe", "NSIS InetBgDL (Mozilla)"}, // old stub
-		{"http://test/?product=partner-firefox-release-unitedinternet-foo-latest&os=win&lang=de", "http://download-installer.cdn.mozilla.net/pub/firefox/releases/partners/foo/bar/127.0/win32/de/Firefox%20Setup%20127.0.exe", "NSIS InetBgDL (Mozilla)"}, // old stub
+		{"http://test/?product=Firefox-latest&os=win&lang=en-US", "http://download-installer.cdn.mozilla.net/pub/firefox/releases/127.0/win32/en-US/Firefox%20Setup%20127.0.exe", "NSIS InetBgDL (Mozilla)"},                                                  // old stub
+		{"http://test/?product=Firefox-latest-ssl&os=win&lang=en-US", "https://download-installer.cdn.mozilla.net/pub/firefox/releases/127.0/win32/en-US/Firefox%20Setup%20127.0.exe", "NSIS InetBgDL (Mozilla)"},                                             // old stub
+		{"http://test/?product=partner-firefox-release-unitedinternet-foo-latest&os=win&lang=de", "http://download-installer.cdn.mozilla.net/pub/firefox/releases/partners/foo/bar/127.0/win32/de/Firefox%20Setup%20127.0.exe", "NSIS InetBgDL (Mozilla)"},    // old stub
 		{"http://test/?product=partner-firefox-release-unitedinternet-foo-latest&os=win&lang=de", "http://download-installer.cdn.mozilla.net/pub/firefox/releases/partners/foo/bar/39.0/win32/de/Firefox%20Setup%2039.0.exe", "NSIS InetBgDL (Mozilla 2024)"}, // new stub
 		{"http://test/?product=partner-firefox-release-unitedinternet-foo-latest&os=win&lang=de", "http://download-installer.cdn.mozilla.net/pub/firefox/releases/partners/foo/bar/39.0/win32/de/Firefox%20Setup%2039.0.exe", defaultUA},
 	}
@@ -449,6 +461,169 @@ func TestSha1Product(t *testing.T) {
 	assert.Equal(t, "thunderbird-43.0b1", sha1Product("thunderbird-44.0b1"))
 
 	assert.Equal(t, "thunderbird-42.0b1", sha1Product("thunderbird-42.0b1"))
+}
+
+func TestIsUserAgentOnlyCompatibleWithESR115(t *testing.T) {
+	uas := []struct {
+		UA     string
+		IsWin7 bool
+	}{
+		{"Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko", true},                                                                 // IE 64bits Win7
+		{"Opera/9.80 (Windows NT 6.1; U; en) Presto/2.7.62 Version/11.01", true},                                                                       // Opera 11 Win7
+		{"Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)", false},                                                         // IE XP
+		{"Mozilla/5.0 (Windows; U; MSIE 7.0; Windows NT 6.0; en-US)", false},                                                                           // IE Vista
+		{"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/537.36 Edg/100.0.1185.36", true}, // Edge Win7
+		{"Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.71 Safari/537.36", true},                    // Chrome Win8
+		{"Mozilla/5.0 (Windows NT 6.3; WOW64; rv:124.0) Gecko/20100101 Firefox/124.0", true},                                                           // Firefox Win8.1
+		{"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36", false},                     // Safari Win10
+		{"Mozilla/5.0 (Windows NT 611; WOW64; Trident/7.0; rv:11.0) like Gecko", false},                                                                // Bogus
+	}
+	for _, ua := range uas {
+		assert.Equal(t, ua.IsWin7, isUserAgentOnlyCompatibleWithESR115(ua.UA), "ua: %v", ua.UA)
+	}
+}
+
+func TestIsWin64UserAgent(t *testing.T) {
+	uas := []struct {
+		UA      string
+		IsWin64 bool
+	}{
+		{"Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko", true},                                                                  // IE 64bits Win7
+		{"Opera/9.80 (Windows NT 6.1; U; en) Presto/2.7.62 Version/11.01", false},                                                                       // Opera 11 Win7 32bits
+		{"Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)", false},                                                          // IE XP
+		{"Mozilla/5.0 (Windows; U; MSIE 7.0; Windows NT 6.0; en-US)", false},                                                                            // IE Vista
+		{"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/537.36 Edg/100.0.1185.36", true},  // Edge Win7
+		{"Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.71 Safari/537.36", true},                     // Chrome Win8
+		{"Mozilla/5.0 (Windows NT 6.3; WOW64; rv:124.0) Gecko/20100101 Firefox/124.0", true},                                                            // Firefox Win8.1
+		{"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36", true},                       // Safari Win10
+		{"Mozilla/5.0 (Windows NT 611; WOW64; Trident/7.0; rv:11.0) like Gecko", true},                                                                  // Bogus
+		{"Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36 Edg/100.0.1185.44", true}, // Edge 100 64bits (Windows 7 SP1)
+	}
+	for _, ua := range uas {
+		assert.Equal(t, ua.IsWin64, isWin64UserAgent(ua.UA), "ua: %v", ua.UA)
+	}
+}
+
+func TestBouncerHandlerForWindowsOnlyCompatibleWithESR115(t *testing.T) {
+	for _, tc := range []struct {
+		userAgent string
+		platform  string
+	}{
+		// Win 7
+		{"Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36", "win32"},
+		{"Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko", "win64"},
+		{"Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64; Trident/5.0)", "win64"},
+		// Win 8
+		{"Mozilla/5.0 (Windows NT 6.2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36", "win32"},
+		{"Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.71 Safari/537.36", "win64"},
+		{"Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36", "win64"},
+		// Win 8.1
+		{"Mozilla/5.0 (Windows NT 6.3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36", "win32"},
+		{"Mozilla/5.0 (Windows NT 6.3; WOW64; rv:124.0) Gecko/20100101 Firefox/124.0", "win64"},
+		{"Mozilla/5.0 (Windows NT 6.3; Win64; x64; Trident/7.0; Touch; LCJB; rv:11.0) like Gecko", "win64"},
+	} {
+		// This is for stub installers.
+		for _, url := range []string{
+			"http://test/?product=firefox-stub&os=win&lang=en-US",
+			"http://test/?product=firefox-beta-stub&os=win&lang=en-US",
+			"http://test/?product=firefox-esr-stub&os=win&lang=en-US",
+		} {
+			// For stub installers, we need to adjust the `os` param for x64 builds.
+			expectedLocation := fmt.Sprintf("https://download-installer.cdn.mozilla.net/pub/firefox/releases/115.16.1esr/%s/en-US/Firefox%%20Setup%%20115.16.1esr.exe", tc.platform)
+
+			w := httptest.NewRecorder()
+			req, _ := http.NewRequest("GET", url, nil)
+			req.Header.Set("User-Agent", tc.userAgent)
+
+			bouncerHandler.ServeHTTP(w, req)
+
+			assert.Equal(t, 302, w.Code, "userAgent: %v, url: %v", tc.userAgent, url)
+			assert.Equal(t, expectedLocation, w.HeaderMap.Get("Location"), "userAgent: %v, url: %v", tc.userAgent, url)
+		}
+
+		// This is for other firefox 32-bit products.
+		for _, url := range []string{
+			"http://test/?product=firefox-beta&os=win&lang=en-US",
+			"http://test/?product=firefox-devedition&os=win&lang=en-US",
+			"http://test/?product=firefox-nightly-latest-ssl&os=win&lang=en-US",
+			"http://test/?product=firefox-ssl-latest&os=win&lang=en-US",
+			"http://test/?product=firefox-unknown&os=win&lang=en-US",
+		} {
+			expectedLocation := "//download-installer.cdn.mozilla.net/pub/firefox/releases/115.16.1esr/win32/en-US/Firefox%20Setup%20115.16.1esr.exe"
+
+			w := httptest.NewRecorder()
+			req, _ := http.NewRequest("GET", url, nil)
+			req.Header.Set("User-Agent", tc.userAgent)
+
+			bouncerHandler.ServeHTTP(w, req)
+
+			assert.Equal(t, 302, w.Code, "userAgent: %v, url: %v", tc.userAgent, url)
+			// We don't need to assert the scheme.
+			assert.True(t, strings.HasSuffix(w.HeaderMap.Get("Location"), expectedLocation), "userAgent: %v, url: %v", tc.userAgent, url)
+		}
+
+		// This is for other firefox 64-bit products.
+		for _, url := range []string{
+			"http://test/?product=firefox-beta&os=win64&lang=en-US",
+			"http://test/?product=firefox-devedition&os=win64&lang=en-US",
+			"http://test/?product=firefox-nightly-latest-ssl&os=win64&lang=en-US",
+			"http://test/?product=firefox-ssl-latest&os=win64&lang=en-US",
+			"http://test/?product=firefox-unknown&os=win64&lang=en-US",
+		} {
+			expectedLocation := "//download-installer.cdn.mozilla.net/pub/firefox/releases/115.16.1esr/win64/en-US/Firefox%20Setup%20115.16.1esr.exe"
+
+			w := httptest.NewRecorder()
+			req, _ := http.NewRequest("GET", url, nil)
+			req.Header.Set("User-Agent", tc.userAgent)
+
+			bouncerHandler.ServeHTTP(w, req)
+
+			assert.Equal(t, 302, w.Code, "userAgent: %v, url: %v", tc.userAgent, url)
+			// We don't need to assert the scheme.
+			assert.True(t, strings.HasSuffix(w.HeaderMap.Get("Location"), expectedLocation), "userAgent: %v, url: %v", tc.userAgent, url)
+		}
+
+		// This is for MSI builds.
+		expectedLocation := "https://download-installer.cdn.mozilla.net/pub/firefox/releases/131.0.3/win64/en-US/Firefox%20Setup%20131.0.3.msi"
+
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("GET", "http://test/?product=firefox-msi-latest-ssl&os=win64&lang=en-US", nil)
+		req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:124.0) Gecko/20100101 Firefox/124.0")
+
+		bouncerHandler.ServeHTTP(w, req)
+
+		assert.Equal(t, 302, w.Code)
+		assert.Equal(t, expectedLocation, w.HeaderMap.Get("Location"))
+
+		// This is for unrelated products.
+		for _, url := range []string{
+			"http://test/?product=unknown&os=win&lang=en-US",
+			"http://test/?product=notfirefox-nightly-latest-ssl&os=win&lang=en-US",
+			"http://test/?product=thunderbird-latest-ssl&os=win&lang=en-US",
+		} {
+			w := httptest.NewRecorder()
+			req, _ := http.NewRequest("GET", url, nil)
+			req.Header.Set("User-Agent", tc.userAgent)
+
+			bouncerHandler.ServeHTTP(w, req)
+
+			assert.Equal(t, 404, w.Code, "userAgent: %v, url: %v", tc.userAgent, url)
+		}
+	}
+}
+
+func TestBouncerHandlerForWindowsOnlyCompatibleWithESR115WithMozorgReferrer(t *testing.T) {
+	expectedLocation := "http://download-installer.cdn.mozilla.net/pub/firefox/releases/39.0/win32/en-US/Firefox%20Setup%2039.0.exe"
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "http://test/?product=firefox-latest&os=win&lang=en-US", nil)
+	req.Header.Set("Referer", "https://www.mozilla.org/")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:124.0) Gecko/20100101 Firefox/124.0")
+
+	bouncerHandler.ServeHTTP(w, req)
+
+	assert.Equal(t, 302, w.Code)
+	assert.Equal(t, expectedLocation, w.HeaderMap.Get("Location"))
 }
 
 func BenchmarkSha1Product(b *testing.B) {
