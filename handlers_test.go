@@ -290,8 +290,8 @@ func TestBouncerHandlerValid(t *testing.T) {
 		{"http://test/?product=Firefox-SSL&os=win64&lang=en-US", "https://download-installer.cdn.mozilla.net/pub/firefox/releases/39.0/win64/en-US/Firefox%20Setup%2039.0.exe", "Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)"},        // Windows XP 64 bit - should get normal win64 build
 		{"http://test/?product=Firefox-stub&os=win&lang=en-US", "https://download-installer.cdn.mozilla.net/pub/firefox/releases/43.0.1/win32/en-US/Firefox%20Setup%2043.0.1.exe", "Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)"},     // Windows XP no stub
 		{"http://test/?product=Firefox-nightly-latest-ssl&os=win&lang=en-US", "https://download-installer.cdn.mozilla.net/pub/firefox/nightly/2024/05/2024-05-06-09-48-55-mozilla-central-l10n/firefox-127.0a1.en-US.win32.installer.exe", "NSIS InetBgDL (Mozilla)"}, // old stub
-		{"http://test/?product=Firefox-nightly-latest-ssl&os=win&lang=en-US", "https://download-installer.cdn.mozilla.net/pub/firefox/nightly/latest-mozilla-central-l10n/firefox-128.0a1.en-US.win32.installer.exe", "NSIS InetBgDL (Mozilla 2024)"},                 // new stub
-		{"http://test/?product=Firefox-nightly-latest-ssl&os=win&lang=en-US", "https://download-installer.cdn.mozilla.net/pub/firefox/nightly/latest-mozilla-central-l10n/firefox-128.0a1.en-US.win32.installer.exe", defaultUA},
+		{"http://test/?product=Firefox-nightly-latest-ssl&os=win&lang=en-US", "https://download-installer.cdn.mozilla.net/pub/firefox/nightly/latest-mozilla-central/firefox-128.0a1.en-US.win32.installer.exe", "NSIS InetBgDL (Mozilla 2024)"},                      // new stub
+		{"http://test/?product=Firefox-nightly-latest-ssl&os=win&lang=en-US", "https://download-installer.cdn.mozilla.net/pub/firefox/nightly/latest-mozilla-central/firefox-128.0a1.en-US.win32.installer.exe", defaultUA},
 		{"http://test/?product=Firefox-nightly-latest&os=win&lang=en-US", "http://download-installer.cdn.mozilla.net/pub/firefox/nightly/2024/05/2024-05-06-09-48-55-mozilla-central-l10n/firefox-127.0a1.en-US.win32.installer.exe", "NSIS InetBgDL (Mozilla)"}, // old stub
 		{"http://test/?product=Firefox-nightly-latest&os=win&lang=en-US", "http://download-installer.cdn.mozilla.net/pub/firefox/nightly/latest-mozilla-central-l10n/firefox-128.0a1.en-US.win32.installer.exe", "NSIS InetBgDL (Mozilla 2024)"},                 // new stub
 		{"http://test/?product=Firefox-nightly-latest&os=win&lang=en-US", "http://download-installer.cdn.mozilla.net/pub/firefox/nightly/latest-mozilla-central-l10n/firefox-128.0a1.en-US.win32.installer.exe", defaultUA},
@@ -599,7 +599,7 @@ func TestBouncerHandlerForWindowsOnlyCompatibleWithESR115(t *testing.T) {
 		for _, url := range []string{
 			"http://test/?product=unknown&os=win&lang=en-US",
 			"http://test/?product=notfirefox-nightly-latest-ssl&os=win&lang=en-US",
-			"http://test/?product=thunderbird-latest-ssl&os=win&lang=en-US",
+			"http://test/?product=thunderbird-something-latest-ssl&os=win&lang=en-US",
 			"http://test/?product=firefox-115.17.0esr-complete&os=win&lang=en-US",
 			"http://test/?product=firefox-115.17.0esr-partial-115.16.1esr&os=win&lang=en-US",
 		} {
