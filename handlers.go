@@ -500,6 +500,9 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	shouldReturnESR115 := strings.HasPrefix(reqParams.Product, "firefox-") &&
 		// and the product is _not_ an MSI build
 		!strings.Contains(reqParams.Product, "-msi") &&
+		// and the product is _not_ a partial or complete update (MAR files)
+		!strings.Contains(reqParams.Product, "-partial") &&
+		!strings.Contains(reqParams.Product, "-complete") &&
 		// and the OS param specifies windows
 		strings.HasPrefix(reqParams.OS, "win") &&
 		// and the User-Agent says it's a Windows 7/8/8.1 client
