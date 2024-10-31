@@ -600,6 +600,8 @@ func TestBouncerHandlerForWindowsOnlyCompatibleWithESR115(t *testing.T) {
 			"http://test/?product=unknown&os=win&lang=en-US",
 			"http://test/?product=notfirefox-nightly-latest-ssl&os=win&lang=en-US",
 			"http://test/?product=thunderbird-latest-ssl&os=win&lang=en-US",
+			"http://test/?product=firefox-115.17.0esr-complete&os=win&lang=en-US",
+			"http://test/?product=firefox-115.17.0esr-partial-115.16.1esr&os=win&lang=en-US",
 		} {
 			w := httptest.NewRecorder()
 			req, _ := http.NewRequest("GET", url, nil)
