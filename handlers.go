@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"math/rand"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -298,27 +297,6 @@ type BouncerHandler struct {
 	StubRootURL        string
 }
 
-func randomMirror(mirrors []bouncer.MirrorsResult) *bouncer.MirrorsResult {
-	totalRatings := 0
-	for _, m := range mirrors {
-		totalRatings += m.Rating
-	}
-	for _, m := range mirrors {
-		// Intn(x) returns from [0,x) and we need [1,x], so adding 1
-		rand := rand.Intn(totalRatings) + 1
-		if rand <= m.Rating {
-			return &m
-		}
-		totalRatings -= m.Rating
-	}
-
-	// This shouldn't happen
-	if len(mirrors) == 0 {
-		return nil
-	}
-	return &mirrors[0]
-}
-
 // URL returns the final redirect URL given a lang, os and product
 // if the string is == "", no mirror or location was found
 func (b *BouncerHandler) URL(pinHttps bool, lang, os, product string) (string, error) {
@@ -350,41 +328,14 @@ func (b *BouncerHandler) URL(pinHttps bool, lang, os, product string) (string, e
 	case err != nil:
 		return "", err
 	}
-
-	mirrorBaseURL, err := b.mirrorBaseURL(pinHttps || sslOnly)
-	if err != nil || mirrorBaseURL == "" {
-		return "", err
-	}
-
 	locationPath = strings.Replace(locationPath, ":lang", lang, -1)
 
+	mirrorBaseURL := "http://" + b.PinnedBaseURLHttp
+	if pinHttps || sslOnly {
+		mirrorBaseURL = "https://" + b.PinnedBaseURLHttps
+	}
+
 	return mirrorBaseURL + locationPath, nil
-}
-
-func (b *BouncerHandler) mirrorBaseURL(sslOnly bool) (string, error) {
-	if b.PinnedBaseURLHttps != "" && sslOnly {
-		return "https://" + b.PinnedBaseURLHttps, nil
-	}
-
-	if b.PinnedBaseURLHttp != "" && !sslOnly {
-		return "http://" + b.PinnedBaseURLHttp, nil
-	}
-
-	mirrors, err := b.db.Mirrors(sslOnly)
-	if err != nil {
-		return "", err
-	}
-
-	if len(mirrors) == 0 {
-		return "", nil
-	}
-
-	mirror := randomMirror(mirrors)
-	if mirror == nil {
-		return "", nil
-	}
-
-	return mirror.BaseURL, nil
 }
 
 func (b *BouncerHandler) stubAttributionURL(reqParams *BouncerParams) string {

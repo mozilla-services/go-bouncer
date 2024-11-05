@@ -41,31 +41,38 @@ the following headers:
 - `x-debug-cache-key`: the computed cache key
 - `x-debug-referer`: the referer value, if any
 
-## Environment Variables
+## Environment variables
 
-Note: This section is not exhaustive.
+### `BOUNCER_ADDR`
+
+Address on which to listen. The default value is: `:8888`
+
+### `BOUNCER_DB_DSN`
+
+Database DSN, see: https://github.com/go-sql-driver/mysql#dsn-data-source-name
+for more details about the format.
+
+### `BOUNCER_PIN_HTTPS_HEADER_NAME`
+
+When this flag is set and the request header value equals https, an HTTPS
+redirect will always be returned. The default value is: `X-Forwarded-Proto`,
+which means this feature is enabled by default.
 
 ### `BOUNCER_PINNED_BASEURL_HTTP`
 
-If this is a unset, bouncer will randomly pick a healthy mirror from the
-database and return its base url. If this option is set, the mirror table is
-completely ignored and `BOUNCER_PINNED_BASEURL_HTTP` will be returned instead.
-
-This option acts on non ssl only products.
-
-Example: `BOUNCER_PINNED_BASEURL=download-sha1.cdn.mozilla.net/pub`
+Configure the base URL for non-SSL only products.
 
 ### `BOUNCER_PINNED_BASEURL_HTTPS`
 
-This option is exactly the same as `BOUNCER_PINNED_BASEURL_HTTP` but acts on ssl
-only products.
+Same as `BOUNCER_PINNED_BASEURL_HTTP` but SSL-only products.
 
 ### `BOUNCER_STUB_ROOT_URL`
 
-If set, bouncer will redirect requests with `attribution_sig` and
-`attribution_code` parameters to
-`BOUNCER_STUB_ROOT_URL?product=PRODUCT&os=OS&lang=LANG&attribution_sig=ATTRIBUTION_SIG&attribution_code=ATTRIBUTION_CODE`.
+Optional. If set, bouncer will redirect requests with `attribution_sig` and
+`attribution_code` parameters to the stubattribution service using this URL:
 
-Example: `BOUNCER_STUB_ROOT_URL=https://stubdownloader.services.mozilla.com/`
+```
+BOUNCER_STUB_ROOT_URL?product=PRODUCT&os=OS&lang=LANG&attribution_sig=ATTRIBUTION_SIG&attribution_code=ATTRIBUTION_CODE
+```
 
 [go-bouncer]: https://github.com/mozilla-services/go-bouncer/
