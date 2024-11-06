@@ -6,3 +6,4 @@ scripts/
 **/*_test.go
 README.md
 compose.yaml
+compose-admin.yaml

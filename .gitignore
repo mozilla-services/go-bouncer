@@ -1,32 +1,5 @@
-# Compiled Object files, Static and Dynamic libs (Shared Objects)
-*.o
-*.a
-*.so
-*.pyc
-
-# Folders
-__pycache__
-_obj
-_test
-.cache
-.tox
-
-# Architecture specific extensions/prefixes
-*.[568vq]
-[568vq].out
-
-*.cgo1.go
-*.cgo2.c
-_cgo_defun.c
-_cgo_gotypes.go
-_cgo_export.*
-
-_testmain.go
-
-*.exe
-*.test
-*.prof
-
-/go-bouncer
-/go-sentry/go-sentry
+# This should be a directory, or a symlink so that why the trailing slash is
+# omitted.
+/bouncer-admin
 /coverage.txt
+/go-bouncer
