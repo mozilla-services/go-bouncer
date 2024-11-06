@@ -54,15 +54,3 @@ func TestMirrors(t *testing.T) {
 	assert.Len(t, mirrors, 1)
 	assert.Equal(t, "2", mirrors[0].ID)
 }
-
-func LocationsActive(t *testing.T) {
-	locations, err := testDB.LocationsActive(false)
-	assert.NoError(t, err)
-	assert.Len(t, locations, 3)
-}
-
-func MirrorsActive(t *testing.T) {
-	mirrors, err := testDB.MirrorsActive("")
-	assert.NoError(t, err)
-	assert.Len(t, mirrors, 2)
-}
