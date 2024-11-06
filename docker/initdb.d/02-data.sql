@@ -222,6 +222,10 @@ INSERT INTO `mirror_aliases` (`id`, `alias`, `related_product`) VALUES (5,'firef
 INSERT INTO `mirror_aliases` (`id`, `alias`, `related_product`) VALUES (6,'firefox-devedition-latest','Devedition-128.0b1');
 INSERT INTO `mirror_aliases` (`id`, `alias`, `related_product`) VALUES (7,'firefox-latest-ssl','Firefox-SSL');
 INSERT INTO `mirror_aliases` (`id`, `alias`, `related_product`) VALUES (8,'partner-firefox-release-unitedinternet-foo-latest','Firefox-partner-unitedinternet-foo');
+INSERT INTO `mirror_aliases` (`id`, `alias`, `related_product`) VALUES (9,'firefox-beta-stub','Firefox-stub');
+INSERT INTO `mirror_aliases` (`id`, `alias`, `related_product`) VALUES (10,'firefox-devedition-stub','Firefox-stub');
+INSERT INTO `mirror_aliases` (`id`, `alias`, `related_product`) VALUES (11,'firefox-devedition-msi-latest-ssl','Firefox-beta-msi-latest-SSL');
+INSERT INTO `mirror_aliases` (`id`, `alias`, `related_product`) VALUES (12,'thunderbird-latest-ssl','Thunderbird-SSL');
 /*!40000 ALTER TABLE `mirror_aliases` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -249,8 +253,8 @@ INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/f
 INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/43.0.1/mac/:lang/Firefox%2043.0.1.dmg',3,2,8);
 INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/43.0.1/win32/:lang/Firefox%20Setup%2043.0.1.exe',3,3,9);
 
-INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/nightly/latest-mozilla-central-l10n/firefox-128.0a1.:lang.win64.installer.exe',4,1,10);
-INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/nightly/latest-mozilla-central-l10n/firefox-128.0a1.:lang.win32.installer.exe',4,3,11);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/nightly/latest-mozilla-central/firefox-128.0a1.:lang.win64.installer.exe',4,1,10);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/nightly/latest-mozilla-central/firefox-128.0a1.:lang.win32.installer.exe',4,3,11);
 INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/nightly/latest-mozilla-central-l10n/firefox-128.0a1.:lang.win64.installer.exe',5,1,12);
 INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/nightly/latest-mozilla-central-l10n/firefox-128.0a1.:lang.win32.installer.exe',5,3,13);
 INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/nightly/latest-mozilla-central-l10n/firefox-128.0a1.:lang.win64.installer.exe',6,1,14);
@@ -306,7 +310,30 @@ INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/f
 INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/115.16.1esr/win64/:lang/Firefox%20Setup%20115.16.1esr.exe',20,1,52);
 INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/115.16.1esr/win32/:lang/Firefox%20Setup%20115.16.1esr.exe',20,3,53);
 
-INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/131.0.3/win64/en-US/Firefox%20Setup%20131.0.3.msi',21,1,54);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/131.0.3/win64/:lang/Firefox%20Setup%20131.0.3.msi',21,1,54);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/131.0.3/win32/:lang/Firefox%20Setup%20131.0.3.msi',21,3,55);
+
+/* Those two locations have "win32" in their path on purpose */
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/131.0.3/win32/:lang/Firefox%20Installer.exe',22,1,56);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/131.0.3/win32/:lang/Firefox%20Installer.exe',22,3,57);
+
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/nightly/latest-mozilla-central-l10n/Firefox%20Installer.en-US.exe',23,1,58);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/nightly/latest-mozilla-central-l10n/Firefox%20Installer.en-US.exe',23,3,59);
+
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/128.3.1esr/win64/:lang/Firefox%20Setup%20128.3.1esr.exe',24,1,60);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/128.3.1esr/win32/:lang/Firefox%20Setup%20128.3.1esr.exe',24,3,61);
+
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/132.0b9/win64/:lang/Firefox%20Setup%20132.0b9.msi',25,1,62);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/132.0b9/win32/:lang/Firefox%20Setup%20132.0b9.msi',25,3,63);
+
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/nightly/latest-mozilla-central/firefox-133.0a1.en-US.win64.installer.msi',26,1,64);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/nightly/latest-mozilla-central/firefox-133.0a1.en-US.win32.installer.msi',26,3,65);
+
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/128.3.1esr/win64/:lang/Firefox%20Setup%20128.3.1esr.msi',27,1,65);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/128.3.1esr/win32/:lang/Firefox%20Setup%20128.3.1esr.msi',27,3,66);
+
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/thunderbird/releases/131.0.1/win64/:lang/Thunderbird%20Setup%20131.0.1.exe',28,1,67);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/thunderbird/releases/131.0.1/win32/:lang/Thunderbird%20Setup%20131.0.1.exe',28,3,68);
 
 /*!40000 ALTER TABLE `mirror_locations` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -367,6 +394,13 @@ INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`
 INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-127.0-unitedinternet-foo',1,1,1,19,0);
 INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-esr115-latest-SSL',1,1,1,20,1);
 INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-msi-latest-SSL',1,1,1,21,1);
+INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-stub',1,1,1,22,1);
+INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-nightly-stub',1,1,1,23,1);
+INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-esr-latest-SSL',1,1,1,24,1);
+INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-beta-msi-latest-SSL',1,1,1,25,1);
+INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-nightly-msi-latest-SSL',1,1,1,26,1);
+INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-esr-msi-latest-SSL',1,1,1,27,1);
+INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Thunderbird-SSL',1,1,1,28,1);
 /*!40000 ALTER TABLE `mirror_products` ENABLE KEYS */;
 UNLOCK TABLES;
 
