@@ -2,11 +2,14 @@ services:
   bouncer:
     build:
       context: .
-    command: go-bouncer --addr 0.0.0.0:8000
+    command: go-bouncer
     ports:
       - 8000:8000
     environment:
+      BOUNCER_ADDR: "0.0.0.0:8000"
       BOUNCER_DB_DSN: "bounceruser:bouncerpass@tcp(mysql:3306)/bouncerdb"
+      BOUNCER_PINNED_BASEURL_HTTP: download.cdn.mozilla.net/pub
+      BOUNCER_PINNED_BASEURL_HTTPS: download-installer.cdn.mozilla.net/pub
     depends_on:
       mysql:
         condition: service_healthy

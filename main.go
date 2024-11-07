@@ -30,35 +30,35 @@ func main() {
 		cli.StringFlag{
 			Name:   "addr",
 			Value:  ":8888",
-			Usage:  "address on which to listen",
+			Usage:  "Address on which to listen",
 			EnvVar: "BOUNCER_ADDR",
 		},
 		cli.StringFlag{
 			Name:   "db-dsn",
 			Value:  "user:password@tcp(localhost:3306)/bouncer",
-			Usage:  "database DSN (https://github.com/go-sql-driver/mysql#dsn-data-source-name)",
+			Usage:  "Database DSN (https://github.com/go-sql-driver/mysql#dsn-data-source-name)",
 			EnvVar: "BOUNCER_DB_DSN",
 		},
 		cli.StringFlag{
 			Name:   "pin-https-header-name",
 			Value:  "X-Forwarded-Proto",
-			Usage:  "If this flag is set and the request header value equals https, an https redirect will always be returned",
+			Usage:  "If this flag is set and the request header value equals https, an HTTPS redirect will always be returned",
 			EnvVar: "BOUNCER_PIN_HTTPS_HEADER_NAME",
 		},
 		cli.StringFlag{
 			Name:   "pinned-baseurl-http",
-			Usage:  "if this flag is set it will always be the base url for http products. Scheme should be excluded, e.g.,: pinned-cdn.mozilla.com/pub",
+			Usage:  "The base URL for HTTP products. Scheme should be excluded, e.g. pinned-cdn.mozilla.com/pub",
 			EnvVar: "BOUNCER_PINNED_BASEURL_HTTP",
 		},
 		cli.StringFlag{
 			Name:   "pinned-baseurl-https",
-			Usage:  "if this flag is set it will always be the base url for https products. Scheme should be excluded, e.g.,: pinned-cdn.mozilla.com/pub",
+			Usage:  "The base URL for HTTPS products. Scheme should be excluded, e.g. pinned-cdn.mozilla.com/pub",
 			EnvVar: "BOUNCER_PINNED_BASEURL_HTTPS",
 		},
 		cli.StringFlag{
 			Name:   "stub-root-url",
 			Value:  "",
-			Usage:  "Root url of service used to service modified stub installers e.g., https://stubdownloader.services.mozilla.com/",
+			Usage:  "Optional. Root URL of the stubattribution service, e.g. https://stubdownloader.services.mozilla.com/",
 			EnvVar: "BOUNCER_STUB_ROOT_URL",
 		},
 	}
@@ -83,6 +83,14 @@ func Main(c *cli.Context) {
 	}
 	defer db.Close()
 	db.SetConnMaxLifetime(300 * time.Second)
+
+	if c.String("pinned-baseurl-http") == "" {
+		log.Fatal("BOUNCER_PINNED_BASEURL_HTTP must be set")
+	}
+
+	if c.String("pinned-baseurl-https") == "" {
+		log.Fatal("BOUNCER_PINNED_BASEURL_HTTPS must be set")
+	}
 
 	bouncerHandler := &BouncerHandler{
 		db:                 db,

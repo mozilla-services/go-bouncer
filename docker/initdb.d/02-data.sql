@@ -9,31 +9,6 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-LOCK TABLES `geoip_country_to_region` WRITE;
-/*!40000 ALTER TABLE `geoip_country_to_region` DISABLE KEYS */;
-INSERT INTO `geoip_country_to_region` (`country_code`, `region_id`, `country_name`, `continent`) VALUES ('US',1,'United States','NA');
-/*!40000 ALTER TABLE `geoip_country_to_region` ENABLE KEYS */;
-UNLOCK TABLES;
-
-LOCK TABLES `geoip_ip_to_country` WRITE;
-/*!40000 ALTER TABLE `geoip_ip_to_country` DISABLE KEYS */;
-INSERT INTO `geoip_ip_to_country` (`id`, `ip_start`, `ip_end`, `country_code`) VALUES (1,0,3758094335,'US');
-/*!40000 ALTER TABLE `geoip_ip_to_country` ENABLE KEYS */;
-UNLOCK TABLES;
-
-LOCK TABLES `geoip_mirror_region_map` WRITE;
-/*!40000 ALTER TABLE `geoip_mirror_region_map` DISABLE KEYS */;
-INSERT INTO `geoip_mirror_region_map` (`id`, `mirror_id`, `region_id`) VALUES (1,1,1);
-INSERT INTO `geoip_mirror_region_map` (`id`, `mirror_id`, `region_id`) VALUES (2,2,1);
-/*!40000 ALTER TABLE `geoip_mirror_region_map` ENABLE KEYS */;
-UNLOCK TABLES;
-
-LOCK TABLES `geoip_regions` WRITE;
-/*!40000 ALTER TABLE `geoip_regions` DISABLE KEYS */;
-INSERT INTO `geoip_regions` (`id`, `name`, `priority`, `throttle`, `fallback_id`, `prevent_global_fallback`) VALUES (1,'All',100,100,NULL,0);
-/*!40000 ALTER TABLE `geoip_regions` ENABLE KEYS */;
-UNLOCK TABLES;
-
 LOCK TABLES `mirror_aliases` WRITE;
 /*!40000 ALTER TABLE `mirror_aliases` DISABLE KEYS */;
 INSERT INTO `mirror_aliases` (`id`, `alias`, `related_product`) VALUES (1,'firefox-latest','Firefox');
@@ -148,13 +123,6 @@ INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/t
 INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/thunderbird/releases/131.0.1/win32/:lang/Thunderbird%20Setup%20131.0.1.exe',28,3,68);
 
 /*!40000 ALTER TABLE `mirror_locations` ENABLE KEYS */;
-UNLOCK TABLES;
-
-LOCK TABLES `mirror_mirrors` WRITE;
-/*!40000 ALTER TABLE `mirror_mirrors` DISABLE KEYS */;
-INSERT INTO `mirror_mirrors` (`count`, `rating`, `name`, `baseurl`, `active`, `id`) VALUES (0,100000,'Mozilla Installer CDN','http://download-installer.cdn.mozilla.net/pub',1,1);
-INSERT INTO `mirror_mirrors` (`count`, `rating`, `name`, `baseurl`, `active`, `id`) VALUES (0,81000,'Mozilla Installer CDN - SSL ','https://download-installer.cdn.mozilla.net/pub',1,2);
-/*!40000 ALTER TABLE `mirror_mirrors` ENABLE KEYS */;
 UNLOCK TABLES;
 
 LOCK TABLES `mirror_os` WRITE;
