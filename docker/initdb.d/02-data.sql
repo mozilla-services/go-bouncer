@@ -27,6 +27,9 @@ INSERT INTO `mirror_aliases` (`id`, `alias`, `related_product`) VALUES (13,'fire
 INSERT INTO `mirror_aliases` (`id`, `alias`, `related_product`) VALUES (14,'firefox-esr115-latest-ssl','Firefox-115.16.1esr-SSL');
 INSERT INTO `mirror_aliases` (`id`, `alias`, `related_product`) VALUES (15,'firefox-msi-latest-ssl','Firefox-131.0.3-msi-SSL');
 INSERT INTO `mirror_aliases` (`id`, `alias`, `related_product`) VALUES (16,'firefox-beta-msi-latest-ssl','Firefox-132.0b9-msi-SSL');
+INSERT INTO `mirror_aliases` (`id`, `alias`, `related_product`) VALUES (17,'firefox-esr115-pkg-latest-ssl','Firefox-115.16.1esr-pkg-SSL');
+INSERT INTO `mirror_aliases` (`id`, `alias`, `related_product`) VALUES (18,'firefox-esr-pkg-latest-ssl','Firefox-128.3.1esr-pkg-SSL');
+INSERT INTO `mirror_aliases` (`id`, `alias`, `related_product`) VALUES (19,'firefox-pkg-latest-ssl','Firefox-133.0-pkg-SSL');
 /*!40000 ALTER TABLE `mirror_aliases` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -139,6 +142,11 @@ INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/f
 INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/nightly/latest-mozilla-central-l10n/firefox-135.0a1.:lang.linux-aarch64.tar.xz',6,6,79);
 INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/nightly/latest-mozilla-central-l10n/firefox-135.0a1.:lang.linux-aarch64.tar.xz',7,6,80);
 
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/115.16.1esr/mac/:lang/Firefox%20115.16.1esr.dmg',20,2,81);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/115.16.1esr/mac/:lang/Firefox%20115.16.1esr.pkg',29,2,82);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/128.3.1esr/mac/:lang/Firefox%20128.3.1esr.dmg',24,2,83);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/128.3.1esr/mac/:lang/Firefox%20128.3.1esr.pkg',30,2,84);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/releases/133.0/mac/:lang/Firefox%20133.0.pkg',31,2,85);
 /*!40000 ALTER TABLE `mirror_locations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -194,6 +202,9 @@ INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`
 INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-nightly-msi-latest-SSL',1,1,1,26,1);
 INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-115.16.1esr-msi-SSL',1,1,1,27,1);
 INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Thunderbird-131.0.1-SSL',1,1,1,28,1);
+INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-115.16.1esr-pkg-SSL',1,1,1,29,1);
+INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-128.3.1esr-pkg-SSL',1,1,1,30,1);
+INSERT INTO `mirror_products` (`count`, `name`, `checknow`, `priority`, `active`, `id`, `ssl_only`) VALUES (0,'Firefox-133.0-pkg-SSL',1,1,1,31,1);
 /*!40000 ALTER TABLE `mirror_products` ENABLE KEYS */;
 UNLOCK TABLES;
 
