@@ -1,6 +1,3 @@
-# github.com/Sirupsen/logrus v0.8.7
-## explicit
-github.com/Sirupsen/logrus
 # github.com/codegangsta/cli v1.8.1-0.20150711215404-bca61c476e3c
 ## explicit
 github.com/codegangsta/cli
