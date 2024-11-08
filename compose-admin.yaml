@@ -1,0 +1,17 @@
+services:
+  admin:
+    build:
+      context: ./bouncer-admin/
+    ports:
+      - 9000:8000
+    environment:
+      DATABASE_URL: mysql
+      DB_USER: bounceruser
+      DB_PASS: bouncerpass
+      DB_NAME: bouncerdb
+      AUTH_USERS: '{"admin": "admin"}'
+      # This is (mainly) used to get stacktraces in the container logs.
+      FLASK_ENV: development
+    depends_on:
+      mysql:
+        condition: service_healthy

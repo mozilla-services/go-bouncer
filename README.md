@@ -41,6 +41,37 @@ the following headers:
 - `x-debug-cache-key`: the computed cache key
 - `x-debug-referer`: the referer value, if any
 
+### Setting up `bouncer-admin` in localdev
+
+[bouncer-admin][] is the admin interface for go-bouncer. It can be optionally
+set up by first cloning the repository (once):
+
+```
+git clone https://github.com/mozilla-services/bouncer-admin
+```
+
+Then, run `docker compose` as follows:
+
+```
+docker compose -f compose.yaml -f compose-admin.yaml up -d
+```
+
+Note: Every `docker compose` needs to specify both configuration files if the
+intent is to interact with the `admin` container, e.g. `docker compose -f
+compose.yaml -f compose-admin.yaml logs -f admin`.
+
+The API is available at: http://127.0.0.1:9000/api/. The authenticated user is
+`admin` with the traditional `admin` password. Here is an example to create a
+new product:
+
+```
+curl -X POST 'http://admin:admin@127.0.0.1:9000/api/product_add/' -d 'product=A-Test-Product&ssl_only=true'
+<?xml version="1.0" encoding="utf-8"?>
+<products>
+  <product id="4557" name="A-Test-Product"/>
+</products>
+```
+
 ## Environment variables
 
 ### `BOUNCER_ADDR`
@@ -76,3 +107,4 @@ BOUNCER_STUB_ROOT_URL?product=PRODUCT&os=OS&lang=LANG&attribution_sig=ATTRIBUTIO
 ```
 
 [go-bouncer]: https://github.com/mozilla-services/go-bouncer/
+[bouncer-admin]: https://github.com/mozilla-services/bouncer-admin/
