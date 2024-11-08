@@ -12,11 +12,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const testDSN = "root@tcp(127.0.0.1:3306)/bouncer_test"
+
 var bouncerHandler *BouncerHandler
 var bouncerHandlerPinned *BouncerHandler
 
 func init() {
-	testDB, err := bouncer.NewDB("root@tcp(127.0.0.1:3306)/bouncer_test")
+	testDB, err := bouncer.NewDB(testDSN)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -635,4 +637,24 @@ func BenchmarkSha1Product(b *testing.B) {
 		sha1Product("firefox-43.0.0")
 		sha1Product("firefox-44.0b1")
 	}
+}
+
+func TestHealthHandler(t *testing.T) {
+	testDB, err := bouncer.NewDB(testDSN)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	h := &HealthHandler{
+		db: testDB,
+	}
+	w := httptest.NewRecorder()
+
+	req, err := http.NewRequest("GET", "/", nil)
+	assert.NoError(t, err)
+
+	h.ServeHTTP(w, req)
+
+	assert.Equal(t, 200, w.Code)
+	assert.Equal(t, fmt.Sprintf(`{"db":true,"healthy":true,"version":"%s"}`, bouncer.Version), w.Body.String())
 }

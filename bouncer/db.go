@@ -72,7 +72,7 @@ func (d *DB) ProductForLanguage(product, lang string) (productID string, sslOnly
 	return
 }
 
-// Location returns the path of the product/os combonation
+// Location returns the path of the product/os combination
 func (d *DB) Location(productID, osID string) (id, path string, err error) {
 	err = d.QueryRow(
 		`SELECT id, path FROM mirror_locations
