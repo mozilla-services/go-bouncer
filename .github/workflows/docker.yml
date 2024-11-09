@@ -34,14 +34,14 @@ jobs:
 
       - name: Generate version.json
         shell: bash
-        run: \
+        run: |
           printf '{"commit":"%s","version":"%s","source":"https://github.com/%s","build":"%s/%s/actions/runs/%s"}\n' \
           "$GITHUB_SHA" \
           "$GITHUB_REF_NAME" \
           "$GITHUB_REPOSITORY" \
           "$GITHUB_SERVER_URL" \
           "$GITHUB_REPOSITORY" \
-          "$GITHUB_RUN_ID" > version.json
+          "$GITHUB_RUN_ID" | tee version.json
 
       - id: gcp-auth
         uses: google-github-actions/auth@v2
