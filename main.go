@@ -8,7 +8,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/codegangsta/cli"
+	"github.com/urfave/cli"
+
 	_ "github.com/mozilla-services/go-bouncer/mozlog"
 )
 
@@ -62,7 +63,9 @@ func main() {
 			EnvVar: "BOUNCER_STUB_ROOT_URL",
 		},
 	}
-	app.RunAndExitOnError()
+	if err := app.Run(os.Args); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func versionHandler(w http.ResponseWriter, _ *http.Request) {
