@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/codegangsta/cli v1.8.1-0.20150711215404-bca61c476e3c
 	github.com/go-sql-driver/mysql v1.8.1
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 )
 
 require (
