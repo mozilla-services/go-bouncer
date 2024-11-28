@@ -13,7 +13,7 @@ func TestMozLogger(t *testing.T) {
 	log.SetFlags(0)
 
 	in := new(bytes.Buffer)
-	Logger.Output = in
+	mozLogger.Output = in
 
 	log.Println("test message")
 

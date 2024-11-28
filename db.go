@@ -1,4 +1,4 @@
-package bouncer
+package main
 
 import (
 	"database/sql"
@@ -11,6 +11,7 @@ type DB struct {
 	*sql.DB
 }
 
+// NewDB returns a new database instance.
 func NewDB(dsn string) (*DB, error) {
 	db, err := sql.Open("mysql", dsn)
 
@@ -30,8 +31,7 @@ func NewDB(dsn string) (*DB, error) {
 
 // AliasFor returns the alias for a product
 //
-// For example firefox-latest will resolve to the latest
-// version of firefox.
+// For example firefox-latest will resolve to the latest version of firefox.
 func (d *DB) AliasFor(product string) (related string, err error) {
 	err = d.QueryRow(
 		"SELECT related_product FROM mirror_aliases WHERE alias = ?",
@@ -55,6 +55,7 @@ func (d *DB) OSID(name string) (id string, err error) {
 	return
 }
 
+// ProductForLanguage returns the product ID given a product name and language.
 func (d *DB) ProductForLanguage(product, lang string) (productID string, sslOnly bool, err error) {
 	sslInt := 0
 	err = d.QueryRow(
