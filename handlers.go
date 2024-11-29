@@ -9,31 +9,22 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
-	"unicode"
 
 	"github.com/mozilla-services/go-bouncer/bouncer"
 )
 
 const (
-	DefaultLang               = "en-US"
-	DefaultOS                 = "win"
-	firefoxSHA1ESRAliasSuffix = "sha1"
-	fxPre2024LastNightly      = "firefox-nightly-pre2024"
-	fxPre2024LastBeta         = "127.0b9"
-	fxPre2024LastRelease      = "127.0"
-	esr115Product             = "firefox-esr115-latest-ssl"
+	DefaultLang          = "en-US"
+	DefaultOS            = "win"
+	fxPre2024LastNightly = "firefox-nightly-pre2024"
+	fxPre2024LastBeta    = "127.0b9"
+	fxPre2024LastRelease = "127.0"
+	esr115Product        = "firefox-esr115-latest-ssl"
 )
 
-type xpRelease struct {
-	Version string
-}
-
 var (
-	// detects Windows XP and Vista clients
-	windowsXPRegex = regexp.MustCompile(`Windows (?:NT 5\.1|XP|NT 5\.2|NT 6\.0)`)
 	// detects windows 7/8/8.1 clients
 	windowsRegexForESR115 = regexp.MustCompile(`Windows (?:NT 6\.(1|2|3))`)
 	// this is used to verify the referer header
@@ -43,13 +34,6 @@ var (
 	// detects x64 clients
 	win64Regex = regexp.MustCompile(`Win64|WOW64`)
 )
-
-var tBirdWinXPLastRelease = xpRelease{"38.5.0"}
-var tBirdWinXPLastBeta = xpRelease{"43.0b1"}
-
-func isWindowsXPUserAgent(userAgent string) bool {
-	return windowsXPRegex.MatchString(userAgent)
-}
 
 func isUserAgentOnlyCompatibleWithESR115(userAgent string) bool {
 	return windowsRegexForESR115.MatchString(userAgent)
@@ -63,133 +47,8 @@ func isWin64UserAgent(userAgent string) bool {
 	return win64Regex.MatchString(userAgent)
 }
 
-func isNotNumber(r rune) bool {
-	return !unicode.IsNumber(r)
-}
-
-// a < b = -1
-// a == b = 0
-// a > b = 1
-func compareVersions(a, b string) int {
-	if a == b {
-		return 0
-	}
-	aParts := strings.Split(a, ".")
-	bParts := strings.Split(b, ".")
-
-	for i, verA := range aParts {
-		if len(bParts) <= i {
-			return 1
-		}
-		verB := bParts[i]
-
-		aInt, err := strconv.Atoi(strings.TrimRightFunc(verA, isNotNumber))
-		if err != nil {
-			aInt = 0
-		}
-		bInt, err := strconv.Atoi(strings.TrimRightFunc(verB, isNotNumber))
-		if err != nil {
-			bInt = 0
-		}
-
-		if aInt > bInt {
-			return 1
-		}
-		if aInt < bInt {
-			return -1
-		}
-	}
-	return 0
-}
-
-func tBirdSha1Product(productSuffix string) string {
-	switch productSuffix {
-	case "beta", "beta-latest":
-		return tBirdWinXPLastBeta.Version
-	case "ssl":
-		return tBirdWinXPLastRelease.Version + "-ssl"
-	case "latest":
-		return tBirdWinXPLastRelease.Version
-	}
-
-	productSuffixParts := strings.SplitN(productSuffix, "-", 2)
-	ver := productSuffixParts[0]
-
-	possibleVersion := tBirdWinXPLastRelease
-	if strings.Contains(ver, ".0b") {
-		possibleVersion = tBirdWinXPLastBeta
-	}
-
-	if compareVersions(ver, possibleVersion.Version) == -1 {
-		return productSuffix
-	}
-
-	if len(productSuffixParts) == 1 {
-		return possibleVersion.Version
-	}
-
-	if productSuffixParts[1] == "ssl" {
-		return possibleVersion.Version + "-ssl"
-	}
-
-	return productSuffix
-}
-
-func firefoxSha1Product(productSuffix string) string {
-	// Example list of products:
-	// Firefox-48.0-Complete
-	// Firefox-48.0build1-Complete
-	// Firefox-48.0
-	// Firefox-48.0-SSL
-	// Firefox-48.0-stub
-	// Firefox-48.0build1-Partial-47.0build3
-	// Firefox-48.0build1-Partial-47.0.1build1
-	// Firefox-48.0build1-Partial-48.0b10build1
-	// Firefox-48.0-Partial-47.0
-	// Firefox-48.0-Partial-47.0.1
-	// Firefox-48.0-Partial-48.0b10
-
-	// Example list of aliases:
-	// firefox-beta-latest
-	// firefox-beta-sha1
-	// Firefox-beta-stub
-	// firefox-esr-latest
-	// firefox-esr-sha1
-	// firefox-latest
-	// firefox-sha1
-	// Firefox-stub
-
-	// Do not touch products ending with "sha1"
-	if strings.HasSuffix(productSuffix, "-sha1") {
-		return productSuffix
-	}
-
-	// Do not touch completes and partials
-	if strings.HasSuffix(productSuffix, "-complete") || strings.Contains(productSuffix, "-partial-") {
-		return productSuffix
-	}
-	return firefoxSHA1ESRAliasSuffix
-}
-
-func sha1Product(product string) string {
-	productParts := strings.SplitN(product, "-", 2)
-	if len(productParts) == 1 {
-		return product
-	}
-
-	if productParts[0] == "firefox" {
-		return "firefox-" + firefoxSha1Product(productParts[1])
-	}
-
-	if productParts[0] == "thunderbird" {
-		return "thunderbird-" + tBirdSha1Product(productParts[1])
-	}
-
-	return product
-}
-
-// detect stub installers that pin the "DigiCert SHA2 Assured ID Code Signing CA" intermediate
-
+// isPre2024StubUserAgent is used to detect stub installers that pin the
+// "DigiCert SHA2 Assured ID Code Signing CA" intermediate.
 func isPre2024StubUserAgent(userAgent string) bool {
 	return "NSIS InetBgDL (Mozilla)" == userAgent
 }
@@ -445,8 +304,13 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		reqParams.Lang = DefaultLang
 	}
 
-	isWinXpClient := isWindowsXPUserAgent(req.UserAgent())
-	isPre2024Stub := isPre2024StubUserAgent(req.UserAgent())
+	// If attribution_code is set, redirect to the stub service.
+	if b.shouldAttribute(reqParams) {
+		stubURL := b.stubAttributionURL(reqParams)
+		http.Redirect(w, req, stubURL, 302)
+		return
+	}
+
 	// We want to return ESR115 when... the product is for Firefox
 	shouldReturnESR115 := strings.HasPrefix(reqParams.Product, "firefox-") &&
 		// and the product is _not_ an MSI build
@@ -461,18 +325,6 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		// and the request doesn't come from mozilla.org
 		!hasMozorgReferrer(reqParams.Referer)
 
-	// If the client is not WinXP and attribution_code is set, redirect to the stub service
-	if b.shouldAttribute(reqParams) && !isWinXpClient {
-		stubURL := b.stubAttributionURL(reqParams)
-		http.Redirect(w, req, stubURL, 302)
-		return
-	}
-
-	// HACKS
-	// If the user is coming from windows xp or vista, send a sha1 signed product.
-	if reqParams.OS == "win" && isWinXpClient {
-		reqParams.Product = sha1Product(reqParams.Product)
-	}
 	// Send the latest compatible ESR product if we detect that this is the best option for the client.
 	if shouldReturnESR115 {
 		// Override the OS if we detect a x64 client that attempts to get a stub installer.
@@ -481,8 +333,9 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		}
 		reqParams.Product = esr115Product
 	}
+
 	// If the user is an "old" stub installer, send a pre-2024-cert-rotation product.
-	if isPre2024Stub {
+	if isPre2024StubUserAgent(req.UserAgent()) {
 		reqParams.Product = pre2024Product(reqParams.Product)
 	}
 
