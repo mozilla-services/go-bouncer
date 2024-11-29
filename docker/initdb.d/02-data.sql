@@ -122,6 +122,19 @@ INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/f
 INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/thunderbird/releases/131.0.1/win64/:lang/Thunderbird%20Setup%20131.0.1.exe',28,1,67);
 INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/thunderbird/releases/131.0.1/win32/:lang/Thunderbird%20Setup%20131.0.1.exe',28,3,68);
 
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/nightly/latest-mozilla-central/firefox-135.0a1.en-US.linux-i686.tar.xz',4,4,69);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/nightly/latest-mozilla-central-l10n/firefox-135.0a1.:lang.linux-i686.tar.xz',5,4,70);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/nightly/latest-mozilla-central-l10n/firefox-135.0a1.:lang.linux-i686.tar.xz',6,4,71);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/nightly/latest-mozilla-central-l10n/firefox-135.0a1.:lang.linux-i686.tar.xz',7,4,72);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/nightly/latest-mozilla-central/firefox-135.0a1.en-US.linux-x86_64.tar.xz',4,5,73);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/nightly/latest-mozilla-central-l10n/firefox-135.0a1.:lang.linux-x86_64.tar.xz',5,5,74);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/nightly/latest-mozilla-central-l10n/firefox-135.0a1.:lang.linux-x86_64.tar.xz',6,5,75);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/nightly/latest-mozilla-central-l10n/firefox-135.0a1.:lang.linux-x86_64.tar.xz',7,5,76);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/nightly/latest-mozilla-central/firefox-135.0a1.en-US.linux-aarch64.tar.xz',4,6,77);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/nightly/latest-mozilla-central-l10n/firefox-135.0a1.:lang.linux-aarch64.tar.xz',5,6,78);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/nightly/latest-mozilla-central-l10n/firefox-135.0a1.:lang.linux-aarch64.tar.xz',6,6,79);
+INSERT INTO `mirror_locations` (`path`, `product_id`, `os_id`, `id`) VALUES ('/firefox/nightly/latest-mozilla-central-l10n/firefox-135.0a1.:lang.linux-aarch64.tar.xz',7,6,80);
+
 /*!40000 ALTER TABLE `mirror_locations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -130,6 +143,9 @@ LOCK TABLES `mirror_os` WRITE;
 INSERT INTO `mirror_os` (`priority`, `id`, `name`) VALUES (0,1,'win64');
 INSERT INTO `mirror_os` (`priority`, `id`, `name`) VALUES (0,2,'osx');
 INSERT INTO `mirror_os` (`priority`, `id`, `name`) VALUES (0,3,'win');
+INSERT INTO `mirror_os` (`priority`, `id`, `name`) VALUES (0,4,'linux');
+INSERT INTO `mirror_os` (`priority`, `id`, `name`) VALUES (0,5,'linux64');
+INSERT INTO `mirror_os` (`priority`, `id`, `name`) VALUES (0,6,'linux64-aarch64');
 /*!40000 ALTER TABLE `mirror_os` ENABLE KEYS */;
 UNLOCK TABLES;
 
