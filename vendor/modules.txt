@@ -2,9 +2,9 @@
 ## explicit; go 1.20
 filippo.io/edwards25519
 filippo.io/edwards25519/field
-# github.com/codegangsta/cli v1.8.1-0.20150711215404-bca61c476e3c
-## explicit
-github.com/codegangsta/cli
+# github.com/cpuguy83/go-md2man/v2 v2.0.5
+## explicit; go 1.11
+github.com/cpuguy83/go-md2man/v2/md2man
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
 github.com/davecgh/go-spew/spew
@@ -14,10 +14,16 @@ github.com/go-sql-driver/mysql
 # github.com/pmezard/go-difflib v1.0.0
 ## explicit
 github.com/pmezard/go-difflib/difflib
+# github.com/russross/blackfriday/v2 v2.1.0
+## explicit
+github.com/russross/blackfriday/v2
 # github.com/stretchr/testify v1.10.0
 ## explicit; go 1.17
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/assert/yaml
+# github.com/urfave/cli v1.22.16
+## explicit; go 1.11
+github.com/urfave/cli
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
