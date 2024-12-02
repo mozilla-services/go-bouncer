@@ -1,6 +1,6 @@
 module github.com/mozilla-services/go-bouncer
 
-go 1.20
+go 1.23
 
 require (
 	github.com/codegangsta/cli v1.8.1-0.20150711215404-bca61c476e3c
