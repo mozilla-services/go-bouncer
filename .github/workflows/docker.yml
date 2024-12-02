@@ -28,9 +28,6 @@ jobs:
         with:
           images: |
             ${{ vars.GAR_LOCATION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GAR_REPOSITORY}}/${{ vars.GAR_NAME }}
-          tags: |
-            type=semver,pattern={{raw}}
-            type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Generate version.json
         shell: bash
