@@ -73,6 +73,13 @@ jobs:
           name: Go test
           command: |
             go test -v -mod vendor -covermode=atomic -coverprofile=coverage.txt ./...
+      - run:
+          name: Go lint
+          command: |
+            go vet ./...
+
+            go install honnef.co/go/tools/cmd/staticcheck@latest
+            $(go env GOPATH)/bin/staticcheck ./...
       - codecov/upload
 
   deploy:

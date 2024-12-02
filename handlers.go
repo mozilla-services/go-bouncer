@@ -11,13 +11,11 @@ import (
 	"regexp"
 	"strings"
 	"time"
-
-	"github.com/mozilla-services/go-bouncer/bouncer"
 )
 
 const (
-	DefaultLang          = "en-US"
-	DefaultOS            = "win"
+	defaultLang          = "en-US"
+	defaultOS            = "win"
 	fxPre2024LastNightly = "firefox-nightly-pre2024"
 	fxPre2024LastBeta    = "127.0b9"
 	fxPre2024LastRelease = "127.0"
@@ -50,7 +48,7 @@ func isWin64UserAgent(userAgent string) bool {
 // isPre2024StubUserAgent is used to detect stub installers that pin the
 // "DigiCert SHA2 Assured ID Code Signing CA" intermediate.
 func isPre2024StubUserAgent(userAgent string) bool {
-	return "NSIS InetBgDL (Mozilla)" == userAgent
+	return userAgent == "NSIS InetBgDL (Mozilla)"
 }
 
 func pre2024Product(product string) string {
@@ -93,9 +91,8 @@ func pre2024Product(product string) string {
 
 // HealthResult represents service health
 type HealthResult struct {
-	DB      bool   `json:"db"`
-	Healthy bool   `json:"healthy"`
-	Version string `json:"version"`
+	DB      bool `json:"db"`
+	Healthy bool `json:"healthy"`
 }
 
 // JSON returns json string
@@ -110,7 +107,7 @@ func (h *HealthResult) JSON() []byte {
 
 // HealthHandler returns 200 if the app looks okay
 type HealthHandler struct {
-	db *bouncer.DB
+	db *DB
 
 	CacheTime time.Duration
 }
@@ -119,7 +116,6 @@ func (h *HealthHandler) check() *HealthResult {
 	result := &HealthResult{
 		DB:      true,
 		Healthy: true,
-		Version: bouncer.Version,
 	}
 
 	err := h.db.Ping()
@@ -131,7 +127,7 @@ func (h *HealthHandler) check() *HealthResult {
 	return result
 }
 
-func (h *HealthHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+func (h *HealthHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
 	if h.CacheTime > 0 {
 		w.Header().Set("Cache-Control", fmt.Sprintf("max-age=%d", h.CacheTime/time.Second))
 	}
@@ -147,10 +143,10 @@ func (h *HealthHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 // BouncerHandler is the primary handler for this application
 type BouncerHandler struct {
-	db *bouncer.DB
+	db *DB
 
 	CacheTime          time.Duration
-	PinHttpsHeaderName string
+	PinHTTPSHeaderName string
 	PinnedBaseURLHttp  string
 	PinnedBaseURLHttps string
 	StubRootURL        string
@@ -158,7 +154,7 @@ type BouncerHandler struct {
 
 // URL returns the final redirect URL given a lang, os and product
 // if the string is == "", no mirror or location was found
-func (b *BouncerHandler) URL(pinHttps bool, lang, os, product string) (string, error) {
+func (b *BouncerHandler) URL(pinHTTPS bool, lang, os, product string) (string, error) {
 	product, err := b.db.AliasFor(product)
 	if err != nil {
 		return "", err
@@ -190,7 +186,7 @@ func (b *BouncerHandler) URL(pinHttps bool, lang, os, product string) (string, e
 	locationPath = strings.Replace(locationPath, ":lang", lang, -1)
 
 	mirrorBaseURL := "http://" + b.PinnedBaseURLHttp
-	if pinHttps || sslOnly {
+	if pinHTTPS || sslOnly {
 		mirrorBaseURL = "https://" + b.PinnedBaseURLHttps
 	}
 
@@ -208,27 +204,27 @@ func (b *BouncerHandler) stubAttributionURL(reqParams *BouncerParams) string {
 	return b.StubRootURL + "?" + query.Encode()
 }
 
-func (b *BouncerHandler) shouldPinHttps(req *http.Request) bool {
-	if b.PinHttpsHeaderName == "" {
+func (b *BouncerHandler) shouldPinHTTPS(req *http.Request) bool {
+	if b.PinHTTPSHeaderName == "" {
 		return false
 	}
 
-	return req.Header.Get(b.PinHttpsHeaderName) == "https"
+	return req.Header.Get(b.PinHTTPSHeaderName) == "https"
 }
 
-func fromRTAMO(attribution_code string) bool {
+func fromRTAMO(attributionCode string) bool {
 	// base64 decode the attribution_code value to see if it matches the RTAMO regex
 	// This uses '.' as padding because Bedrock is using this library to encode the values:
 	// https://pypi.org/project/querystringsafe-base64/
 	var base64Decoder = base64.URLEncoding.WithPadding('.')
-	sDec, err := base64Decoder.DecodeString(attribution_code)
+	sDec, err := base64Decoder.DecodeString(attributionCode)
 	if err != nil {
-		log.Printf("Error decoding %s: %s ", attribution_code, err.Error())
+		log.Printf("Error decoding %s: %s ", attributionCode, err.Error())
 		return false
 	}
 	q, err := url.ParseQuery(string(sDec))
 	if err != nil {
-		log.Printf("Error parsing the attribution_code query parameters: %s", err.Error())
+		log.Printf("Error parsing the attribution_code query parameter: %s", err.Error())
 		return false
 	}
 
@@ -293,21 +289,22 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	reqParams := BouncerParamsFromValues(req.URL.Query(), req.Header)
 
 	if reqParams.Product == "" {
-		http.Redirect(w, req, "https://www.mozilla.org/", 302)
+		http.Redirect(w, req, "https://www.mozilla.org/", http.StatusFound)
 		return
 	}
 
 	if reqParams.OS == "" {
-		reqParams.OS = DefaultOS
+		reqParams.OS = defaultOS
 	}
+
 	if reqParams.Lang == "" {
-		reqParams.Lang = DefaultLang
+		reqParams.Lang = defaultLang
 	}
 
 	// If attribution_code is set, redirect to the stub service.
 	if b.shouldAttribute(reqParams) {
 		stubURL := b.stubAttributionURL(reqParams)
-		http.Redirect(w, req, stubURL, 302)
+		http.Redirect(w, req, stubURL, http.StatusFound)
 		return
 	}
 
@@ -339,7 +336,7 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		reqParams.Product = pre2024Product(reqParams.Product)
 	}
 
-	url, err := b.URL(b.shouldPinHttps(req), reqParams.Lang, reqParams.OS, reqParams.Product)
+	url, err := b.URL(b.shouldPinHTTPS(req), reqParams.Lang, reqParams.OS, reqParams.Product)
 	if err != nil {
 		http.Error(w, "Internal Server Error.", http.StatusInternalServerError)
 		log.Println(err)
@@ -361,5 +358,5 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	http.Redirect(w, req, url, 302)
+	http.Redirect(w, req, url, http.StatusFound)
 }

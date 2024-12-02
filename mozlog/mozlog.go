@@ -1,3 +1,4 @@
+// Package mozlog is an implementation of the mozlog logging format.
 package mozlog
 
 import (
@@ -10,7 +11,7 @@ import (
 	"time"
 )
 
-var Logger = &MozLogger{
+var mozLogger = &MozLogger{
 	Output:     os.Stdout,
 	LoggerName: "Bouncer",
 }
@@ -30,7 +31,7 @@ func init() {
 		log.Printf("Can't resolve hostname: %v", err)
 	}
 
-	log.SetOutput(Logger)
+	log.SetOutput(mozLogger)
 	log.SetFlags(log.Lshortfile)
 }
 

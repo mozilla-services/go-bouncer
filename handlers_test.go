@@ -8,17 +8,15 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mozilla-services/go-bouncer/bouncer"
 	"github.com/stretchr/testify/assert"
 )
 
 const testDSN = "root@tcp(127.0.0.1:3306)/bouncer_test"
 
 var bouncerHandler *BouncerHandler
-var bouncerHandlerPinned *BouncerHandler
 
 func init() {
-	testDB, err := bouncer.NewDB(testDSN)
+	testDB, err := NewDB(testDSN)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -26,15 +24,9 @@ func init() {
 	bouncerHandler = &BouncerHandler{
 		db:                 testDB,
 		StubRootURL:        "https://stub/",
-		PinHttpsHeaderName: "X-Forwarded-Proto",
+		PinHTTPSHeaderName: "X-Forwarded-Proto",
 		PinnedBaseURLHttp:  "download.cdn.mozilla.net/pub",
 		PinnedBaseURLHttps: "download-installer.cdn.mozilla.net/pub",
-	}
-	bouncerHandlerPinned = &BouncerHandler{
-		db:                 testDB,
-		PinnedBaseURLHttp:  "download-sha1.cdn.mozilla.net/pub",
-		PinnedBaseURLHttps: "download-sha1.cdn.mozilla.net/pub",
-		PinHttpsHeaderName: "X-Forwarded-Proto",
 	}
 }
 
@@ -201,7 +193,7 @@ func TestBouncerHandlerAttributionCode(t *testing.T) {
 
 		bouncerHandler.ServeHTTP(w, req)
 		assert.Equal(t, 302, w.Code)
-		assert.Equal(t, test.Out, w.HeaderMap.Get("Location"))
+		assert.Equal(t, test.Out, w.Result().Header.Get("Location"))
 	}
 }
 
@@ -213,27 +205,27 @@ func TestBouncerHandlerParams(t *testing.T) {
 
 	bouncerHandler.ServeHTTP(w, req)
 	assert.Equal(t, 302, w.Code)
-	assert.Equal(t, "https://www.mozilla.org/", w.HeaderMap.Get("Location"))
+	assert.Equal(t, "https://www.mozilla.org/", w.Result().Header.Get("Location"))
 }
 
 func TestBouncerShouldPinHttps(t *testing.T) {
-	bouncerHandler.PinHttpsHeaderName = ""
+	bouncerHandler.PinHTTPSHeaderName = ""
 	req, err := http.NewRequest("GET", "http://test/?product=firefox-latest&os=osx&lang=en-US", nil)
 	assert.NoError(t, err)
-	assert.Equal(t, false, bouncerHandler.shouldPinHttps(req))
+	assert.Equal(t, false, bouncerHandler.shouldPinHTTPS(req))
 
 	req.Header.Set("X-Forwarded-Proto", "https")
-	assert.Equal(t, false, bouncerHandler.shouldPinHttps(req))
+	assert.Equal(t, false, bouncerHandler.shouldPinHTTPS(req))
 
-	bouncerHandler.PinHttpsHeaderName = "X-Forwarded-Proto"
+	bouncerHandler.PinHTTPSHeaderName = "X-Forwarded-Proto"
 
-	assert.Equal(t, true, bouncerHandler.shouldPinHttps(req))
+	assert.Equal(t, true, bouncerHandler.shouldPinHTTPS(req))
 
 	req.Header.Set("X-Forwarded-Proto", "http")
-	assert.Equal(t, false, bouncerHandler.shouldPinHttps(req))
+	assert.Equal(t, false, bouncerHandler.shouldPinHTTPS(req))
 
 	req.Header.Del("X-Forwarded-Proto")
-	assert.Equal(t, false, bouncerHandler.shouldPinHttps(req))
+	assert.Equal(t, false, bouncerHandler.shouldPinHTTPS(req))
 }
 
 func TestBouncerHandlerPrintQuery(t *testing.T) {
@@ -297,7 +289,7 @@ func TestBouncerHandlerValid(t *testing.T) {
 
 		bouncerHandler.ServeHTTP(w, req)
 		assert.Equal(t, 302, w.Code, "url: %v ua: %v", testRequest.URL, testRequest.UserAgent)
-		assert.Equal(t, testRequest.ExpectedLocation, w.HeaderMap.Get("Location"), "url: %v ua: %v", testRequest.URL, testRequest.UserAgent)
+		assert.Equal(t, testRequest.ExpectedLocation, w.Result().Header.Get("Location"), "url: %v ua: %v", testRequest.URL, testRequest.UserAgent)
 	}
 }
 
@@ -396,7 +388,7 @@ func TestBouncerHandlerForWindowsOnlyCompatibleWithESR115(t *testing.T) {
 			bouncerHandler.ServeHTTP(w, req)
 
 			assert.Equal(t, 302, w.Code, "userAgent: %v, url: %v", tc.userAgent, url)
-			assert.Equal(t, expectedLocation, w.HeaderMap.Get("Location"), "userAgent: %v, url: %v", tc.userAgent, url)
+			assert.Equal(t, expectedLocation, w.Result().Header.Get("Location"), "userAgent: %v, url: %v", tc.userAgent, url)
 		}
 
 		// This is for other firefox 32-bit products.
@@ -417,7 +409,7 @@ func TestBouncerHandlerForWindowsOnlyCompatibleWithESR115(t *testing.T) {
 
 			assert.Equal(t, 302, w.Code, "userAgent: %v, url: %v", tc.userAgent, url)
 			// We don't need to assert the scheme.
-			assert.True(t, strings.HasSuffix(w.HeaderMap.Get("Location"), expectedLocation), "userAgent: %v, url: %v", tc.userAgent, url)
+			assert.True(t, strings.HasSuffix(w.Result().Header.Get("Location"), expectedLocation), "userAgent: %v, url: %v", tc.userAgent, url)
 		}
 
 		// This is for other firefox 64-bit products.
@@ -438,7 +430,7 @@ func TestBouncerHandlerForWindowsOnlyCompatibleWithESR115(t *testing.T) {
 
 			assert.Equal(t, 302, w.Code, "userAgent: %v, url: %v", tc.userAgent, url)
 			// We don't need to assert the scheme.
-			assert.True(t, strings.HasSuffix(w.HeaderMap.Get("Location"), expectedLocation), "userAgent: %v, url: %v", tc.userAgent, url)
+			assert.True(t, strings.HasSuffix(w.Result().Header.Get("Location"), expectedLocation), "userAgent: %v, url: %v", tc.userAgent, url)
 		}
 
 		// This is for MSI builds.
@@ -451,7 +443,7 @@ func TestBouncerHandlerForWindowsOnlyCompatibleWithESR115(t *testing.T) {
 		bouncerHandler.ServeHTTP(w, req)
 
 		assert.Equal(t, 302, w.Code)
-		assert.Equal(t, expectedLocation, w.HeaderMap.Get("Location"))
+		assert.Equal(t, expectedLocation, w.Result().Header.Get("Location"))
 
 		// This is for unrelated products.
 		for _, url := range []string{
@@ -483,11 +475,11 @@ func TestBouncerHandlerForWindowsOnlyCompatibleWithESR115WithMozorgReferrer(t *t
 	bouncerHandler.ServeHTTP(w, req)
 
 	assert.Equal(t, 302, w.Code)
-	assert.Equal(t, expectedLocation, w.HeaderMap.Get("Location"))
+	assert.Equal(t, expectedLocation, w.Result().Header.Get("Location"))
 }
 
 func TestHealthHandler(t *testing.T) {
-	testDB, err := bouncer.NewDB(testDSN)
+	testDB, err := NewDB(testDSN)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -503,5 +495,5 @@ func TestHealthHandler(t *testing.T) {
 	h.ServeHTTP(w, req)
 
 	assert.Equal(t, 200, w.Code)
-	assert.Equal(t, fmt.Sprintf(`{"db":true,"healthy":true,"version":"%s"}`, bouncer.Version), w.Body.String())
+	assert.Equal(t, `{"db":true,"healthy":true}`, w.Body.String())
 }

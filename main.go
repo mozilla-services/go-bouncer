@@ -1,13 +1,14 @@
+// go-bouncer is the web service behind https://download.mozilla.org/.
+// Its purpose is to serve builds given a product, OS, and language.
 package main
 
 import (
-	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/codegangsta/cli"
-	"github.com/mozilla-services/go-bouncer/bouncer"
 	_ "github.com/mozilla-services/go-bouncer/mozlog"
 )
 
@@ -20,7 +21,6 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "bouncer"
 	app.Action = Main
-	app.Version = bouncer.Version
 	app.Flags = []cli.Flag{
 		cli.IntFlag{
 			Name:  "cache-time",
@@ -65,8 +65,8 @@ func main() {
 	app.RunAndExitOnError()
 }
 
-func versionHandler(w http.ResponseWriter, req *http.Request) {
-	versionFile, err := ioutil.ReadFile(versionFilePath)
+func versionHandler(w http.ResponseWriter, _ *http.Request) {
+	versionFile, err := os.ReadFile(versionFilePath)
 	if err != nil {
 		http.Error(w, "Could not read version file.", http.StatusNotFound)
 		return
@@ -76,8 +76,9 @@ func versionHandler(w http.ResponseWriter, req *http.Request) {
 	w.Write(versionFile)
 }
 
+// Main is the entrypoint of the application.
 func Main(c *cli.Context) {
-	db, err := bouncer.NewDB(c.String("db-dsn"))
+	db, err := NewDB(c.String("db-dsn"))
 	if err != nil {
 		log.Fatalf("Could not open DB: %v", err)
 	}
@@ -95,7 +96,7 @@ func Main(c *cli.Context) {
 	bouncerHandler := &BouncerHandler{
 		db:                 db,
 		CacheTime:          time.Duration(c.Int("cache-time")) * time.Second,
-		PinHttpsHeaderName: c.String("pin-https-header-name"),
+		PinHTTPSHeaderName: c.String("pin-https-header-name"),
 		PinnedBaseURLHttp:  c.String("pinned-baseurl-http"),
 		PinnedBaseURLHttps: c.String("pinned-baseurl-https"),
 		StubRootURL:        c.String("stub-root-url"),
