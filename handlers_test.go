@@ -313,23 +313,67 @@ func TestBouncerHandlerPre2024(t *testing.T) {
 	}
 }
 
-func TestIsUserAgentOnlyCompatibleWithESR115(t *testing.T) {
+func TestIsWindowsUserAgentOnlyCompatibleWithESR115(t *testing.T) {
 	uas := []struct {
-		UA     string
-		IsWin7 bool
+		UA           string
+		IsCompatible bool
 	}{
-		{"Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko", true},                                                                 // IE 64bits Win7
-		{"Opera/9.80 (Windows NT 6.1; U; en) Presto/2.7.62 Version/11.01", true},                                                                       // Opera 11 Win7
-		{"Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)", false},                                                         // IE XP
-		{"Mozilla/5.0 (Windows; U; MSIE 7.0; Windows NT 6.0; en-US)", false},                                                                           // IE Vista
-		{"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/537.36 Edg/100.0.1185.36", true}, // Edge Win7
-		{"Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.71 Safari/537.36", true},                    // Chrome Win8
-		{"Mozilla/5.0 (Windows NT 6.3; WOW64; rv:124.0) Gecko/20100101 Firefox/124.0", true},                                                           // Firefox Win8.1
-		{"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36", false},                     // Safari Win10
-		{"Mozilla/5.0 (Windows NT 611; WOW64; Trident/7.0; rv:11.0) like Gecko", false},                                                                // Bogus
+		// IE 64bits Win7
+		{"Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko", true},
+		// Opera 11 Win7
+		{"Opera/9.80 (Windows NT 6.1; U; en) Presto/2.7.62 Version/11.01", true},
+		// IE XP
+		{"Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)", false},
+		// IE Vista
+		{"Mozilla/5.0 (Windows; U; MSIE 7.0; Windows NT 6.0; en-US)", false},
+		// Edge Win7
+		{"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/537.36 Edg/100.0.1185.36", true},
+		// Chrome Win8
+		{"Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.71 Safari/537.36", true},
+		// Firefox Win8.1
+		{"Mozilla/5.0 (Windows NT 6.3; WOW64; rv:124.0) Gecko/20100101 Firefox/124.0", true},
+		// Safari Win10
+		{"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36", false},
+		// Bogus
+		{"Mozilla/5.0 (Windows NT 611; WOW64; Trident/7.0; rv:11.0) like Gecko", false},
+		// macOS 10.12
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:109.0) Gecko/20100101 Firefox/115.0", false},
 	}
 	for _, ua := range uas {
-		assert.Equal(t, ua.IsWin7, isUserAgentOnlyCompatibleWithESR115(ua.UA), "ua: %v", ua.UA)
+		assert.Equal(t, ua.IsCompatible, isWindowsUserAgentOnlyCompatibleWithESR115(ua.UA), "ua: %v", ua.UA)
+	}
+}
+
+func TestIsMacOSUserAgentOnlyCompatibleWithESR115(t *testing.T) {
+	uas := []struct {
+		UA           string
+		IsCompatible bool
+	}{
+		// macOS versions < 10.12
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/601.7.8 (KHTML, like Gecko) Version/9.1.3 Safari/537.86.7", false},
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36", false},
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9) AppleWebKit/537.71 (KHTML, like Gecko) Version/7.0 Safari/537.71", false},
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0", false},
+		// macOS 10.12
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:109.0) Gecko/20100101 Firefox/115.0", true},
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36", true},
+		// macOS 10.13
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Safari/605.1.15", true},
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:109.0) Gecko/20100101 Firefox/115.0", true},
+		// macOS 10.14
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Safari/605.1.15. As: Safari 12 on macOS (Mojave).", true},
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0) Gecko/20100101 Firefox/68.0", true},
+		// Firefox on iPhone
+		{"Mozilla/5.0 (iPhone; CPU iPhone OS 12_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/18.2b15817 Mobile/15E148 Safari/605.1.15", false},
+		// macOS 10.15
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.1 Safari/605.1.15", false},
+		// Bogus
+		{"Mozilla/5.0 (Windows NT 611; WOW64; Trident/7.0; rv:11.0) like Gecko", false},
+		// Firefox Win8.1
+		{"Mozilla/5.0 (Windows NT 6.3; WOW64; rv:124.0) Gecko/20100101 Firefox/124.0", false},
+	}
+	for _, ua := range uas {
+		assert.Equal(t, ua.IsCompatible, isMacOSUserAgentOnlyCompatibleWithESR115(ua.UA), "ua: %v", ua.UA)
 	}
 }
 
@@ -398,6 +442,7 @@ func TestBouncerHandlerForWindowsOnlyCompatibleWithESR115(t *testing.T) {
 			"http://test/?product=firefox-nightly-latest-ssl&os=win&lang=en-US",
 			"http://test/?product=firefox-ssl-latest&os=win&lang=en-US",
 			"http://test/?product=firefox-unknown&os=win&lang=en-US",
+			"http://test/?product=firefox-esr-latest-ssl&os=win&lang=en-US",
 		} {
 			expectedLocation := "//download-installer.cdn.mozilla.net/pub/firefox/releases/115.16.1esr/win32/en-US/Firefox%20Setup%20115.16.1esr.exe"
 
@@ -419,6 +464,7 @@ func TestBouncerHandlerForWindowsOnlyCompatibleWithESR115(t *testing.T) {
 			"http://test/?product=firefox-nightly-latest-ssl&os=win64&lang=en-US",
 			"http://test/?product=firefox-ssl-latest&os=win64&lang=en-US",
 			"http://test/?product=firefox-unknown&os=win64&lang=en-US",
+			"http://test/?product=firefox-esr-latest-ssl&os=win64&lang=en-US",
 		} {
 			expectedLocation := "//download-installer.cdn.mozilla.net/pub/firefox/releases/115.16.1esr/win64/en-US/Firefox%20Setup%20115.16.1esr.exe"
 
@@ -435,23 +481,21 @@ func TestBouncerHandlerForWindowsOnlyCompatibleWithESR115(t *testing.T) {
 
 		// This is for MSI builds.
 		expectedLocation := "https://download-installer.cdn.mozilla.net/pub/firefox/releases/131.0.3/win64/en-US/Firefox%20Setup%20131.0.3.msi"
-
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("GET", "http://test/?product=firefox-msi-latest-ssl&os=win64&lang=en-US", nil)
-		req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:124.0) Gecko/20100101 Firefox/124.0")
-
+		req.Header.Set("User-Agent", tc.userAgent)
 		bouncerHandler.ServeHTTP(w, req)
-
 		assert.Equal(t, 302, w.Code)
 		assert.Equal(t, expectedLocation, w.Result().Header.Get("Location"))
 
 		// This is for unrelated products.
 		for _, url := range []string{
 			"http://test/?product=unknown&os=win&lang=en-US",
-			"http://test/?product=notfirefox-nightly-latest-ssl&os=win&lang=en-US",
-			"http://test/?product=thunderbird-something-latest-ssl&os=win&lang=en-US",
+			"http://test/?product=notfirefox-latest-ssl&os=win&lang=en-US",
+			"http://test/?product=thunderbird-ssl&os=win&lang=en-US",
 			"http://test/?product=firefox-115.17.0esr-complete&os=win&lang=en-US",
 			"http://test/?product=firefox-115.17.0esr-partial-115.16.1esr&os=win&lang=en-US",
+			"http://test/?product=firefox-latest-ssl&os=linux&lang=en-US",
 		} {
 			w := httptest.NewRecorder()
 			req, _ := http.NewRequest("GET", url, nil)
@@ -461,6 +505,26 @@ func TestBouncerHandlerForWindowsOnlyCompatibleWithESR115(t *testing.T) {
 
 			assert.Equal(t, 404, w.Code, "userAgent: %v, url: %v", tc.userAgent, url)
 		}
+
+		// This is for a macOS (DMG) build - THe ESR115 override is per OS, which
+		// is why a win7/8/8.1 client won't receive ESR115 when it requests a build
+		// with `os=osx`.
+		expectedLocation = "https://download-installer.cdn.mozilla.net/pub/firefox/releases/128.3.1esr/mac/fr/Firefox%20128.3.1esr.dmg"
+		w = httptest.NewRecorder()
+		req, _ = http.NewRequest("GET", "http://test/?product=firefox-esr-latest-ssl&os=osx&lang=fr", nil)
+		req.Header.Set("User-Agent", tc.userAgent)
+		bouncerHandler.ServeHTTP(w, req)
+		assert.Equal(t, 302, w.Code)
+		assert.Equal(t, expectedLocation, w.Result().Header.Get("Location"))
+
+		// This is for a macOS (pkg) build - Same as above.
+		expectedLocation = "https://download-installer.cdn.mozilla.net/pub/firefox/releases/128.3.1esr/mac/fr/Firefox%20128.3.1esr.pkg"
+		w = httptest.NewRecorder()
+		req, _ = http.NewRequest("GET", "http://test/?product=firefox-esr-pkg-latest-ssl&os=osx&lang=fr", nil)
+		req.Header.Set("User-Agent", tc.userAgent)
+		bouncerHandler.ServeHTTP(w, req)
+		assert.Equal(t, 302, w.Code)
+		assert.Equal(t, expectedLocation, w.Result().Header.Get("Location"))
 	}
 }
 
@@ -496,4 +560,127 @@ func TestHealthHandler(t *testing.T) {
 
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, `{"db":true,"healthy":true}`, w.Body.String())
+}
+
+func TestBouncerHandlerForMacOSOnlyCompatibleWithESR115(t *testing.T) {
+	for _, tc := range []struct {
+		userAgent string
+	}{
+		// macOS 10.12
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:109.0) Gecko/20100101 Firefox/115.0"},
+		// macOS 10.13
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Safari/605.1.15"},
+		// macOS 10.14
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Safari/605.1.15. As: Safari 12 on macOS (Mojave)."},
+	} {
+		for _, url := range []string{
+			"http://test/?product=firefox-beta&os=osx&lang=en-US",
+			"http://test/?product=firefox-devedition&os=osx&lang=en-US",
+			"http://test/?product=firefox-nightly-latest-ssl&os=osx&lang=en-US",
+			"http://test/?product=firefox-ssl-latest&os=osx&lang=en-US",
+			"http://test/?product=firefox-unknown&os=osx&lang=en-US",
+			"http://test/?product=firefox-esr-latest-ssl&os=osx&lang=en-US",
+		} {
+			expectedLocation := "//download-installer.cdn.mozilla.net/pub/firefox/releases/115.16.1esr/mac/en-US/Firefox%20115.16.1esr.dmg"
+
+			w := httptest.NewRecorder()
+			req, _ := http.NewRequest("GET", url, nil)
+			req.Header.Set("User-Agent", tc.userAgent)
+
+			bouncerHandler.ServeHTTP(w, req)
+
+			assert.Equal(t, 302, w.Code, "userAgent: %v, url: %v", tc.userAgent, url)
+			// We don't need to assert the scheme.
+			assert.True(t, strings.HasSuffix(w.Result().Header.Get("Location"), expectedLocation), "userAgent: %v, url: %v", tc.userAgent, url)
+		}
+
+		// ESR115 -pkg products
+		for _, url := range []string{
+			"http://test/?product=firefox-esr115-pkg-latest-ssl&os=osx&lang=en-US",
+			"http://test/?product=firefox-115.16.1esr-pkg-ssl&os=osx&lang=en-US",
+		} {
+			expectedLocation := "//download-installer.cdn.mozilla.net/pub/firefox/releases/115.16.1esr/mac/en-US/Firefox%20115.16.1esr.pkg"
+
+			w := httptest.NewRecorder()
+			req, _ := http.NewRequest("GET", url, nil)
+			req.Header.Set("User-Agent", tc.userAgent)
+
+			bouncerHandler.ServeHTTP(w, req)
+
+			assert.Equal(t, 302, w.Code, "userAgent: %v, url: %v", tc.userAgent, url)
+			// We don't need to assert the scheme.
+			assert.True(t, strings.HasSuffix(w.Result().Header.Get("Location"), expectedLocation), "userAgent: %v, url: %v", tc.userAgent, url)
+		}
+
+		// Latest ESR -pkg products
+		for _, url := range []string{
+			"http://test/?product=firefox-esr-pkg-latest-ssl&os=osx&lang=en-US",
+			"http://test/?product=firefox-128.3.1esr-pkg-ssl&os=osx&lang=en-US",
+		} {
+			expectedLocation := "//download-installer.cdn.mozilla.net/pub/firefox/releases/128.3.1esr/mac/en-US/Firefox%20128.3.1esr.pkg"
+
+			w := httptest.NewRecorder()
+			req, _ := http.NewRequest("GET", url, nil)
+			req.Header.Set("User-Agent", tc.userAgent)
+
+			bouncerHandler.ServeHTTP(w, req)
+
+			assert.Equal(t, 302, w.Code, "userAgent: %v, url: %v", tc.userAgent, url)
+			// We don't need to assert the scheme.
+			assert.True(t, strings.HasSuffix(w.Result().Header.Get("Location"), expectedLocation), "userAgent: %v, url: %v", tc.userAgent, url)
+		}
+
+		// Latest -pkg product
+		expectedLocation := "//download-installer.cdn.mozilla.net/pub/firefox/releases/133.0/mac/fr/Firefox%20133.0.pkg"
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("GET", "http://test/?product=firefox-pkg-latest-ssl&os=osx&lang=fr", nil)
+		req.Header.Set("User-Agent", tc.userAgent)
+		bouncerHandler.ServeHTTP(w, req)
+		assert.Equal(t, 302, w.Code, "userAgent: %v", tc.userAgent)
+		// We don't need to assert the scheme.
+		assert.True(t, strings.HasSuffix(w.Result().Header.Get("Location"), expectedLocation), "userAgent: %v", tc.userAgent)
+
+		// This is for unrelated products.
+		for _, url := range []string{
+			"http://test/?product=unknown&os=osx&lang=en-US",
+			"http://test/?product=notfirefox-latest-ssl&os=osx&lang=en-US",
+			"http://test/?product=thunderbird-ssl&os=osx&lang=en-US",
+			"http://test/?product=firefox-115.17.0esr-complete&os=osx&lang=en-US",
+			"http://test/?product=firefox-115.17.0esr-partial-115.16.1esr&os=osx&lang=en-US",
+			"http://test/?product=firefox-latest-ssl&os=linux&lang=en-US",
+		} {
+			w := httptest.NewRecorder()
+			req, _ := http.NewRequest("GET", url, nil)
+			req.Header.Set("User-Agent", tc.userAgent)
+
+			bouncerHandler.ServeHTTP(w, req)
+
+			assert.Equal(t, 404, w.Code, "userAgent: %v, url: %v", tc.userAgent, url)
+		}
+
+		// This is for a windows build - THe ESR115 override is per OS, which is
+		// why a macOS 10.12/10.13/10.14 client won't receive ESR115 when it
+		// requests a build with `os=win`.
+		expectedLocation = "https://download-installer.cdn.mozilla.net/pub/firefox/releases/128.3.1esr/win32/fr/Firefox%20Setup%20128.3.1esr.exe"
+		w = httptest.NewRecorder()
+		req, _ = http.NewRequest("GET", "http://test/?product=firefox-esr-latest-ssl&os=win&lang=fr", nil)
+		req.Header.Set("User-Agent", tc.userAgent)
+		bouncerHandler.ServeHTTP(w, req)
+		assert.Equal(t, 302, w.Code, "userAgent: %v", tc.userAgent)
+		assert.Equal(t, expectedLocation, w.Result().Header.Get("Location"))
+	}
+}
+
+func TestBouncerHandlerForMacOSOnlyCompatibleWithESR115WithMozorgReferrer(t *testing.T) {
+	expectedLocation := "http://download.cdn.mozilla.net/pub/firefox/releases/39.0/mac/en-US/Firefox%2039.0.dmg"
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "http://test/?product=firefox-latest&os=osx&lang=en-US", nil)
+	req.Header.Set("Referer", "https://www.mozilla.org/")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:109.0) Gecko/20100101 Firefox/115.0")
+
+	bouncerHandler.ServeHTTP(w, req)
+
+	assert.Equal(t, 302, w.Code)
+	assert.Equal(t, expectedLocation, w.Result().Header.Get("Location"))
 }
