@@ -3,7 +3,7 @@ module github.com/mozilla-services/go-bouncer
 go 1.23
 
 require (
-	github.com/go-sql-driver/mysql v1.8.1
+	github.com/go-sql-driver/mysql v1.9.0
 	github.com/stretchr/testify v1.10.0
 	github.com/urfave/cli v1.22.16
 )
