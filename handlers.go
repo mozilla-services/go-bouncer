@@ -31,17 +31,10 @@ var (
 	fxPartnerAlias = regexp.MustCompile(`^partner-firefox-release-([^-]*)-(.*)-latest$`)
 	// detects x64 clients
 	win64Regex = regexp.MustCompile(`Win64|WOW64`)
-	// detects macOS 10.12 to 10.14 clients. Note that we can't keep doing UA-based
-	// detection forever... https://bugzilla.mozilla.org/show_bug.cgi?id=1679929
-	osxRegexForESR115 = regexp.MustCompile(`Macintosh; Intel Mac OS X 10[\._]1(2|3|4)`)
 )
 
-func isWindowsUserAgentOnlyCompatibleWithESR115(userAgent string) bool {
+func isUserAgentOnlyCompatibleWithESR115(userAgent string) bool {
 	return windowsRegexForESR115.MatchString(userAgent)
-}
-
-func isMacOSUserAgentOnlyCompatibleWithESR115(userAgent string) bool {
-	return osxRegexForESR115.MatchString(userAgent)
 }
 
 func hasMozorgReferrer(referrer string) bool {
@@ -50,31 +43,6 @@ func hasMozorgReferrer(referrer string) bool {
 
 func isWin64UserAgent(userAgent string) bool {
 	return win64Regex.MatchString(userAgent)
-}
-
-func shouldReturnESR115(product, os, referrer, userAgent string) bool {
-	// We want to return ESR115 when the product is for Firefox
-	if !strings.HasPrefix(product, "firefox-") ||
-		// and the request doesn't come from mozilla.org
-		hasMozorgReferrer(referrer) ||
-		// and the product is _not_ a partial or complete update (MAR files)
-		strings.Contains(product, "-partial") ||
-		strings.Contains(product, "-complete") {
-		return false
-	}
-
-	if strings.HasPrefix(os, "win") {
-		// When the requested OS is Windows, we only return ESR115 for non-MSI
-		// builds, and only if the User-Agent says it's a Windows 7/8/8.1.
-		return !strings.Contains(product, "-msi") && isWindowsUserAgentOnlyCompatibleWithESR115(userAgent)
-	} else if os == "osx" {
-		// When the requested OS is macOS, we only return ESR115 for non-pkg
-		// builds, and only if the User-Agent says it's a macOS 10.12/10.13/10.14
-		// client.
-		return !strings.Contains(product, "-pkg") && isMacOSUserAgentOnlyCompatibleWithESR115(userAgent)
-	}
-
-	return false
 }
 
 // isPre2024StubUserAgent is used to detect stub installers that pin the
@@ -340,8 +308,22 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	// We want to return ESR115 when... the product is for Firefox
+	shouldReturnESR115 := strings.HasPrefix(reqParams.Product, "firefox-") &&
+		// and the product is _not_ an MSI build
+		!strings.Contains(reqParams.Product, "-msi") &&
+		// and the product is _not_ a partial or complete update (MAR files)
+		!strings.Contains(reqParams.Product, "-partial") &&
+		!strings.Contains(reqParams.Product, "-complete") &&
+		// and the OS param specifies windows
+		strings.HasPrefix(reqParams.OS, "win") &&
+		// and the User-Agent says it's a Windows 7/8/8.1 client
+		isUserAgentOnlyCompatibleWithESR115(req.UserAgent()) &&
+		// and the request doesn't come from mozilla.org
+		!hasMozorgReferrer(reqParams.Referer)
+
 	// Send the latest compatible ESR product if we detect that this is the best option for the client.
-	if shouldReturnESR115(reqParams.Product, reqParams.OS, reqParams.Referer, req.UserAgent()) {
+	if shouldReturnESR115 {
 		// Override the OS if we detect a x64 client that attempts to get a stub installer.
 		if strings.Contains(reqParams.Product, "-stub") && isWin64UserAgent(req.UserAgent()) {
 			reqParams.OS = "win64"
