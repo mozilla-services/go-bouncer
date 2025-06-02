@@ -26,7 +26,7 @@ var (
 	// detects windows 7/8/8.1 clients
 	windowsRegexForESR115 = regexp.MustCompile(`Windows (?:NT 6\.(1|2|3))`)
 	// this is used to verify the referer header
-	mozorgRegex = regexp.MustCompile(`^https://www\.mozilla\.org/`)
+	allowedReferrerRegexp = regexp.MustCompile(`^https://www\.(mozilla\.org|firefox\.com)/`)
 	// detects partner aliases
 	fxPartnerAlias = regexp.MustCompile(`^partner-firefox-release-([^-]*)-(.*)-latest$`)
 	// detects x64 clients
@@ -37,8 +37,8 @@ func isUserAgentOnlyCompatibleWithESR115(userAgent string) bool {
 	return windowsRegexForESR115.MatchString(userAgent)
 }
 
-func hasMozorgReferrer(referrer string) bool {
-	return mozorgRegex.MatchString(referrer)
+func hasAllowedReferrer(referrer string) bool {
+	return allowedReferrerRegexp.MatchString(referrer)
 }
 
 func isWin64UserAgent(userAgent string) bool {
@@ -276,10 +276,10 @@ func (b *BouncerHandler) shouldAttribute(reqParams *BouncerParams) bool {
 	}
 
 	// Check if the request is coming from RTAMO, and if so, only attribute
-	// if there is a referer header from https://www.mozilla.org/
+	// if there is a referer header from a known allowed site.
 	// https://github.com/mozilla-services/go-bouncer/issues/347
 	if fromRTAMO(reqParams.AttributionCode) {
-		return hasMozorgReferrer(reqParams.Referer)
+		return hasAllowedReferrer(reqParams.Referer)
 	}
 
 	return true
@@ -319,8 +319,8 @@ func (b *BouncerHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		strings.HasPrefix(reqParams.OS, "win") &&
 		// and the User-Agent says it's a Windows 7/8/8.1 client
 		isUserAgentOnlyCompatibleWithESR115(req.UserAgent()) &&
-		// and the request doesn't come from mozilla.org
-		!hasMozorgReferrer(reqParams.Referer)
+		// and the request doesn't come from an allowed site
+		!hasAllowedReferrer(reqParams.Referer)
 
 	// Send the latest compatible ESR product if we detect that this is the best option for the client.
 	if shouldReturnESR115 {

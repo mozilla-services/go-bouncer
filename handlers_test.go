@@ -158,6 +158,37 @@ func TestShouldAttribute(t *testing.T) {
 			},
 			false,
 		},
+		{
+			&BouncerParams{
+				OS:              "win",
+				Product:         "firefox-stub",
+				AttributionCode: "c291cmNlPWFkZG9ucy5tb3ppbGxhLm9yZyZtZWRpdW09cmVmZXJyYWwmY2FtcGFpZ249bm9uLWZ4LWJ1dHRvbiZjb250ZW50PXJ0YTplMkk1WkdJeE5tRTBMVFpsWkdNdE5EZGxZeTFoTVdZMExXSTROakk1TW1Wa01qRXhaSDAmZXhwZXJpbWVudD0obm90IHNldCkmdmFyaWF0aW9uPShub3Qgc2V0KSZ1YT1lZGdlJnZpc2l0X2lkPShub3Qgc2V0KQ..",
+				AttributionSig:  "att-sig",
+				Referer:         "https://www.firefox.com/",
+			},
+			true,
+		},
+		{
+			&BouncerParams{
+				OS:              "win",
+				Product:         "firefox-stub",
+				AttributionCode: "c291cmNlPWFkZG9ucy5tb3ppbGxhLm9yZyZtZWRpdW09cmVmZXJyYWwmY2FtcGFpZ249bm9uLWZ4LWJ1dHRvbiZjb250ZW50PXJ0YTplMkk1WkdJeE5tRTBMVFpsWkdNdE5EZGxZeTFoTVdZMExXSTROakk1TW1Wa01qRXhaSDAmZXhwZXJpbWVudD0obm90IHNldCkmdmFyaWF0aW9uPShub3Qgc2V0KSZ1YT1lZGdlJnZpc2l0X2lkPShub3Qgc2V0KQ..",
+				AttributionSig:  "att-sig",
+				Referer:         "https://www.firefox.com/test/other/paths",
+			},
+			true,
+		},
+		{
+			&BouncerParams{
+				OS:              "win",
+				Product:         "firefox-stub",
+				AttributionCode: "c291cmNlPWFkZG9ucy5tb3ppbGxhLm9yZyZtZWRpdW09cmVmZXJyYWwmY2FtcGFpZ249bm9uLWZ4LWJ1dHRvbiZjb250ZW50PXJ0YTplMkk1WkdJeE5tRTBMVFpsWkdNdE5EZGxZeTFoTVdZMExXSTROakk1TW1Wa01qRXhaSDAmZXhwZXJpbWVudD0obm90IHNldCkmdmFyaWF0aW9uPShub3Qgc2V0KSZ1YT1lZGdlJnZpc2l0X2lkPShub3Qgc2V0KQ..",
+				AttributionSig:  "att-sig",
+				// Bogus referer
+				Referer: "https://www-firefox.com/",
+			},
+			false,
+		},
 	}
 
 	for _, test := range tests {
@@ -470,6 +501,20 @@ func TestBouncerHandlerForWindowsOnlyCompatibleWithESR115WithMozorgReferrer(t *t
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "http://test/?product=firefox-latest&os=win&lang=en-US", nil)
 	req.Header.Set("Referer", "https://www.mozilla.org/")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:124.0) Gecko/20100101 Firefox/124.0")
+
+	bouncerHandler.ServeHTTP(w, req)
+
+	assert.Equal(t, 302, w.Code)
+	assert.Equal(t, expectedLocation, w.Result().Header.Get("Location"))
+}
+
+func TestBouncerHandlerForWindowsOnlyCompatibleWithESR115WithFxcReferrer(t *testing.T) {
+	expectedLocation := "http://download.cdn.mozilla.net/pub/firefox/releases/39.0/win32/en-US/Firefox%20Setup%2039.0.exe"
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "http://test/?product=firefox-latest&os=win&lang=en-US", nil)
+	req.Header.Set("Referer", "https://www.firefox.com/")
 	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:124.0) Gecko/20100101 Firefox/124.0")
 
 	bouncerHandler.ServeHTTP(w, req)
