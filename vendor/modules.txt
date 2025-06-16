@@ -8,7 +8,7 @@ github.com/cpuguy83/go-md2man/v2/md2man
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
 github.com/davecgh/go-spew/spew
-# github.com/go-sql-driver/mysql v1.9.2
+# github.com/go-sql-driver/mysql v1.9.3
 ## explicit; go 1.21.0
 github.com/go-sql-driver/mysql
 # github.com/pmezard/go-difflib v1.0.0
