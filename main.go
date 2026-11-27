@@ -112,7 +112,7 @@ func Main(c *cli.Context) {
 
 	mux := http.NewServeMux()
 
-	mux.Handle("/__lbheartbeat__", healthHandler)
+	mux.HandleFunc("/__lbheartbeat__", lbHeartbeatHandler)
 	mux.Handle("/__heartbeat__", healthHandler)
 	mux.HandleFunc("/__version__", versionHandler)
 	mux.Handle("/", bouncerHandler)
