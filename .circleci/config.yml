@@ -35,7 +35,7 @@ jobs:
       - run:
           name: Waiting for MySQL to be ready
           command: |
-            for i in `seq 1 10`;
+            for i in `seq 1 60`;
             do
               nc -z 127.0.0.1 3306 && echo Success && exit 0
               echo -n .
