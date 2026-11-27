@@ -9,7 +9,7 @@ docker run -v "$PWD/docker/initdb.d/:/fixtures" -d --name bouncer-test-mysql \
     -p 3306:3306 \
     -e MYSQL_ALLOW_EMPTY_PASSWORD="yes" \
     -e MYSQL_DATABASE="bouncer_test" \
-    mysql
+    mysql:8.4
 
 sleep 20
 

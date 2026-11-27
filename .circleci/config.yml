@@ -45,7 +45,7 @@ jobs:
   test:
     docker:
       - image: cimg/go:1.24
-      - image: cimg/mysql:5.7
+      - image: cimg/mysql:8.4
     steps:
       - checkout
       - run:
