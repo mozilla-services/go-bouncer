@@ -542,3 +542,14 @@ func TestHealthHandler(t *testing.T) {
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, `{"db":true,"healthy":true}`, w.Body.String())
 }
+
+func TestLBHeartbeatHandler(t *testing.T) {
+	w := httptest.NewRecorder()
+
+	req, err := http.NewRequest("GET", "/__lbheartbeat__", nil)
+	assert.NoError(t, err)
+
+	lbHeartbeatHandler(w, req)
+
+	assert.Equal(t, 200, w.Code)
+}

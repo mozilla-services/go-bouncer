@@ -105,6 +105,12 @@ func (h *HealthResult) JSON() []byte {
 	return res
 }
 
+// lbHeartbeatHandler returns 200 as long as the process is able to serve
+// requests, without checking any dependencies.
+func lbHeartbeatHandler(w http.ResponseWriter, _ *http.Request) {
+	w.WriteHeader(http.StatusOK)
+}
+
 // HealthHandler returns 200 if the app looks okay
 type HealthHandler struct {
 	db *DB
