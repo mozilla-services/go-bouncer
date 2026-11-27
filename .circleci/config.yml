@@ -28,7 +28,7 @@ jobs:
 
   test:
     docker:
-      - image: cimg/go:1.24
+      - image: cimg/go:1.27.4
       - image: cimg/mysql:8.4
     steps:
       - checkout
@@ -62,7 +62,7 @@ jobs:
           command: |
             go vet ./...
 
-            go install honnef.co/go/tools/cmd/staticcheck@latest
+            go install honnef.co/go/tools/cmd/staticcheck@v0.8.2
             $(go env GOPATH)/bin/staticcheck ./...
       - codecov/upload
 
